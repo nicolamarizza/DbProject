@@ -8,14 +8,14 @@ from flask_login import login_user
 from flask_login import logout_user
 import db
 import hashlib
+import os
 
 import warnings
 warnings.simplefilter("ignore")
 
 app = Flask(__name__)
-#with open('/etc/mc_dbApi/FLASK_SECRET_KEY', 'r') as file:
-#	app.config['SECRET_KEY'] = file.read().replace('\n','')
-app.config['SECRET_KEY'] = "baubau"
+with open(os.environ['FLASK_KEY_PATH'], 'r') as file:
+	app.config['SECRET_KEY'] = file.read().replace('\n','')
 login_manager = LoginManager()
 login_manager.init_app(app)
 

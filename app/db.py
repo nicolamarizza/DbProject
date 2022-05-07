@@ -3,8 +3,11 @@ from sqlalchemy import Column, ForeignKey, create_engine, MetaData, Table, Colum
 from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.ext.automap import automap_base, generate_relationship
 
-engine = create_engine('postgresql://groupmember:hey@nas/PCTO')
-#engine = create_engine('postgresql://studente@nas/PCTO')
+import os
+host = os.environ['SERVER_HOST']
+port = os.environ['SERVER_PORT']
+engine = create_engine(f'postgresql://groupmember:hey@{host}:{port}/PCTO')
+#engine = create_engine('postgresql://studente@{host}:{port}/PCTO')
 metadata = MetaData(bind=engine)
 Session = sessionmaker(bind=engine)
 
