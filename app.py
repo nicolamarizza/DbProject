@@ -32,9 +32,6 @@ def tryAuthenticate(email, password):
 
 	hashed = hashlib.sha512(password.encode('utf-8')).hexdigest()
 
-	import sys
-	print(hashed, file=sys.stderr)
-
 	if(user is None or user.password != hashed):
 		return False
 	
