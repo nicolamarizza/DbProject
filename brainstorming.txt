@@ -1,0 +1,12 @@
+UTENTE
+	cambiare la password
+
+STUDENTE
+	vedere tutti i corsi (compresi quelli per cui le iscrizioni sono chiuse)
+	iscrivere a un corso
+	vedere le lezioni relative ai corsi a cui è iscritto
+
+DOCENTE : STUDENTE
+	creare corsi
+	creare lezioni
+	vedere gli iscritti ai corsi/lezioni
