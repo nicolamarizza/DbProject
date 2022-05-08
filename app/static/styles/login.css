@@ -1,0 +1,41 @@
+.tabs .indicator {
+    border-radius: 5px;
+    height: 5px;
+}
+
+.tabs {
+    border-radius: 5px;
+}
+
+.external-card {
+    padding: 0px;
+    border-radius: 5px;
+}
+
+
+
+
+
+
+/* label focus color */
+.input-field input[type=text]:focus+label {
+    color: #000;
+}
+
+/* label underline focus color */
+.input-field input[type=text]:focus {
+    border-bottom: 1px solid rgb(255, 0, 0);
+    box-shadow: 0 1px 0 0 #000;
+}
+
+/* valid color */
+.input-field input[type=text].valid {
+    border-bottom: 1px solid rgb(31, 189, 0);
+    box-shadow: 0 1px 0 0 #000;
+}
+
+/* invalid color */
+.input-field input[type=text].invalid {
+    border-bottom: 1px solid rgb(255, 0, 0);
+    box-shadow: 0 1px 0 0 #000;
+}

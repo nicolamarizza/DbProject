@@ -1,21 +1,89 @@
 <!doctype html>
 <html>
+
 	<head>
-		<title>Minecraft database webapp</title>
+		<title>Titolo che dovrebbe cambiaer</title>
+
 		<link rel='stylesheet' href='https://www.w3schools.com/w3css/4/w3.css'>
 		<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
+
+		
+
+
+		<!-- Compiled and minified CSS -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+		<!-- Compiled and minified JavaScript -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+		<!-- Material Icon-->
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<script src="https://code.iconify.design/2/2.2.1/iconify.min.js"></script>
+
+
+		<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/base.css') }}">
 		{% block head_base %}{% endblock %}
+
 	</head>
+
 	<body>
-		<div class='w3-bar w3-light-grey'>
-			{%- if authenticated -%}
-			<button class='w3-bar-item w3-button w3-right' onclick="window.location.href='/logout'" >Logout</button>
-			<button class='w3-bar-item w3-button w3-right' onclick="window.location.href='/password'" >Change password</button>
-			{%- else -%}
-			<button class='w3-bar-item w3-button w3-right' onclick="window.location.href='/login'" >Login</button>
-			{%- endif -%}
-			{%- block barContent -%}{%- endblock %}
-		</div>
-		{%- block body_base -%}{%- endblock -%}
+		<nav class="deep-orange darken-3">
+			<div class="nav-wrapper container">
+				<a href="" class="brand-logo">DREAM TEAM - PROGETTO</a>
+				<ul class="right hide-on-med-and-down">
+					<li><a href="">Home</a></li>
+					<li><a href="">Corsi</a></li>
+					<li><a href="">Lezioni</a></li>
+					<li class="active"><a href="">Login</a></li>
+				</ul>
+			</div>
+		</nav>
+
+		<main class="container">
+
+			{%- block body_base -%}
+			{%- endblock -%}
+
+		</main>
+
+		<footer class="page-footer deep-orange darken-3">
+			<div class="container">
+				<div class="row">
+					<div class="col l6 s12">
+						<h5 class="white-text">About Us</h5>
+						<p class="grey-text text-lighten-4">
+							Il progetto è stato sviluppato da:
+						</p>
+						<ul>
+							<li>Luca Daminato</li>
+							<li>Nicola Marizza</li>
+							<li>Giulia </li>
+						</ul>
+					</div>
+					<div class="col l4 offset-l2 s12">
+						<h5 class="white-text">Links</h5>
+						<ul>
+							<li><a class="grey-text text-lighten-3" href="#!">Link 1</a></li>
+							<li><a class="grey-text text-lighten-3" href="#!">Link 2</a></li>
+							<li><a class="grey-text text-lighten-3" href="#!">Link 3</a></li>
+							<li><a class="grey-text text-lighten-3" href="#!">Link 4</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="footer-copyright">
+				<div class="container">
+					<a class="grey-text text-lighten-4 centre" href="#!"><i class="material-icons">whatsapp</i></a>
+					<a class="grey-text text-lighten-4 centre" href="#!"><i class="material-icons"><span class="iconify" data-icon="akar-icons:facebook-fill"></span></i></a>
+				</div>
+			</div>
+		</footer>
+
+		
+		<script src="{{ url_for('static',filename='javascript/base.js') }}"></script>
+		
+		{% block base_javascript %}{% endblock %}
+		
 	</body>
+
 </html>
