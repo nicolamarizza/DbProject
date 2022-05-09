@@ -89,4 +89,4 @@ class Lezioni(Base):
 
 def generate_relationships(base, direction, return_fn, attrname, local_cls, referred_cls, **kw):
     return None
-Base.prepare(engine=teacherEngine, reflect=True, generate_relationship=generate_relationships)
+Base.prepare(engine=engine, reflect=True, generate_relationship=generate_relationships)
