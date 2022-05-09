@@ -24,18 +24,12 @@ class FkAttribute(Attribute):
 		name, 
 		pythonType,
 		strRef,	# è una stringa del tipo 'Aula.id' (occhio all'uppercase, deve matchare le classi in db.py, non le tabelle del db)
-		defaultValue=None,
-		selectable=True, 
-		insertable=True, 
-		secret=False
+		**attrKwargs
 	):
 		Attribute.__init__(self, 
 			name, 
 			pythonType, 
-			defaultValue=defaultValue,
-			selectable=selectable,
-			insertable=insertable,
-			secret=secret
+			**attrKwargs
 		)
 		mappedClassName, self.referencedKey = strRef.split('.')
 		self.mappedClass = getattr(db, mappedClassName)

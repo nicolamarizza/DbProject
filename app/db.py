@@ -75,4 +75,6 @@ class Aule(Base):
 class Edifici(Base):
 	__tablename__ = 'edifici'
 
-Base.prepare(engine=engine, reflect=True)
+def generate_relationships(base, direction, return_fn, attrname, local_cls, referred_cls, **kw):
+    return None
+Base.prepare(engine=teacherEngine, reflect=True, generate_relationship=generate_relationships)
