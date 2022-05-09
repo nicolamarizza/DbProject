@@ -8,10 +8,15 @@ from sqlalchemy.ext.declarative import declarative_base
 import os
 host = os.environ['SERVER_HOST']
 port = os.environ['SERVER_PORT']
-engine = create_engine(f'postgresql://groupmember:hey@{host}:{port}/PCTO')
-#engine = create_engine('postgresql://studente@{host}:{port}/PCTO')
+engine = create_engine(f'postgresql://postgres@{host}:{port}/PCTO')
+teacherEngine = create_engine(f'postgresql://docente@{host}:{port}/PCTO')
+studentEngine = create_engine(f'postgresql://studente@{host}:{port}/PCTO')
+
 metadata = MetaData(bind=engine)
+
 Session = sessionmaker(bind=engine)
+teacherSession = sessionmaker(bind=teacherEngine)
+studentSession = sessionmaker(bind=studentEngine)
 
 
 DeclBase = declarative_base()
@@ -36,6 +41,10 @@ class User(UserMixin, Base):
 
 	def get_id(self):
 		return self.email
+
+	def getSession(self):
+		return teacherSession() if self.isdocente else studentSession()
+
 
 class Corsi(Base):
 	__tablename__ = 'corsi'
