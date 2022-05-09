@@ -27,11 +27,11 @@
 								<form class="col s12" action='/login' method='POST'>
 									<div class="row">
 										<div class="input-field col s6">
-											<input name="email" type="text" class="validate">
+											<input id="email_login" name="email" type="text" class="validate">
 											<label for="email">Email</label>
 										</div>
 										<div class="input-field col s6">
-											<input name="pwd" type="password" class="validate">
+											<input id="pwd_login" name="pwd" type="password" class="validate">
 											<label for="pwd">Password</label>
 										</div>
 										{%- if error -%}
