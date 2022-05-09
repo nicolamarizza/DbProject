@@ -24,24 +24,31 @@
 
 						<div>
 							<div class="row">
-								<form class="col s12">
+								<form class="col s12" action='/login' method='POST'>
 									<div class="row">
 										<div class="input-field col s6">
-											<input id="email" type="text" class="validate">
+											<input name="email" type="text" class="validate">
 											<label for="email">Email</label>
 										</div>
 										<div class="input-field col s6">
-											<input id="pwd" type="password" class="validate">
+											<input name="pwd" type="password" class="validate">
 											<label for="pwd">Password</label>
 										</div>
+										{%- if error -%}
+										<div class="col s12">
+											<label class="error red-text">Email o password errate!</label>
+										</div>
+										{%- endif -%}
+									</div>
+
+									<div>
+										<button class="waves-effect waves-light btn deep-orange darken-3 right"
+											type="submit" name="login">Login</button>
 									</div>
 								</form>
 							</div>
 						</div>
 
-						<div>
-							<a class="waves-effect waves-light btn deep-orange darken-3 right">Login</a>
-						</div>
 
 					</div>
 
