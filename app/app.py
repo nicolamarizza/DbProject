@@ -45,6 +45,8 @@ def tryAuthenticate(email, password):
 def redirect_to_home():
 	return redirect(url_for('home_get'))
 
+
+
 @app.route('/home')
 def home_get():
 	if current_user.is_authenticated:
@@ -52,9 +54,12 @@ def home_get():
 	else:
 		return render_template('home.html', authenticated=False)
 
+
+
 @app.route('/login', methods=["GET"])
 def login_get():
 	return render_template('login.html')
+
 
 
 @app.route('/login', methods=["POST"])
@@ -74,3 +79,12 @@ def login_post():
 def logout():
     logout_user() #chiamata a flask-login
     return redirect(url_for('home_get'))
+
+
+
+@app.route('/corsi')
+def corsi_get():
+	if current_user.is_authenticated:
+		return render_template('corsi.html', authenticated=True, name=current_user.nome)
+	else:
+		return render_template('corsi.html', authenticated=False)

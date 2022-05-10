@@ -41,9 +41,9 @@
 				<a href="" class="brand-logo">DREAM TEAM - PROGETTO</a>
 				<ul class="right hide-on-med-and-down">
 					<li {% if active_page == 'home.index' %} class='active' {% endif %}><a href="/home">Home</a></li>
-					<li {% if active_page == 'corsi.index' %} class='active' {% endif %}><a href="/home">Corsi</a></li>
-					<li {% if active_page == 'lezioni.index' %} class='active' {% endif %}><a href="">Lezioni</a></li>
+					<li {% if active_page == 'corsi.index' %} class='active' {% endif %}><a href="/corsi">Corsi</a></li>
 					{%- if authenticated -%}
+					<li {% if active_page == 'lezioni.index' %} class='active' {% endif %}><a href="">Lezioni</a></li>
 					<li><a class="dropdown-trigger" href="#!" data-target="dropdownlogin">Hi, {{ name }}</a></li>
 					{%- else -%}
 					<li {% if active_page == 'login.index' %} class="active" {% endif %}><a href="/login">Login</a></li>
