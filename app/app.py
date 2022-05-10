@@ -42,9 +42,12 @@ def tryAuthenticate(email, password):
 #######
 
 @app.route('/')
-def redirect_to_login():
-	return redirect(url_for('login_get'))
+def redirect_to_home():
+	return redirect(url_for('home_get'))
 
+@app.route('/home')
+def home_get():
+	return render_template('home.html', authenticated=current_user.is_authenticated, name=current_user.nome)
 
 @app.route('/login', methods=["GET"])
 def login_get():
@@ -57,7 +60,7 @@ def login_post():
 	pwd = request.form['pwd']
 
 	if(tryAuthenticate(email, pwd)):
-		return render_template('home.html', name=current_user.nome)
+		return redirect(url_for('home_get'))
 
 	return render_template('login.html', error=True)
 

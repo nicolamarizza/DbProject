@@ -10,3 +10,13 @@ DOCENTE : STUDENTE
 	creare corsi
 	creare lezioni
 	vedere gli iscritti ai corsi/lezioni
+
+
+CORSI:
+	aggiungere categorie + con annessa tabella
+	aggiungere struttura + con annessa tabella
+	modalità del corso (online, presenza e duale) + eventuali trigger per controllo consistenza dati (se corso online, solo lezioni online)
+	aggiungere durata (es 10 ore di lezini) 
+	aggiungere periodo (es da Marzo ad Aprile)
+	aggiungere numero minimo iscrizioni
+	
