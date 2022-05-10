@@ -47,7 +47,10 @@ def redirect_to_home():
 
 @app.route('/home')
 def home_get():
-	return render_template('home.html', authenticated=current_user.is_authenticated, name=current_user.nome)
+	if current_user.is_authenticated:
+		return render_template('home.html', authenticated=True, name=current_user.nome)
+	else:
+		return render_template('home.html', authenticated=False)
 
 @app.route('/login', methods=["GET"])
 def login_get():
@@ -64,3 +67,10 @@ def login_post():
 
 	return render_template('login.html', error=True)
 
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user() #chiamata a flask-login
+    return redirect(url_for('home_get'))

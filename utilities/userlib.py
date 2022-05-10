@@ -53,7 +53,7 @@ def registerUser(firstName, lastName, password, session=None, docente=False):
 		)
 	)
 
-	provided = session is None
+	provided = not session is None
 	if(not provided):
 		session = Session()
 	

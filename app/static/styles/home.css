@@ -1,0 +1,17 @@
+main {
+    width: 100%;
+    min-width: 100%;
+}
+
+.sfondo_bg {
+    position: relative;
+    width: 100%;
+}
+
+.testo_foto {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    text-align: center;
+    transform: translate(-50%, -50%);
+}
