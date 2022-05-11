@@ -91,7 +91,7 @@ def corsi_get():
 
 
 @app.route('/lezioni')
-#@login_required #ti dice che non sei autorizzato se non hai effettuato il login
+@login_required #ti dice che non sei autorizzato se non hai effettuato il login
 def lezioni():
 	if current_user.is_authenticated:
 		return render_template('lezioni.html', name = current_user.nome)
