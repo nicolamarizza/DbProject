@@ -121,3 +121,15 @@ Lezioni.attributes = [
 	EnumAttribute('tipo', str, {'P':'presenza', 'R':'remoto', 'PR':'duale'})
 ]
 
+
+class AnonymousUser():
+	def __init__(self):
+		self.is_active = False
+		self.is_authenticated = False
+		self.is_anonymous = True
+
+	def get_id(self):
+		return None
+	
+	def getSession(self):
+		return studentSession()

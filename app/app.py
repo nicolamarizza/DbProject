@@ -18,6 +18,7 @@ app = Flask(__name__)
 with open(os.environ['FLASK_KEY_PATH'], 'r') as file:
 	app.config['SECRET_KEY'] = file.read().replace('\n','')
 login_manager = LoginManager()
+login_manager.anonymous_user = views.AnonymousUser
 login_manager.init_app(app)
 
 
