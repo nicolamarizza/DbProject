@@ -82,6 +82,34 @@ def logout():
 
 
 
+@app.route('/registrazione', methods=["POST"])
+def registrazione():
+	#prende i dati inviati al form
+	email = request.form['email']
+	pwd = request.form['pwd']
+	nome = request.form['nome']
+	cognome = request.form['cognome']
+	dataNascita = request.form['dataN']
+
+	#crypta la password
+	pwd_crypt = hashlib.sha512(pwd.encode('utf-8')).hexdigest()
+
+	#inserisce i dati nel database
+	session = db.Session()
+	user = db.User(email=email, nome=nome, cognome=cognome, datanascita = dataNascita, isdocente=False, password=pwd_crypt)
+	session.add(user)
+	session.commit()
+	session.close()
+
+	#per ora torna alla home
+	#TODO: avvisare che è stato inserito con successo
+	return render_template("home.html")
+
+
+
+
+
+
 @app.route('/corsi')
 def corsi_get():
 	if current_user.is_authenticated:
@@ -106,6 +134,8 @@ def lezioni_get():
 		return render_template('lezioni.html', name = current_user.nome)
 	else:
 		return render_template('home.html', error = True)
+
+
 
 
 

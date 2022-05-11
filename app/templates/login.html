@@ -57,38 +57,48 @@
 
 						<div>
 							<div class="row">
-								<form class="col s12">
+								<form class="col s12", action="/registrazione", method="POST">
 									<div class="row">
-										<div class="input-field col s6">
-											<input placeholder="Placeholder" id="first_name" type="text"
+										<!--<div class="input-field col s6">
+											<input placeholder="Placeholder" name="nome" id="first_name" type="text"
 												class="validate">
+											<label for="first_name">First Name</label>
+										</div>-->
+										<div class="input-field col s6">
+											<input id="first_name" name="nome" type="text" class="validate">
 											<label for="first_name">First Name</label>
 										</div>
 										<div class="input-field col s6">
-											<input id="last_name" type="text" class="validate">
+											<input id="last_name" name="cognome" type="text" class="validate">
 											<label for="last_name">Last Name</label>
 										</div>
 									</div>
-									<div class="row">
+									<!--<div class="row">
 										<div class="input-field col s12">
 											<input disabled value="I am not editable" id="disabled" type="text"
 												class="validate">
 											<label for="disabled">Disabled</label>
 										</div>
-									</div>
+									</div>-->
 									<div class="row">
 										<div class="input-field col s12">
-											<input id="password" type="password" class="validate">
+											<input id="password" name="pwd" type="password" class="validate">
 											<label for="password">Password</label>
 										</div>
 									</div>
 									<div class="row">
 										<div class="input-field col s12">
-											<input id="email" type="email" class="validate">
+											<input id="email" name="email" type="email" class="validate">
 											<label for="email">Email</label>
 										</div>
 									</div>
 									<div class="row">
+										<div class="input-field col s12">
+											<input id="data_nascita" name="dataN" type="date" class="validate">
+											<label for="data_nascita">Data nascita</label>
+										</div>
+									</div>
+									<!--<div class="row">
 										<div class="col s12">
 											This is an inline input field:
 											<div class="input-field inline">
@@ -98,14 +108,15 @@
 													text</span>
 											</div>
 										</div>
+									</div>-->
+
+
+									<div>
+										<button class="waves-effect waves-light btn deep-orange darken-3 right"
+											type="submit" name="registrati">Registrati</button>
 									</div>
 								</form>
 							</div>
-
-						</div>
-						<div>
-
-							<a class="waves-effect waves-light btn deep-orange darken-3 right">Registrati</a>
 
 						</div>
 
