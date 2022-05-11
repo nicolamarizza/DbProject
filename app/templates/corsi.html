@@ -16,27 +16,34 @@
 
         <h2>Corsi</h2>
 
+        {%- if authenticated -%}
+        <h3>I tuoi corsi</h3>
+            {%- if i_tuoi_corsi -%}
+            <ul class="collapsible expandable popout">
+                {% for corso in i_tuoi_corsi %}
+                    {% include 'corso_elem.html' %}
+                {% endfor %}
+            </ul>
+            {%- else -%}
+            Non ti sei ancora iscritto ad alcun corso.
+            {%- endif -%}
+        {%- endif -%}
+
+
+
+
         <h3>Corsi disponibili</h3>
-
-        <ul class="collapsible">
-            <li>
-                <div class="collapsible-header">Ciao</div>
-                <div class="collapsible-body">
-                    
-                    
-
-                </div>
-            </li>
-            <li>
-                <div class="collapsible-header"><i class="material-icons">place</i>Second</div>
-                <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
-            </li>
-            <li>
-                <div class="collapsible-header"><i class="material-icons">whatshot</i>Third</div>
-                <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
-            </li>
+        {%- if corsi_disponibili -%}
+        <ul class="collapsible expandable popout">
+            {% for corso in corsi_disponibili %}
+                {% include 'corso_elem.html' %}
+            {% endfor %}
         </ul>
-    
+        {%- else -%}
+        Nessun corso disponibile al momento. ☹
+        {%- endif -%}
+
+
     </div>
 </div>
 

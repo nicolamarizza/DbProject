@@ -7,6 +7,7 @@ from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
 import db
+import views
 import hashlib
 import os
 
@@ -116,19 +117,54 @@ def registrazione():
 
 @app.route('/corsi')
 def corsi_get():
-	if current_user.is_authenticated:
-		
-		return render_template('corsi.html', authenticated=True, name=current_user.nome )
+	
+	#user = current_user
+	#with user.getSession() as session:
+	#	corsi = session.query(views.Corsi).all()
+	#	for corso in corsi:
+	#		setattr(corso, 'iscritto', user.is_authenticated and user in corso.iscritti)
+
+
+	user = current_user
+	with user.getSession() as session:
+		corsi_totali = session.query(views.Corsi).all()
+		i_tuoi_corsi = list(filter(lambda c : user.is_authenticated and user in c.iscritti, corsi_totali))
+		corsi_disponibili = list(filter(lambda c : not user.is_authenticated or not user in c.iscritti, corsi_totali))
+
+	if user.is_authenticated:
+		return render_template('corsi.html', authenticated=True, name=user.nome, i_tuoi_corsi=i_tuoi_corsi, corsi_disponibili=corsi_disponibili)
+
 	else:
 
 		#query che dovrebbe prendere tutte le informazioni dai corsi
 		#TODO: testarlo sull'html quando ci sarà qualche corso inserito nel database
-		session = db.Session()
-		c = session.query(db.Corsi).all()
-		session.close()
+		#session = db.Session()
+		#c = session.query(db.Corsi).all()
+		#session.close()
+
+		return render_template('corsi.html', authenticated=False, corsi_disponibili=corsi_disponibili)
 
 
-		return render_template('corsi.html', authenticated=False, info_corsi = c)
+
+
+
+@app.route('/iscrizione_corso', methods=["POST"])
+@login_required
+def iscrizione_corso_post():
+	idcorso = request.form['idcorso']
+
+	user = current_user
+	#QUERY CHE INSERISCE ISCRIZIONE
+	with user.getSession() as session:
+		corso = session.query(db.Corsi).get(idcorso)
+		corso.iscritti.append(user)
+		session.commit()
+
+	return redirect(url_for('corsi_get'))
+
+
+
+
 
 
 @app.route('/lezioni')

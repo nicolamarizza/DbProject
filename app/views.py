@@ -120,3 +120,4 @@ Lezioni.attributes = [
 	Attribute('durata', timedelta),
 	EnumAttribute('tipo', str, {'P':'presenza', 'R':'remoto', 'PR':'duale'})
 ]
+
