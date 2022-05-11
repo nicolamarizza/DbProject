@@ -85,9 +85,18 @@ def logout():
 @app.route('/corsi')
 def corsi_get():
 	if current_user.is_authenticated:
-		return render_template('corsi.html', authenticated=True, name=current_user.nome)
+		
+		return render_template('corsi.html', authenticated=True, name=current_user.nome )
 	else:
-		return render_template('corsi.html', authenticated=False)
+
+		#query che dovrebbe prendere tutte le informazioni dai corsi
+		#TODO: testarlo sull'html quando ci sarà qualche corso inserito nel database
+		session = db.Session()
+		c = session.query(db.Corsi).all()
+		session.close()
+
+
+		return render_template('corsi.html', authenticated=False, info_corsi = c)
 
 
 @app.route('/lezioni')
@@ -97,4 +106,8 @@ def lezioni_get():
 		return render_template('lezioni.html', name = current_user.nome)
 	else:
 		return render_template('home.html', error = True)
+
+
+
+
 
