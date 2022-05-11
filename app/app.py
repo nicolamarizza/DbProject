@@ -22,8 +22,12 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(email):
-	with db.Session() as session:
-		user = session.query(db.User).get(email)
+	#utilizzando il with dava errore :(
+
+	#with db.Session() as session:
+	session = db.Session() 
+	user = session.query(db.User).get(email)
+	session.close()
 
 	return user
 
