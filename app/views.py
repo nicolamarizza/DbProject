@@ -7,11 +7,16 @@ import db
 from db import Session, StudentSession, TeacherSession
 
 
+def buildingDisplayName(building):
+	return f'edificio \'{building.nome}\' ({building.indirizzo})'
+
 def roomDisplayName(room):
 	edificio = room.edificio
-	return f'{room.nome} edificio \'{edificio.nome}\' ({edificio.indirizzo})'
+	return f'{room.nome} {buildingDisplayName(edificio)}'
 
 
+
+pending_foreign_keys = []
 
 class Attribute():
 	def __init__(
@@ -72,31 +77,29 @@ class FkAttribute(Attribute):
 			**attrKwargs
 		)
 		self.getDisplayName = getDisplayName
-		mappedClassName, self.referencedKey = strRef.split('.')
-		self.mappedClass = getattr(sys.modules[__name__], mappedClassName)
-		self.options = self.getOptions()
+		self.mappedClassName, self.referencedKey = strRef.split('.')
 		self.isFk = True
+		pending_foreign_keys.append(self)
 # quando l'utente vuole inserire una fk bisogna limitare il suo input a tutte le pk puntate dalla fk
 # se le pk sono autoincrement (quindi non hanno senso agli occhi del client) si può
 # fornire la funzione lambda getDisplayName che accetta come argomento un oggetto appartenente
 # alla tabella puntata dalla fk e restituisce la stringa da mostrare al client
 # se la session non viene fornita, l'operazione è atomica
-	def getOptions(self, session=None):
+	def buildOptions(self, session=None):
 		sessionProvided = not session is None
 		if(not sessionProvided):
 			session = db.Session()
 		
-		result = {}
+		mappedClass = getattr(db, self.mappedClassName)
+		self.options = {}
 		try:
-			for obj in session.query(self.mappedClass).all():
+			for obj in session.query(mappedClass).all():
 				key = getattr(obj, self.referencedKey)
-				result[key] = key if self.getDisplayName is None else self.getDisplayName(obj)
+				self.options[key] = key if self.getDisplayName is None else self.getDisplayName(obj)
 		finally:
 			if(not sessionProvided):
 				session.commit()
 				session.close()
-		
-		return result
 
 class AnonymousUser():
 	def __init__(self):
@@ -144,33 +147,13 @@ class User(SimpleView):
 	def __init__(self, **kwargs):
 		SimpleView.__init__(self, 'User', **kwargs)
 
-class Corsi(SimpleView):
-	pk = 'id'
-	attributes = {
-		'id' : Attribute('id', int, insertable=False, selectable=False),
-		'titolo' : Attribute('titolo', str),
-		'descrizione' : Attribute('descrizione', str),
-		'iscrizioniminime' : Attribute('iscrizioniminime', int, displayName='iscrizioni minime'),
-		'iscrizionimassime' : Attribute('iscrizionimassime', int, displayName='limite iscrizioni'),
-		'inizioiscrizioni' : Attribute('inizioiscrizioni', datetime, displayName='inizio iscrizioni'),
-		'scadenzaiscrizioni' : Attribute('scadenzaiscrizioni', datetime, displayName='scadenza iscrizioni'),
-		'modalità' : EnumAttribute('modalità', str, {'P':'presenza', 'R':'remoto', 'PR':'duale'}),
-		'iddipartimento' : FkAttribute('iddipartimento', str, 'Categorie.nome'),
-		'categoria' : FkAttribute('categoria', str, 'Categorie.nome'),
-		'durata' : Attribute('durata', timedelta),
-		'periodo' : Attribute('periodo', str)
-	}
-
-	def __init__(self, **kwargs):
-		SimpleView.__init__(self, 'Corsi', **kwargs)
-
 class Edifici(SimpleView):
 	pk = 'id'
 	attributes = {
 		'id' : Attribute('id', int, insertable=False),
 		'nome' : Attribute('nome', str),
 		'indirizzo' : Attribute('indirizzo', str),
-		'iddipartimento': FkAttribute('iddipartimento', str, 'Categorie.sigla')
+		'iddipartimento': FkAttribute('iddipartimento', str, 'Dipartimenti.sigla', displayName='dipartimento', getDisplayName=lambda x : x.nome)
 	}
 
 	def __init__(self, **kwargs):
@@ -189,6 +172,46 @@ class Aule(SimpleView):
 	def __init__(self, **kwargs):
 		SimpleView.__init__(self, 'Aule', **kwargs)
 
+class Dipartimenti(SimpleView):
+	pk = 'sigla'
+	attributes = {
+		'sigla': Attribute('sigla', str),
+		'nome': Attribute('nome', str),
+		'idsede': FkAttribute('idsede', int, 'Edifici.id', displayName='sede', getDisplayName=buildingDisplayName)
+	}
+
+	def __init__(self, **kwargs):
+		SimpleView.__init__(self, 'Dipartimenti', **kwargs)
+
+class Categorie(SimpleView):
+	pk = 'nome'
+	attributes = {
+		'nome': Attribute('nome', str)
+	}
+
+	def __init__(self, **kwargs):
+		SimpleView.__init__(self, 'Categorie', **kwargs)
+
+class Corsi(SimpleView):
+	pk = 'id'
+	attributes = {
+		'id' : Attribute('id', int, insertable=False, selectable=False),
+		'titolo' : Attribute('titolo', str),
+		'descrizione' : Attribute('descrizione', str),
+		'iscrizioniminime' : Attribute('iscrizioniminime', int, displayName='iscrizioni minime'),
+		'iscrizionimassime' : Attribute('iscrizionimassime', int, displayName='limite iscrizioni'),
+		'inizioiscrizioni' : Attribute('inizioiscrizioni', datetime, displayName='inizio iscrizioni'),
+		'scadenzaiscrizioni' : Attribute('scadenzaiscrizioni', datetime, displayName='scadenza iscrizioni'),
+		'modalità' : EnumAttribute('modalità', str, {'P':'presenza', 'R':'remoto', 'PR':'duale'}),
+		'iddipartimento' : FkAttribute('iddipartimento', str, 'Dipartimenti.id', displayName='dipartimento', getDisplayName=lambda x : x.nome),
+		'categoria' : FkAttribute('categoria', str, 'Categorie.nome'),
+		'durata' : Attribute('durata', timedelta),
+		'periodo' : Attribute('periodo', str)
+	}
+
+	def __init__(self, **kwargs):
+		SimpleView.__init__(self, 'Corsi', **kwargs)
+
 class Lezioni(SimpleView):
 	pk = 'id'
 	attributes = {
@@ -203,22 +226,8 @@ class Lezioni(SimpleView):
 	def __init__(self, **kwargs):
 		SimpleView.__init__(self, 'Lezioni', **kwargs)
 
-class Dipartimenti(SimpleView):
-	pk = 'sigla'
-	attributes = {
-		'sigla': Attribute('sigla', str),
-		'nome': Attribute('nome', str),
-		'idsede': FkAttribute('idsede', int, 'Edifici.id')
-	}
 
-	def __init__(self, **kwargs):
-		SimpleView.__init__(self, 'Dipartimenti', **kwargs)
 
-class Categorie(SimpleView):
-	pk = 'nome'
-	attributes = {
-		'nome': Attribute('nome', str)
-	}
 
-	def __init__(self, **kwargs):
-		SimpleView.__init__(self, 'Categorie', **kwargs)
+for fk in pending_foreign_keys:
+	fk.buildOptions()
