@@ -1,6 +1,17 @@
 from datetime import date, datetime, timedelta
+from flask_login import current_user
+from sqlalchemy.exc import IntegrityError
+
 import sys
-from db import *
+import db
+from db import Session, StudentSession, TeacherSession
+
+
+def roomDisplayName(room):
+	edificio = room.edificio
+	return f'{room.nome} edificio \'{edificio.nome}\' ({edificio.indirizzo})'
+
+
 
 class Attribute():
 	def __init__(
@@ -29,7 +40,6 @@ class Attribute():
 
 		self.isEnum = False
 		self.isFk = False
-
 
 class EnumAttribute(Attribute):
 	def __init__(
@@ -74,7 +84,7 @@ class FkAttribute(Attribute):
 	def getOptions(self, session=None):
 		sessionProvided = not session is None
 		if(not sessionProvided):
-			session = Session()
+			session = db.Session()
 		
 		result = {}
 		try:
@@ -88,69 +98,6 @@ class FkAttribute(Attribute):
 		
 		return result
 
-def roomDisplayName(room):
-	edificio = room.edificio
-	return f'{room.nome} edificio \'{edificio.nome}\' ({edificio.indirizzo})'
-
-User.attributes = {
-	'email' : Attribute('email', str),
-	'nome' : Attribute('nome', str),
-	'cognome' : Attribute('cognome', str),
-	'datanascita' : Attribute('datanascita', date, displayName='data di nascita'),
-	'isdocente' : Attribute('isdocente', bool, displayName='docente'),
-	'password' : Attribute('password', str, selectable=False, secret=True)
-}
-
-Corsi.attributes = {
-	'id' : Attribute('id', int, insertable=False, selectable=False),
-	'titolo' : Attribute('titolo', str),
-	'descrizione' : Attribute('descrizione', str),
-	'iscrizioniminime' : Attribute('iscrizioniminime', int, displayName='iscrizioni minime'),
-	'iscrizionimassime' : Attribute('iscrizionimassime', int, displayName='limite iscrizioni'),
-	'inizioiscrizioni' : Attribute('inizioiscrizioni', datetime, displayName='inizio iscrizioni'),
-	'scadenzaiscrizioni' : Attribute('scadenzaiscrizioni', datetime, displayName='scadenza iscrizioni'),
-	'modalità' : EnumAttribute('modalità', str, {'P':'presenza', 'R':'remoto', 'PR':'duale'}),
-	'struttura' : FkAttribute('struttura', str, 'Strutture.nome'),
-	'categoria' : FkAttribute('categoria', str, 'Categorie.nome'),
-	'durata' : Attribute('durata', timedelta),
-	'periodo' : Attribute('periodo', str)
-}
-
-Edifici.attributes = {
-	'id' : Attribute('id', int, insertable=False),
-	'nome' : Attribute('nome', str),
-	'indirizzo' : Attribute('indirizzo', str),
-	'iddipartimento': FkAttribute('iddipartimento', str, 'Dipartimenti.sigla')
-}
-
-Aule.attributes = {
-	'id' : Attribute('id', int, insertable=False),
-	'nome' : Attribute('nome', str),
-	'idedificio' : FkAttribute('idedificio', int, 'Edifici.id', displayName='edificio', getDisplayName=lambda x : f'{x.nome} ({x.indirizzo})'),
-	'postitotali' : Attribute('postitotali', int, displayName='posti totali'),
-	'postidisponibili' : Attribute('postidisponibili', int, displayName='posti disponibili')
-}
-
-Lezioni.attributes = {
-	'id' : Attribute('id', int, insertable=False, selectable=False),
-	'idaula' : FkAttribute('idaula', int, 'Aule.id', displayName='aula', getDisplayName=roomDisplayName),
-	'idcorso' : FkAttribute('idcorso', int, 'Corsi.id', displayName='corso', getDisplayName=lambda x : x.titolo),
-	'inizio' : Attribute('inizio', datetime),
-	'durata' : Attribute('durata', timedelta),
-	'modalità' : EnumAttribute('modalità', str, {'P':'presenza', 'R':'remoto', 'PR':'duale'})
-}
-
-Dipartimenti.attributes = {
-	'sigla': Attribute('sigla', str),
-	'nome': Attribute('nome', str),
-	'idsede': FkAttribute('idsede', int, 'Edifici.id')
-}
-
-Categorie.attributes = {
-	'nome': Attribute('nome', str)
-}
-
-
 class AnonymousUser():
 	def __init__(self):
 		self.is_active = False
@@ -161,4 +108,117 @@ class AnonymousUser():
 		return None
 	
 	def getSession(self):
-		return studentSession()
+		return db.StudentSession()
+
+class SimpleView():
+	def __init__(self, className, **kwargs):
+		self.kwargs = kwargs
+		self.dbClass = getattr(db, className)
+		self.viewClass = sys.modules[className]
+
+	def insert(self):
+		with current_user.getSession() as session:
+			session.add(self.dbClass(**self.kwargs))
+			session.commit()
+
+		return None
+
+	def update(self):
+		with current_user.getSession() as session:
+			obj = session.query(self.dbClass).get(self.kwargs.pop(self.viewClass.pk))
+			for k,v in self.kwargs.items():
+				setattr(obj, k, v)
+			session.commit()
+
+class User(SimpleView):
+	pk = 'email'
+	attributes = {
+		'nome': Attribute('nome', str),
+		'cognome': Attribute('cognome', str),
+		'email': Attribute('email', str),
+		'password': Attribute('password', str, secret=True),
+		'confirm_password': Attribute('confirm_password', str, secret=True),
+		'data_nascita': Attribute('data_nascita', date)
+	}
+
+	def __init__(self, **kwargs):
+		SimpleView.__init__(self, 'User', **kwargs)
+
+class Corsi(SimpleView):
+	pk = 'id'
+	attributes = {
+		'id' : Attribute('id', int, insertable=False, selectable=False),
+		'titolo' : Attribute('titolo', str),
+		'descrizione' : Attribute('descrizione', str),
+		'iscrizioniminime' : Attribute('iscrizioniminime', int, displayName='iscrizioni minime'),
+		'iscrizionimassime' : Attribute('iscrizionimassime', int, displayName='limite iscrizioni'),
+		'inizioiscrizioni' : Attribute('inizioiscrizioni', datetime, displayName='inizio iscrizioni'),
+		'scadenzaiscrizioni' : Attribute('scadenzaiscrizioni', datetime, displayName='scadenza iscrizioni'),
+		'modalità' : EnumAttribute('modalità', str, {'P':'presenza', 'R':'remoto', 'PR':'duale'}),
+		'iddipartimento' : FkAttribute('iddipartimento', str, 'Categorie.nome'),
+		'categoria' : FkAttribute('categoria', str, 'Categorie.nome'),
+		'durata' : Attribute('durata', timedelta),
+		'periodo' : Attribute('periodo', str)
+	}
+
+	def __init__(self, **kwargs):
+		SimpleView.__init__(self, 'Corsi', **kwargs)
+
+class Edifici(SimpleView):
+	pk = 'id'
+	attributes = {
+		'id' : Attribute('id', int, insertable=False),
+		'nome' : Attribute('nome', str),
+		'indirizzo' : Attribute('indirizzo', str),
+		'iddipartimento': FkAttribute('iddipartimento', str, 'Categorie.sigla')
+	}
+
+	def __init__(self, **kwargs):
+		SimpleView.__init__(self, 'Edifici', **kwargs)
+
+class Aule(SimpleView):
+	pk = 'id'
+	attributes = {
+		'id' : Attribute('id', int, insertable=False),
+		'nome' : Attribute('nome', str),
+		'idedificio' : FkAttribute('idedificio', int, 'Edifici.id', displayName='edificio', getDisplayName=lambda x : f'{x.nome} ({x.indirizzo})'),
+		'postitotali' : Attribute('postitotali', int, displayName='posti totali'),
+		'postidisponibili' : Attribute('postidisponibili', int, displayName='posti disponibili')
+	}
+
+	def __init__(self, **kwargs):
+		SimpleView.__init__(self, 'Aule', **kwargs)
+
+class Lezioni(SimpleView):
+	pk = 'id'
+	attributes = {
+		'id' : Attribute('id', int, insertable=False, selectable=False),
+		'idaula' : FkAttribute('idaula', int, 'Aule.id', displayName='aula', getDisplayName=roomDisplayName),
+		'idcorso' : FkAttribute('idcorso', int, 'Corsi.id', displayName='corso', getDisplayName=lambda x : x.titolo),
+		'inizio' : Attribute('inizio', datetime),
+		'durata' : Attribute('durata', timedelta),
+		'modalità' : EnumAttribute('modalità', str, {'P':'presenza', 'R':'remoto', 'PR':'duale'})
+	}
+
+	def __init__(self, **kwargs):
+		SimpleView.__init__(self, 'Lezioni', **kwargs)
+
+class Dipartimenti(SimpleView):
+	pk = 'sigla'
+	attributes = {
+		'sigla': Attribute('sigla', str),
+		'nome': Attribute('nome', str),
+		'idsede': FkAttribute('idsede', int, 'Edifici.id')
+	}
+
+	def __init__(self, **kwargs):
+		SimpleView.__init__(self, 'Dipartimenti', **kwargs)
+
+class Categorie(SimpleView):
+	pk = 'nome'
+	attributes = {
+		'nome': Attribute('nome', str)
+	}
+
+	def __init__(self, **kwargs):
+		SimpleView.__init__(self, 'Categorie', **kwargs)

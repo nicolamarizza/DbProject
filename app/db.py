@@ -15,8 +15,8 @@ studentEngine = create_engine(f'postgresql://studente@{host}:{port}/PCTO')
 metadata = MetaData(bind=engine)
 
 Session = sessionmaker(bind=engine)
-teacherSession = sessionmaker(bind=teacherEngine)
-studentSession = sessionmaker(bind=studentEngine)
+TeacherSession = sessionmaker(bind=teacherEngine)
+StudentSession = sessionmaker(bind=studentEngine)
 
 
 DeclBase = declarative_base()
@@ -43,7 +43,7 @@ class User(UserMixin, Base):
 		return self.email
 
 	def getSession(self):
-		return teacherSession() if self.isdocente else studentSession()
+		return TeacherSession() if self.isdocente else StudentSession()
 
 
 class Corsi(Base):
