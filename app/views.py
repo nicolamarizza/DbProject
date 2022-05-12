@@ -119,21 +119,49 @@ class SimpleView():
 		self.dbClass = getattr(db, className)
 		self.viewClass = getattr(sys.modules[__name__], className)
 
-	def insert(self):
-		session = current_user.getSession()
+	def insert(self, session=None):
+		sessionProvided = not session is None
+		if(not sessionProvided):
+			session = current_user.getSession()
+
 		obj = self.dbClass(**self.kwargs)
 		session.add(obj)
-		session.commit()
+
+		if(not sessionProvided):
+			session.commit()
+			session.close()
+		
 		return session, obj
 
-	def update(self):
-		session = current_user.getSession()
+	def update(self, session=None):
+		sessionProvided = not session is None
+		if(not sessionProvided):
+			session = current_user.getSession()
+
 		obj = session.query(self.dbClass).get(self.kwargs.pop(self.viewClass.pk))
 		for k,v in self.kwargs.items():
 			if(self.viewClass.attributes[k].secret):
 				v = db.encrypt(v)
 			setattr(obj, k, v)
-		session.commit()
+
+		if(not sessionProvided):
+			session.commit()
+			session.close()
+
+		return session, obj
+
+	def delete(self, session=None):
+		sessionProvided = not session is None
+		if(not sessionProvided):
+			session = current_user.getSession()
+		
+		obj = session.query(self.dbClass).get(self.kwargs.pop(self.viewClass.pk))
+		session.delete(obj)
+
+		if(not sessionProvided):
+			session.commit()
+			session.close()
+
 		return session, obj
 
 
