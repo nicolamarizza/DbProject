@@ -89,48 +89,66 @@ class FkAttribute(Attribute):
 		return result
 
 def roomDisplayName(room):
-	name = room.nome
-	buildingName = room.edificio.nome
-	return f'{name} (edificio {buildingName})'
+	edificio = room.edificio
+	return f'{room.nome} edificio \'{edificio.nome}\' ({edificio.indirizzo})'
 
-User.attributes = [
-	Attribute('email', str),
-	Attribute('nome', str),
-	Attribute('cognome', str),
-	Attribute('datanascita', date, displayName='data di nascita'),
-	Attribute('isdocente', bool, displayName='docente'),
-	Attribute('password', str, selectable=False, secret=True)
-]
+User.attributes = {
+	'email' : Attribute('email', str),
+	'nome' : Attribute('nome', str),
+	'cognome' : Attribute('cognome', str),
+	'datanascita' : Attribute('datanascita', date, displayName='data di nascita'),
+	'isdocente' : Attribute('isdocente', bool, displayName='docente'),
+	'password' : Attribute('password', str, selectable=False, secret=True)
+}
 
-Corsi.attributes = [
-	Attribute('id', int, insertable=False, selectable=False),
-	Attribute('titolo', str),
-	Attribute('descrizione', str),
-	Attribute('limiteiscrizioni', int, displayName='limite iscrizioni'),
-	Attribute('scadenzaiscrizioni', datetime, displayName='scadenza iscrizioni')
-]
+Corsi.attributes = {
+	'id' : Attribute('id', int, insertable=False, selectable=False),
+	'titolo' : Attribute('titolo', str),
+	'descrizione' : Attribute('descrizione', str),
+	'iscrizioniminime' : Attribute('iscrizioniminime', int, displayName='iscrizioni minime'),
+	'iscrizionimassime' : Attribute('iscrizionimassime', int, displayName='limite iscrizioni'),
+	'inizioiscrizioni' : Attribute('inizioiscrizioni', datetime, displayName='inizio iscrizioni'),
+	'scadenzaiscrizioni' : Attribute('scadenzaiscrizioni', datetime, displayName='scadenza iscrizioni'),
+	'modalità' : EnumAttribute('modalità', str, {'P':'presenza', 'R':'remoto', 'PR':'duale'}),
+	'struttura' : FkAttribute('struttura', str, 'Strutture.nome'),
+	'categoria' : FkAttribute('categoria', str, 'Categorie.nome'),
+	'durata' : Attribute('durata', timedelta),
+	'periodo' : Attribute('periodo', str)
+}
 
-Edifici.attributes = [
-	Attribute('nome', str),
-	Attribute('indirizzo', str)
-]
+Edifici.attributes = {
+	'id' : Attribute('id', int, insertable=False),
+	'nome' : Attribute('nome', str),
+	'indirizzo' : Attribute('indirizzo', str),
+	'iddipartimento': FkAttribute('iddipartimento', str, 'Dipartimenti.sigla')
+}
 
-Aule.attributes = [
-	Attribute('id', int, insertable=False),
-	Attribute('nome', str),
-	FkAttribute('idedificio', str, 'Edifici.nome', displayName='edificio'),
-	Attribute('postitotali', int, displayName='posti totali'),
-	Attribute('postidisponibili', int, displayName='posti disponibili')
-]
+Aule.attributes = {
+	'id' : Attribute('id', int, insertable=False),
+	'nome' : Attribute('nome', str),
+	'idedificio' : FkAttribute('idedificio', int, 'Edifici.id', displayName='edificio', getDisplayName=lambda x : f'{x.nome} ({x.indirizzo})'),
+	'postitotali' : Attribute('postitotali', int, displayName='posti totali'),
+	'postidisponibili' : Attribute('postidisponibili', int, displayName='posti disponibili')
+}
 
-Lezioni.attributes = [
-	Attribute('id', int, insertable=False, selectable=False),
-	FkAttribute('idaula', int, 'Aule.id', displayName='aula', getDisplayName=roomDisplayName),
-	FkAttribute('idcorso', int, 'Corsi.id', displayName='corso', getDisplayName=lambda x : x.titolo),
-	Attribute('inizio', datetime),
-	Attribute('durata', timedelta),
-	EnumAttribute('tipo', str, {'P':'presenza', 'R':'remoto', 'PR':'duale'})
-]
+Lezioni.attributes = {
+	'id' : Attribute('id', int, insertable=False, selectable=False),
+	'idaula' : FkAttribute('idaula', int, 'Aule.id', displayName='aula', getDisplayName=roomDisplayName),
+	'idcorso' : FkAttribute('idcorso', int, 'Corsi.id', displayName='corso', getDisplayName=lambda x : x.titolo),
+	'inizio' : Attribute('inizio', datetime),
+	'durata' : Attribute('durata', timedelta),
+	'modalità' : EnumAttribute('modalità', str, {'P':'presenza', 'R':'remoto', 'PR':'duale'})
+}
+
+Dipartimenti.attributes = {
+	'sigla': Attribute('sigla', str),
+	'nome': Attribute('nome', str),
+	'idsede': FkAttribute('idsede', int, 'Edifici.id')
+}
+
+Categorie.attributes = {
+	'nome': Attribute('nome', str)
+}
 
 
 class AnonymousUser():

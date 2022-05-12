@@ -86,6 +86,11 @@ class Lezioni(Base):
 		backref='prenotatoPer'
 	)
 
+class Dipartimenti(Base):
+	__tablename__='dipartimenti'
+
+class Categorie(Base):
+	__tablename__='categorie'
 
 def generate_relationships(base, direction, return_fn, attrname, local_cls, referred_cls, **kw):
     return None

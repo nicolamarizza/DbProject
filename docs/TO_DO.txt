@@ -1,0 +1,22 @@
+UTENTE
+	cambiare la password
+
+STUDENTE
+	vedere tutti i corsi (compresi quelli per cui le iscrizioni sono chiuse)
+	vedere le lezioni relative ai corsi a cui è iscritto
+
+DOCENTE : STUDENTE
+	creare corsi
+	creare lezioni
+	vedere gli iscritti ai corsi/lezioni
+
+CORSI:
+	trigger per controllo consistenza dati dei corsi (se corso online, solo lezioni online)
+
+
+FEATURES:
+	1) Per il momento la policy per le prenotazioni quando viene eliminata una lezione è di NO ACTION
+		questo da la possibilità eventualmente di avvisare prima tutti gli studenti prenotati.
+
+	2) Per il momento la policy per le iscrizioni quando viene eliminato un corso è di NO ACTION
+		stessa ragione del punto sopra
