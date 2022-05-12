@@ -22,6 +22,15 @@ class Attribute():
 		self.defaultValue = defaultValue
 		self.optional = not defaultValue is None
 
+		self.isDate = pythonType is date
+		self.isDatetime = pythonType is datetime
+		self.isTimedelta = pythonType is timedelta
+
+
+		self.isEnum = False
+		self.isFk = False
+
+
 class EnumAttribute(Attribute):
 	def __init__(
 		self, 
@@ -36,6 +45,7 @@ class EnumAttribute(Attribute):
 			**attrKwargs
 		)
 		self.options = options
+		self.isEnum = True
 
 class FkAttribute(Attribute):
 	def __init__(
@@ -54,7 +64,8 @@ class FkAttribute(Attribute):
 		self.getDisplayName = getDisplayName
 		mappedClassName, self.referencedKey = strRef.split('.')
 		self.mappedClass = getattr(sys.modules[__name__], mappedClassName)
-
+		self.options = self.getOptions()
+		self.isFk = True
 # quando l'utente vuole inserire una fk bisogna limitare il suo input a tutte le pk puntate dalla fk
 # se le pk sono autoincrement (quindi non hanno senso agli occhi del client) si può
 # fornire la funzione lambda getDisplayName che accetta come argomento un oggetto appartenente

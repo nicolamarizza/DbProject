@@ -1,0 +1,23 @@
+{%- if element.isFk or element.isEnum -%}
+	<select name={{ element.name }}>
+		<option value="" disabled selected>{{ element.displayName }}</option>
+		{%- for pk, displayName in element.options.items() -%}
+			<option value={{ pk }}>{{ displayName }}</option>
+		{%- endfor -%}
+	</select>
+	<label>{{ displayName }}</label>
+{%- else -%}
+	<input 
+		id={{ element.name }} 
+		name={{ element.name }} 
+		type=
+		{%- if element.secret -%}			"password"
+		{%- elif element.isDate -%}			"date"
+		{%- elif element.isDatetime -%}		"datetime-local"
+		{%- elif element.isTimedelta -%}	"time"
+		{%- else -%}"text"{%- endif -%} 
+		class="validate"
+		{% if not element.optional %}required=True{% endif %}
+	>
+	<label for={{ element.name }}>{{ element.displayName }}</label>
+{%- endif -%}
