@@ -120,18 +120,22 @@ class SimpleView():
 		self.viewClass = getattr(sys.modules[__name__], className)
 
 	def insert(self):
-		with current_user.getSession() as session:
-			session.add(self.dbClass(**self.kwargs))
-			session.commit()
-
-		return None
+		session = current_user.getSession()
+		obj = self.dbClass(**self.kwargs)
+		session.add(obj)
+		session.commit()
+		return session, obj
 
 	def update(self):
-		with current_user.getSession() as session:
-			obj = session.query(self.dbClass).get(self.kwargs.pop(self.viewClass.pk))
-			for k,v in self.kwargs.items():
-				setattr(obj, k, v)
-			session.commit()
+		session = current_user.getSession()
+		obj = session.query(self.dbClass).get(self.kwargs.pop(self.viewClass.pk))
+		for k,v in self.kwargs.items():
+			if(self.viewClass.attributes[k].secret):
+				v = db.encrypt(v)
+			setattr(obj, k, v)
+		session.commit()
+		return session, obj
+
 
 class User(SimpleView):
 	pk = 'email'
@@ -140,8 +144,7 @@ class User(SimpleView):
 		'cognome': Attribute('cognome', str),
 		'email': Attribute('email', str),
 		'password': Attribute('password', str, secret=True),
-		'confirm_password': Attribute('confirm_password', str, secret=True),
-		'data_nascita': Attribute('data_nascita', date)
+		'datanascita': Attribute('datanascita', date)
 	}
 
 	def __init__(self, **kwargs):

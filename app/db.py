@@ -4,6 +4,7 @@ from sqlalchemy import Column, ForeignKey, create_engine, MetaData, Table, Colum
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.ext.declarative import declarative_base
+import hashlib
 
 import os
 host = os.environ['SERVER_HOST']
@@ -36,8 +37,16 @@ responsabili_corsi = Table('responsabili_corsi', DeclBase.metadata,
 
 Base = automap_base(DeclBase)
 
+def encrypt(password):
+	return hashlib.sha512(password.encode('utf-8')).hexdigest()
+
 class User(UserMixin, Base):
 	__tablename__ = 'utenti'
+
+	def __init__(self, **kwargs):
+		Base.__init__(self, **kwargs)
+		self.password = encrypt(self.password)
+
 
 	def get_id(self):
 		return self.email
