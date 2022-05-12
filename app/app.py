@@ -1,4 +1,5 @@
 ####  SERVER
+from doctest import UnexpectedException
 from flask import *
 from sqlalchemy import *
 from sqlalchemy.orm import *
@@ -7,7 +8,6 @@ from flask_login import LoginManager, current_user
 from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
-import db
 import views
 import hashlib
 import os
@@ -47,20 +47,20 @@ def redirect_to_home():
 	return redirect(url_for('home_get'))
 
 
-
 @app.route('/home')
 def home_get():
-	if current_user.is_authenticated:
-		return render_template('home.html', authenticated=True, name=current_user.nome)
-	else:
-		return render_template('home.html', authenticated=False)
-
+	user = current_user
+	authenticated = user.is_authenticated
+	return render_template(
+		'home.html', 
+		authenticated=authenticated, 
+		name=user.nome if authenticated else None
+	)
 
 
 @app.route('/login', methods=["GET"])
 def login_get():
 	return render_template('login.html')
-
 
 
 @app.route('/login', methods=["POST"])
@@ -74,13 +74,11 @@ def login_post():
 	return render_template('login.html', login_error=True)
 
 
-
 @app.route('/logout')
 @login_required
 def logout():
     logout_user() #chiamata a flask-login
     return redirect(url_for('home_get'))
-
 
 
 @app.route('/registrazione', methods=["POST"])
@@ -102,47 +100,31 @@ def registrazione():
 		try:
 			session.commit()
 		except IntegrityError:
-			registration_error = True
+			return render_template("login.html", registration_error=True)
 
-	if(registration_error):
-		return render_template("login.html", registration_error=registration_error)
-	
-	return render_template("home.html")
+	if (not tryAuthenticate(email, pwd)):
+		raise UnexpectedException
 
-
-
-
+	return redirect(url_for('home_get'))
 
 
 @app.route('/corsi')
 def corsi_get():
-	
-	#user = current_user
-	#with user.getSession() as session:
-	#	corsi = session.query(views.Corsi).all()
-	#	for corso in corsi:
-	#		setattr(corso, 'iscritto', user.is_authenticated and user in corso.iscritti)
 	user = current_user
+	authenticated = user.is_authenticated
+
 	with user.getSession() as session:
 		corsi_totali = session.query(views.Corsi).all()
-		i_tuoi_corsi = list(filter(lambda c : user.is_authenticated and user in c.iscritti, corsi_totali))
-		corsi_disponibili = list(filter(lambda c : not user.is_authenticated or not user in c.iscritti, corsi_totali))
+		i_tuoi_corsi = list(filter(lambda c : authenticated and user in c.iscritti, corsi_totali))
+		corsi_disponibili = list(filter(lambda c : not authenticated or not user in c.iscritti, corsi_totali))
 
-	if user.is_authenticated:
-		return render_template('corsi.html', authenticated=True, name=user.nome, i_tuoi_corsi=i_tuoi_corsi, corsi_disponibili=corsi_disponibili)
-
-	else:
-
-		#query che dovrebbe prendere tutte le informazioni dai corsi
-		#TODO: testarlo sull'html quando ci sarà qualche corso inserito nel database
-		#session = views.Session()
-		#c = session.query(views.Corsi).all()
-		#session.close()
-
-		return render_template('corsi.html', authenticated=False, corsi_disponibili=corsi_disponibili)
-
-
-
+	return render_template(
+		'corsi.html', 
+		authenticated=authenticated, 
+		name=user.nome if authenticated else None, 
+		i_tuoi_corsi=i_tuoi_corsi, 
+		corsi_disponibili=corsi_disponibili
+	)
 
 
 @app.route('/iscrizione_corso', methods=["POST"])
@@ -160,20 +142,10 @@ def iscrizione_corso_post():
 	return redirect(url_for('corsi_get'))
 
 
-
-
-
-
 @app.route('/lezioni')
 @login_required #ti dice che non sei autorizzato se non hai effettuato il login
 def lezioni_get():
-	if current_user.is_authenticated:
-		return render_template('lezioni.html', authenticated=True, name = current_user.nome)
-	else:
-		return render_template('home.html', error = True)
-
-
-
+	return render_template('lezioni.html', authenticated=True, name = current_user.nome)
 
 
 
