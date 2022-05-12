@@ -2,6 +2,7 @@
 from flask import *
 from sqlalchemy import *
 from sqlalchemy.orm import *
+from sqlalchemy.exc import IntegrityError
 from flask_login import LoginManager, current_user
 from flask_login import login_required
 from flask_login import login_user
@@ -24,14 +25,8 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(email):
-	#utilizzando il with dava errore :(
-
-	#with db.Session() as session:
-	session = db.Session() 
-	user = session.query(db.User).get(email)
-	session.close()
-
-	return user
+	with views.Session() as session:
+		return session.query(views.User).get(email)
 
 def tryAuthenticate(email, password):
 	user = load_user(email)
@@ -76,7 +71,7 @@ def login_post():
 	if(tryAuthenticate(email, pwd)):
 		return redirect(url_for('home_get'))
 
-	return render_template('login.html', error=True)
+	return render_template('login.html', login_error=True)
 
 
 
@@ -101,14 +96,17 @@ def registrazione():
 	pwd_crypt = hashlib.sha512(pwd.encode('utf-8')).hexdigest()
 
 	#inserisce i dati nel database
-	session = db.Session()
-	user = db.User(email=email, nome=nome, cognome=cognome, datanascita = dataNascita, isdocente=False, password=pwd_crypt)
-	session.add(user)
-	session.commit()
-	session.close()
+	with current_user.getSession() as session:
+		user = views.User(email=email, nome=nome, cognome=cognome, datanascita = dataNascita, isdocente=False, password=pwd_crypt)
+		session.add(user)
+		try:
+			session.commit()
+		except IntegrityError:
+			registration_error = True
 
-	#per ora torna alla home
-	#TODO: avvisare che è stato inserito con successo
+	if(registration_error):
+		return render_template("login.html", registration_error=registration_error)
+	
 	return render_template("home.html")
 
 
@@ -124,8 +122,6 @@ def corsi_get():
 	#	corsi = session.query(views.Corsi).all()
 	#	for corso in corsi:
 	#		setattr(corso, 'iscritto', user.is_authenticated and user in corso.iscritti)
-
-
 	user = current_user
 	with user.getSession() as session:
 		corsi_totali = session.query(views.Corsi).all()
@@ -139,8 +135,8 @@ def corsi_get():
 
 		#query che dovrebbe prendere tutte le informazioni dai corsi
 		#TODO: testarlo sull'html quando ci sarà qualche corso inserito nel database
-		#session = db.Session()
-		#c = session.query(db.Corsi).all()
+		#session = views.Session()
+		#c = session.query(views.Corsi).all()
 		#session.close()
 
 		return render_template('corsi.html', authenticated=False, corsi_disponibili=corsi_disponibili)
@@ -157,7 +153,7 @@ def iscrizione_corso_post():
 	user = current_user
 	#QUERY CHE INSERISCE ISCRIZIONE
 	with user.getSession() as session:
-		corso = session.query(db.Corsi).get(idcorso)
+		corso = session.query(views.Corsi).get(idcorso)
 		corso.iscritti.append(user)
 		session.commit()
 

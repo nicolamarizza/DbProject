@@ -35,7 +35,7 @@
 											<input id="pwd_login" name="pwd" type="password" class="validate">
 											<label for="pwd">Password</label>
 										</div>
-										{%- if error -%}
+										{%- if login_error -%}
 										<div class="col s12">
 											<label class="error red-text">Email o password errate!</label>
 										</div>
@@ -88,7 +88,8 @@
 									</div>
 									<div class="row">
 										<div class="input-field col s12">
-											<input id="email" name="email" type="email" class="validate">
+											<input id="email" name="email" type="email" class={%- if registration_error
+												-%}"invalid"{%- else -%}"validate"{%- endif -%}>
 											<label for="email">Email</label>
 										</div>
 									</div>
@@ -110,7 +111,11 @@
 										</div>
 									</div>-->
 
-
+									{%- if registration_error -%}
+									<div class="col s12">
+										<label class="error red-text">Esiste già un utente con questa email</label>
+									</div>
+									{%- endif -%}
 									<div>
 										<button class="waves-effect waves-light btn deep-orange darken-3 right"
 											type="submit" name="registrati">Registrati</button>
