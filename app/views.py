@@ -117,7 +117,7 @@ class SimpleView():
 	def __init__(self, className, **kwargs):
 		self.kwargs = kwargs
 		self.dbClass = getattr(db, className)
-		self.viewClass = sys.modules[className]
+		self.viewClass = getattr(sys.modules[__name__], className)
 
 	def insert(self):
 		with current_user.getSession() as session:
