@@ -1,4 +1,4 @@
-{%- if element.isFk or element.isEnum -%}
+{%- if element.isMultiChoice -%}
 	<select name={{ element.name }}>
 		<option value="" disabled selected>{{ element.displayName }}</option>
 		{%- for pk, displayName in element.options.items() -%}

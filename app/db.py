@@ -49,6 +49,7 @@ class User(UserMixin, Base):
 	def getSession(self):
 		return TeacherSession() if self.isdocente else StudentSession()
 
+modalita_presenza = {'P': 'presenza', 'R': 'remoto', 'PR': 'duale'}
 
 class Corsi(Base):
 	__tablename__ = 'corsi'
