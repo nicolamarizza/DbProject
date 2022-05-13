@@ -311,5 +311,6 @@ class Lezioni(SimpleView):
 		SimpleView.__init__(self, **kwargs)
 
 
-for fk in pending_foreign_keys:
-	fk.buildOptions()
+with Session() as session:
+	for fk in pending_foreign_keys:
+		fk.buildOptions(session=session)
