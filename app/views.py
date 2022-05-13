@@ -1,11 +1,14 @@
 from datetime import date, datetime, timedelta
 from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
+import hashlib
 
 import sys
 import db
 from db import Session, StudentSession, TeacherSession
 
+def encrypt(password):
+	return hashlib.sha512(password.encode('utf-8')).hexdigest()
 
 def buildingDisplayName(building):
 	return f'edificio \'{building.nome}\' ({building.indirizzo})'
@@ -120,6 +123,9 @@ class SimpleView():
 			kwargs.items()
 		))
 		self.kwargs = {t[0].split('.')[1] : t[1] for t in ownedAttrs}
+		for attr in self.kwargs:
+			if(attr != 'pk' and self.__class__.attributes[attr].secret):
+				self.kwargs[attr] = encrypt(self.kwargs[attr])
 
 	def insert(self, session=None):
 		sessionProvided = not session is None
@@ -133,7 +139,7 @@ class SimpleView():
 			session.commit()
 			session.close()
 		
-		return session, obj
+		return obj
 
 	def update(self, session=None):
 		sessionProvided = not session is None
@@ -142,15 +148,13 @@ class SimpleView():
 
 		obj = session.query(self.__class__.dbClass).get(self.kwargs.pop('pk'))
 		for k,v in self.kwargs.items():
-			if(self.__class__.attributes[k].secret):
-				v = db.encrypt(v)
 			setattr(obj, k, v)
 
 		if(not sessionProvided):
 			session.commit()
 			session.close()
 
-		return session, obj
+		return obj
 
 	def delete(self, session=None):
 		sessionProvided = not session is None
@@ -164,7 +168,7 @@ class SimpleView():
 			session.commit()
 			session.close()
 
-		return session, obj
+		return obj
 
 
 class User(SimpleView):
