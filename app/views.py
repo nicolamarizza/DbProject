@@ -114,17 +114,19 @@ class AnonymousUser():
 		return db.StudentSession()
 
 class SimpleView():
-	def __init__(self, className, **kwargs):
-		self.kwargs = kwargs
-		self.dbClass = getattr(db, className)
-		self.viewClass = getattr(sys.modules[__name__], className)
+	def __init__(self, **kwargs):
+		ownedAttrs = list(filter(
+			lambda t : t[0].split('.')[0] == self.__class__.__name__,
+			kwargs.items()
+		))
+		self.kwargs = {t[0].split('.')[1] : t[1] for t in ownedAttrs}
 
 	def insert(self, session=None):
 		sessionProvided = not session is None
 		if(not sessionProvided):
 			session = current_user.getSession()
 
-		obj = self.dbClass(**self.kwargs)
+		obj = self.__class__.dbClass(**self.kwargs)
 		session.add(obj)
 
 		if(not sessionProvided):
@@ -138,9 +140,9 @@ class SimpleView():
 		if(not sessionProvided):
 			session = current_user.getSession()
 
-		obj = session.query(self.dbClass).get(self.kwargs.pop(self.viewClass.pk))
+		obj = session.query(self.__class__.dbClass).get(self.kwargs.pop('pk'))
 		for k,v in self.kwargs.items():
-			if(self.viewClass.attributes[k].secret):
+			if(self.__class__.attributes[k].secret):
 				v = db.encrypt(v)
 			setattr(obj, k, v)
 
@@ -155,7 +157,7 @@ class SimpleView():
 		if(not sessionProvided):
 			session = current_user.getSession()
 		
-		obj = session.query(self.dbClass).get(self.kwargs.pop(self.viewClass.pk))
+		obj = session.query(self.__class__.dbClass).get(self.kwargs.pop('pk'))
 		session.delete(obj)
 
 		if(not sessionProvided):
@@ -166,7 +168,7 @@ class SimpleView():
 
 
 class User(SimpleView):
-	pk = 'email'
+	dbClass = getattr(db, 'User')
 	attributes = {
 		'nome': Attribute('nome', str),
 		'cognome': Attribute('cognome', str),
@@ -176,22 +178,21 @@ class User(SimpleView):
 	}
 
 	def __init__(self, **kwargs):
-		SimpleView.__init__(self, 'User', **kwargs)
+		SimpleView.__init__(self, **kwargs)
 
 class Edifici(SimpleView):
-	pk = 'id'
+	dbClass = getattr(db, 'Edifici')
 	attributes = {
 		'id' : Attribute('id', int, insertable=False),
 		'nome' : Attribute('nome', str),
 		'indirizzo' : Attribute('indirizzo', str),
-		'iddipartimento': FkAttribute('iddipartimento', str, 'Dipartimenti.sigla', displayName='dipartimento', getDisplayName=lambda x : x.nome)
 	}
 
 	def __init__(self, **kwargs):
-		SimpleView.__init__(self, 'Edifici', **kwargs)
+		SimpleView.__init__(self, **kwargs)
 
 class Aule(SimpleView):
-	pk = 'id'
+	dbClass = getattr(db, 'Aule')
 	attributes = {
 		'id' : Attribute('id', int, insertable=False),
 		'nome' : Attribute('nome', str),
@@ -201,30 +202,29 @@ class Aule(SimpleView):
 	}
 
 	def __init__(self, **kwargs):
-		SimpleView.__init__(self, 'Aule', **kwargs)
+		SimpleView.__init__(self, **kwargs)
 
 class Dipartimenti(SimpleView):
-	pk = 'sigla'
+	dbClass = getattr(db, 'Dipartimenti')
 	attributes = {
 		'sigla': Attribute('sigla', str),
 		'nome': Attribute('nome', str),
-		'idsede': FkAttribute('idsede', int, 'Edifici.id', displayName='sede', getDisplayName=buildingDisplayName)
 	}
 
 	def __init__(self, **kwargs):
-		SimpleView.__init__(self, 'Dipartimenti', **kwargs)
+		SimpleView.__init__(self, **kwargs)
 
 class Categorie(SimpleView):
-	pk = 'nome'
+	dbClass = getattr(db, 'Categorie')
 	attributes = {
 		'nome': Attribute('nome', str)
 	}
 
 	def __init__(self, **kwargs):
-		SimpleView.__init__(self, 'Categorie', **kwargs)
+		SimpleView.__init__(self, **kwargs)
 
 class Corsi(SimpleView):
-	pk = 'id'
+	dbClass = getattr(db, 'Corsi')
 	attributes = {
 		'id' : Attribute('id', int, insertable=False, selectable=False),
 		'titolo' : Attribute('titolo', str),
@@ -234,17 +234,17 @@ class Corsi(SimpleView):
 		'inizioiscrizioni' : Attribute('inizioiscrizioni', datetime, displayName='inizio iscrizioni'),
 		'scadenzaiscrizioni' : Attribute('scadenzaiscrizioni', datetime, displayName='scadenza iscrizioni'),
 		'modalità' : EnumAttribute('modalità', str, {'P':'presenza', 'R':'remoto', 'PR':'duale'}),
-		'iddipartimento' : FkAttribute('iddipartimento', str, 'Dipartimenti.id', displayName='dipartimento', getDisplayName=lambda x : x.nome),
+		'iddipartimento' : FkAttribute('iddipartimento', str, 'Dipartimenti.sigla', displayName='dipartimento', getDisplayName=lambda x : x.nome),
 		'categoria' : FkAttribute('categoria', str, 'Categorie.nome'),
 		'durata' : Attribute('durata', timedelta),
 		'periodo' : Attribute('periodo', str)
 	}
 
 	def __init__(self, **kwargs):
-		SimpleView.__init__(self, 'Corsi', **kwargs)
+		SimpleView.__init__(self, **kwargs)
 
 class Lezioni(SimpleView):
-	pk = 'id'
+	dbClass = getattr(db, 'Lezioni')
 	attributes = {
 		'id' : Attribute('id', int, insertable=False, selectable=False),
 		'idaula' : FkAttribute('idaula', int, 'Aule.id', displayName='aula', getDisplayName=roomDisplayName),
@@ -255,9 +255,7 @@ class Lezioni(SimpleView):
 	}
 
 	def __init__(self, **kwargs):
-		SimpleView.__init__(self, 'Lezioni', **kwargs)
-
-
+		SimpleView.__init__(self, **kwargs)
 
 
 for fk in pending_foreign_keys:

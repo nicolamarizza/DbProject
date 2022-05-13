@@ -9,7 +9,7 @@ import hashlib
 import os
 host = os.environ['SERVER_HOST']
 port = os.environ['SERVER_PORT']
-engine = create_engine(f'postgresql://postgres@{host}:{port}/PCTO')
+engine = create_engine(f'postgresql://groupmember:hey@{host}:{port}/PCTO')
 teacherEngine = create_engine(f'postgresql://docente@{host}:{port}/PCTO')
 studentEngine = create_engine(f'postgresql://studente@{host}:{port}/PCTO')
 
@@ -34,6 +34,10 @@ responsabili_corsi = Table('responsabili_corsi', DeclBase.metadata,
     Column('iddocente', ForeignKey('utenti.email')),
     Column('idcorso', ForeignKey('corsi.id'))
 )
+dipartimenti_sedi = Table('dipartimenti_sedi', DeclBase.metadata,
+    Column('iddipartimento', ForeignKey('dipartimenti.sigla')),
+    Column('idsede', ForeignKey('edifici.id'))
+)
 
 Base = automap_base(DeclBase)
 
@@ -46,7 +50,6 @@ class User(UserMixin, Base):
 	def __init__(self, **kwargs):
 		Base.__init__(self, **kwargs)
 		self.password = encrypt(self.password)
-
 
 	def get_id(self):
 		return self.email
@@ -75,6 +78,15 @@ class Corsi(Base):
 
 class Edifici(Base):
 	__tablename__ = 'edifici'
+
+	dipartimento = relationship(
+		"Dipartimenti",
+		secondary=dipartimenti_sedi,
+		primaryjoin='Edifici.id==dipartimenti_sedi.c.idsede',
+		secondaryjoin='Dipartimenti.sigla==dipartimenti_sedi.c.iddipartimento',
+		backref='sede',
+		uselist=False
+	)
 
 class Aule(Base):
 	__tablename__ = 'aule'
