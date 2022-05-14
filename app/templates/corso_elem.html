@@ -1,25 +1,33 @@
 <li>
-    <div class="collapsible-header">{{ corso.titolo }}</div>
+    <div class="collapsible-header" style="display: block;">
+        {{ corso.titolo }}
+        <div class="right">
+            <i class="btn material-icons">edit</i>
+            <i class="material-icons">expand_more</i>
+        </div>
+    </div>
     <div class="collapsible-body">
         <div class="row" style="margin-bottom: 0px;">
             <div class="col s11 offset-s1">
                 <div class="row">
                     {{ corso.descrizione }}
                 </div>
-
-                
-
                 {%- if authenticated -%}
-                <form action="/iscrizione_corso" method="POST">
-                    <input name="idcorso" type="number" style="display:none" value="{{ corso.id }}">
-                    <button class="waves-effect waves-light btn deep-orange darken-3 right" type="submit">
-                        {%- if corso in i_tuoi_corsi -%}
-                        Disiscriviti
-                        {%- else -%}
-                        Iscriviti
-                        {%- endif -%}
-                    </button>
-                </form>
+                    {%- if corso in i_tuoi_corsi -%}
+                    <form action="/disiscrizione_corso" method="POST">
+                        <input name="idcorso" type="number" style="display:none" value="{{ corso.id }}">
+                        <button class="waves-effect waves-light btn deep-orange darken-3 right" type="submit">
+                            Disiscriviti
+                        </button>
+                    </form>
+                    {%- else -%}
+                    <form action="/iscrizione_corso" method="POST">
+                        <input name="idcorso" type="number" style="display:none" value="{{ corso.id }}">
+                        <button class="waves-effect waves-light btn deep-orange darken-3 right" type="submit">
+                            Iscriviti
+                        </button>
+                    </form>
+                    {%- endif -%}
                 {%- endif -%}
 
             </div>

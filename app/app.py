@@ -26,7 +26,7 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(email):
 	with views.Session() as session:
-		return session.query(views.User).get(email)
+		return session.query(views.User.dbClass).get(email)
 
 def tryAuthenticate(email, password):
 	user = load_user(email)
@@ -114,14 +114,14 @@ def corsi_get():
 	authenticated = user.is_authenticated
 
 	with user.getSession() as session:
-		corsi_totali = session.query(views.Corsi).all()
+		corsi_totali = session.query(views.Corsi.dbClass).all()
 		i_tuoi_corsi = list(filter(lambda c : authenticated and user in c.iscritti, corsi_totali))
 		corsi_disponibili = list(filter(lambda c : not authenticated or not user in c.iscritti, corsi_totali))
 
 	return render_template(
 		'corsi.html', 
-		authenticated=authenticated, 
-		name=user.nome if authenticated else None, 
+		authenticated=authenticated,
+		name=user.nome if authenticated else None,
 		i_tuoi_corsi=i_tuoi_corsi, 
 		corsi_disponibili=corsi_disponibili
 	)
@@ -135,9 +135,25 @@ def iscrizione_corso_post():
 	user = current_user
 	#QUERY CHE INSERISCE ISCRIZIONE
 	with user.getSession() as session:
-		corso = session.query(views.Corsi).get(idcorso)
+		corso = session.query(views.Corsi.dbClass).get(idcorso)
 		corso.iscritti.append(user)
 		session.commit()
+
+	return redirect(url_for('corsi_get'))
+
+
+@app.route('/disiscrizione_corso', methods=["POST"])
+@login_required
+def disiscrizione_corso_post():
+	idcorso = request.form['idcorso']
+
+	user = current_user
+	#QUERY CHE INSERISCE ISCRIZIONE
+	with user.getSession() as session:
+		corso = session.query(views.Corsi.dbClass).get(idcorso)
+		corso.iscritti.remove(user)
+		session.commit()
+
 
 	return redirect(url_for('corsi_get'))
 
