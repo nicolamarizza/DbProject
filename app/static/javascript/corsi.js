@@ -25,6 +25,3 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-function hideOrShowForm(elem){
-  console.log(elem)
-}

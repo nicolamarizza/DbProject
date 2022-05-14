@@ -128,7 +128,8 @@ def corsi_get():
 		name=user.nome if authenticated else None,
 		is_docente=user.isdocente if authenticated else False,
 		i_tuoi_corsi=i_tuoi_corsi, 
-		corsi_disponibili=corsi_disponibili
+		corsi_disponibili=corsi_disponibili,
+		attrList=views.Corsi.attributes
 	)
 
 
