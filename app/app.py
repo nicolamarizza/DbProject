@@ -147,6 +147,63 @@ def iscrizione_corso_post():
 def lezioni_get():
 	return render_template('lezioni.html', authenticated=True, name = current_user.nome)
 
+@app.route('/test', methods=['GET'])
+def shit_get():
+	return render_template("test.html", attrList=views.Corsi.attributes)
 
 
+def test_response(objects):
+	for k,v in objects.items():
+		View = getattr(views, k)
+		objects[k] = {name:getattr(v, name) for name in View.attributes.keys()}
+	return objects
 
+def getTables(**kwargs):
+	return {tName:None for tName in map(lambda k : k.split('.')[0], kwargs.keys())}.keys()
+
+
+@app.route('/test')
+def shit():
+	return render_template("test.html", attrList=views.Corsi.attributes)
+
+@app.route('/update', methods=['POST'])
+def update_post():
+	kwargs = {**request.form}
+
+	results = {}
+	with views.Session() as session:
+		for tableName in getTables(**kwargs):
+			View = getattr(views, tableName)
+			obj = View(**kwargs)
+			dbObj = obj.update(session=session)
+			results[tableName] = dbObj
+
+		session.commit()
+		return test_response(results)
+
+@app.route('/insert', methods=['POST'])
+def insert_post():
+	kwargs = {**request.form}
+
+	results = {}
+	with views.Session() as session:
+		for tableName in getTables(**kwargs):
+			View = getattr(views, tableName)
+			obj = View(**kwargs)
+			dbObj = obj.insert(session=session)
+			results[tableName] = dbObj
+
+		session.commit()
+		return test_response(results)
+
+@app.route('/delete', methods=['POST'])
+def delete_post():
+	kwargs = {**request.form}
+
+	with views.Session() as session:
+		for tableName in getTables(**kwargs):
+			View = getattr(views, tableName)
+			obj = View(**kwargs)
+			obj.delete(session=session)
+		session.commit()
+		return {}
