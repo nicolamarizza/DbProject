@@ -29,10 +29,21 @@
             {%- endif -%}
         {%- endif -%}
 
+        
+        {%- if is_docente -%}
+        <button class="waves-effect waves-light btn deep-orange darken-3">
+            Crea nuovo corso
+        </button>
+        {%- endif -%}
 
 
 
+        {%- if is_docente -%}
+        <h3>Altri corsi</h3>
+        {%- else -%}
         <h3>Corsi disponibili</h3>
+        {%- endif -%}
+        
         {%- if corsi_disponibili -%}
         <ul class="collapsible expandable popout">
             {% for corso in corsi_disponibili %}

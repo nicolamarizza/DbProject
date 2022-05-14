@@ -115,13 +115,18 @@ def corsi_get():
 
 	with user.getSession() as session:
 		corsi_totali = session.query(views.Corsi.dbClass).all()
-		i_tuoi_corsi = list(filter(lambda c : authenticated and user in c.iscritti, corsi_totali))
-		corsi_disponibili = list(filter(lambda c : not authenticated or not user in c.iscritti, corsi_totali))
+		if authenticated and user.isdocente:
+			i_tuoi_corsi = list(filter(lambda c : user in c.responsabili, corsi_totali))
+			corsi_disponibili = list(filter(lambda c : user not in c.responsabili, corsi_totali))
+		else:
+			i_tuoi_corsi = list(filter(lambda c : authenticated and user in c.iscritti, corsi_totali))
+			corsi_disponibili = list(filter(lambda c : not authenticated or not user in c.iscritti, corsi_totali))
 
 	return render_template(
 		'corsi.html', 
 		authenticated=authenticated,
 		name=user.nome if authenticated else None,
+		is_docente=user.isdocente if authenticated else False,
 		i_tuoi_corsi=i_tuoi_corsi, 
 		corsi_disponibili=corsi_disponibili
 	)
