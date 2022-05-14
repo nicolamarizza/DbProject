@@ -23,7 +23,7 @@
 	<label for={{ element.name }}>{{ element.displayName }}</label>
 	{%- if input_error -%}
 		{%- if element.name == input_error.elementName -%}
-		<span class="helper-text" data-error="wrong" data-success="right">{{ input_error.message }}</span>
+		<span class="helper-text {%- if element.isDatetime %} active{%- endif -%}" data-error="wrong" data-success="right">{{ input_error.message }}</span>
 		{%- endif -%}
 	{%- endif -%}
 {%- endif -%}
