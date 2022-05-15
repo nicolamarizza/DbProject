@@ -9,22 +9,27 @@
         <div class="row" style="margin-bottom: 0px;">
             <div class="col s11 offset-s1">
                 <div class="row">
+					{%- set num_iscritti = corso.iscritti|length -%}
                     <div><div class="col s2"><b>Descrizione:</b></div><div class="col s10">{{ corso.descrizione }}</div></div>
                     <div><div class="col s4"><b>Categoria:</b></div><div class="col s8">{{ corso.categoria }}</div></div>
                     <div><div class="col s4"><b>Durata corso:</b></div><div class="col s8">{{ corso.durata }}</div></div>
                     <div><div class="col s4"><b>Periodo:</b></div><div class="col s8">{{ corso.periodo }}</div></div>
                     <div><div class="col s4"><b>Modalità:</b></div><div class="col s8">{{ corso.modalità }}</div></div>
                     <div><div class="col s4"><b>Dipartimento:</b></div><div class="col s8">{{ corso.iddipartimento }}</div></div>
-                    <div><div class="col s4"><b>Data inizio iscrizioni:</b></div><div class="col s8">{{ corso.inizioiscrizioni }}</div></div>
-                    <div><div class="col s4"><b>Data scadenza iscrizioni:</b></div><div class="col s8">{{ corso.scadenzaiscrizioni }}</div></div>
-                    <div><div class="col s4"><b>Posti totali:</b></div><div class="col s8">{{ corso.iscrizionimassime }}</div></div>
-                    <div><div class="col s4"><b>Posti rimanenti:</b></div><div class="col s8">DA CAMBIARE</div></div>
-                    <div><div class="col s4"><b>Posti minimi:</b></div><div class="col s8">{{ corso.iscrizioniminime }}</div></div>
-                    <div><div class="col s4"><b>Studenti iscritti:</b></div><div class="col s8">DA CAMBIARE</div></div>
+                    <div><div class="col s4"><b>Apertura iscrizioni:</b></div><div class="col s8">{{ corso.inizioiscrizioni }}</div></div>
+                    <div><div class="col s4"><b>Chiusura iscrizioni:</b></div><div class="col s8">{{ corso.scadenzaiscrizioni }}</div></div>
+                    <div><div class="col s4"><b>Iscrizioni minime:</b></div><div class="col s8">{{ corso.iscrizioniminime }}</div></div>
+                    <div><div class="col s4"><b>Studenti iscritti:</b></div><div class="col s8">{{ num_iscritti }}/{{ corso.iscrizionimassime }}</div></div>
                 </div>
 
                 <div class="row" style="display: none;">
-                    <form class="col s12" action="/test" method="POST">
+					{%- set class_name = 'Corsi' -%}
+                    <form id="{{ corso.id }}" class="col s12" action="/update" method="POST">
+						<div class="row", style="display: none;">
+                            <div class="input-field col s8">
+                                <input name='{{ class_name }}.pk' value='{{ corso.id }}'>
+                            </div>
+                        </div>
                         {%- for element in attrList.values() -%}
                         {%- if element.insertable -%}
                         <div class="row">
@@ -54,7 +59,7 @@
                                     <button class="waves-effect waves-light btn deep-orange darken-3" onclick="hideOrShowForm(event)">
                                         Annulla
                                     </button>
-                                    <button class="waves-effect waves-light btn deep-orange darken-3" onclick="hideOrShowForm(event)">
+                                    <button type="submit" form="{{ corso.id }}" class="waves-effect waves-light btn deep-orange darken-3" onclick="hideOrShowForm(event)">
                                         Salva modifiche
                                     </button>
                                 </div>

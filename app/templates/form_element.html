@@ -1,15 +1,15 @@
 {%- if element.isMultiChoice -%}
-	<select name={{ element.name }}>
+	<select name={{ class_name }}.{{ element.name }}>
 		<option value="" disabled selected>{{ element.displayName }}</option>
 		{%- for pk, displayName in element.options.items() -%}
-			<option value={{ pk }}>{{ displayName }}</option>
+			<option value="{{ pk }}" {% if corso and corso[element.name] == pk -%}selected="selected"{%- endif -%}>{{ displayName }}</option>
 		{%- endfor -%}
 	</select>
 	<label>{{ displayName }}</label>
 {%- else -%}
 	<input 
 		id={{ element.name }} 
-		name={{ element.name }} 
+		name="{{ class_name }}.{{ element.name }}"
 		type=
 		{%- if element.secret -%}			"password"
 		{%- elif element.isDate -%}			"date"
@@ -18,7 +18,16 @@
 		{%- else -%}						"text"
 		{%- endif %} 
 		class="validate"
-		{% if not element.optional %}required=True{% endif %}
+		{% if not element.optional and not corso %} required=True {% endif %}
+		{% if corso -%}
+			{%- if element.isDatetime -%}
+				{%- set date = corso[element.name] -%}
+				value="{{ date.year }}-{{ date.month }}-{{ date.day }}T{{ date.hour }}:{{ date.minute }}"
+			{%- elif element.time -%}
+			{%- else -%}
+				value="{{ corso [element.name] }}"
+			{%- endif -%}
+		{%- endif -%}
 	>
 	<label {%- if element.isDatetime %} class="active" {%- endif %} for={{ element.name }}>{{ element.displayName }}</label>
 	{%- if input_error -%}
