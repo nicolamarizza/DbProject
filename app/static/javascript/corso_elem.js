@@ -1,4 +1,4 @@
-function hideOrShowForm(event){
+function hideOrShowFormModificaCorso(event){
     divButton = event.target.parentNode.parentNode
     divParentForm = divButton.parentNode
     if(divParentForm.children[0].style.display === "none") {

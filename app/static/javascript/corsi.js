@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
         for (var j = 0; j < collElem.childElementCount; j++) {
           liElem = collElem.children[j]
           if (liElem.classList.contains("active")){
-              ultimoDiv = liElem.children[0].children[0]
+              collHeader = liElem.children[0]
+              ultimoDiv = collHeader.children[collHeader.childElementCount - 1]
               ultimoDiv.children[ultimoDiv.childElementCount - 1].textContent = "expand_less"
           }
         }
@@ -22,7 +23,8 @@ document.addEventListener('DOMContentLoaded', function () {
         for (var j = 0; j < collElem.childElementCount; j++) {
           liElem = collElem.children[j]
           if (!liElem.classList.contains("active")){
-              ultimoDiv = liElem.children[0].children[0]
+              collHeader = liElem.children[0]
+              ultimoDiv = collHeader.children[collHeader.childElementCount - 1]
               ultimoDiv.children[ultimoDiv.childElementCount - 1].textContent = "expand_more"
           }
         }

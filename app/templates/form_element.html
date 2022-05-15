@@ -5,7 +5,7 @@
 			<option value="{{ pk }}" {% if corso and corso[element.name] == pk -%}selected="selected"{%- endif -%}>{{ displayName }}</option>
 		{%- endfor -%}
 	</select>
-	<label>{{ displayName }}</label>
+	<label>{{ element.displayName }}</label>
 {%- else -%}
 	<input 
 		id={{ element.name }} 
@@ -23,9 +23,11 @@
 			{%- if element.isDatetime -%}
 				{%- set date = corso[element.name] -%}
 				value="{{ date.strftime('%Y-%m-%dT%H:%M') }}"
-			{%- elif element.time -%}
+			{%- elif element.isTimedelta -%}
+				{%- set date = corso[element.name] -%}
+				value="{{ (date|string())[0:5] }}"
 			{%- else -%}
-				value="{{ corso [element.name] }}"
+				value="{{ corso[element.name] }}"
 			{%- endif -%}
 		{%- endif -%}
 	>

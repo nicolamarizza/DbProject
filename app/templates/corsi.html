@@ -31,9 +31,59 @@
 
         
         {%- if is_docente -%}
-        <button class="waves-effect waves-light btn deep-orange darken-3">
-            Crea nuovo corso
-        </button>
+        <div>
+            <button class="waves-effect waves-light btn deep-orange darken-3">
+                Crea nuovo corso
+            </button>
+            
+            <button class="waves-effect waves-light btn deep-orange darken-3" onclick="">
+                Annulla
+            </button>
+            <button type="submit" form="{{ corso.id }}" class="waves-effect waves-light btn deep-orange darken-3" onclick="">
+                Salva modifiche
+            </button>
+
+            <ul class="collapsible expandable popout">
+                
+                <li>
+                    <div class="collapsible-header" style="display: block;">
+                        Nuovo corso
+                        <div class="right">
+                            <i class="material-icons">expand_more</i>
+                        </div>
+                    </div>
+                    <div class="collapsible-body">
+                        <div class="row" style="margin-bottom: 0px;">
+                            <div class="col s11 offset-s1">                
+                                <div class="row">
+                                    {%- set class_name = 'Corsi' -%}
+                                    <form id="nuovo_corso_insert" class="col s12" action="/insert" method="POST">
+                                        <div class="row", style="display: none;">
+                                            <div class="input-field col s8">
+                                                <input name='{{ class_name }}.pk' value=''>
+                                            </div>
+                                        </div>
+                                        {%- for element in attrList.values() -%}
+                                        {%- if element.insertable -%}
+                                        <div class="row">
+                                            <div class="input-field col s8">
+                                                {%- include "form_element.html" -%}
+                                            </div>
+                                        </div>
+                                        {%- endif -%}
+                                        {%- endfor -%}
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                
+
+            </ul>
+        </div>
+
+
         {%- endif -%}
 
 
