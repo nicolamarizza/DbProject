@@ -122,15 +122,15 @@ def corsi_get():
 			i_tuoi_corsi = list(filter(lambda c : authenticated and user in c.iscritti, corsi_totali))
 			corsi_disponibili = list(filter(lambda c : not authenticated or not user in c.iscritti, corsi_totali))
 
-	return render_template(
-		'corsi.html', 
-		authenticated=authenticated,
-		name=user.nome if authenticated else None,
-		is_docente=user.isdocente if authenticated else False,
-		i_tuoi_corsi=i_tuoi_corsi, 
-		corsi_disponibili=corsi_disponibili,
-		attrList=views.Corsi.attributes
-	)
+		return render_template(
+			'corsi.html', 
+			authenticated=authenticated,
+			name=user.nome if authenticated else None,
+			is_docente=user.isdocente if authenticated else False,
+			i_tuoi_corsi=i_tuoi_corsi, 
+			corsi_disponibili=corsi_disponibili,
+			attrList=views.Corsi.attributes
+		)
 
 
 @app.route('/iscrizione_corso', methods=["POST"])

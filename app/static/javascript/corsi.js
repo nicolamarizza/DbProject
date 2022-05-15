@@ -5,23 +5,44 @@ document.addEventListener('DOMContentLoaded', function () {
     onOpenEnd: function () {
       var elem = document.querySelectorAll(".collapsible");
       for (var i = 0; i < elem.length; i++) {
-        elem2 = elem[i].querySelectorAll("li.active");
-        for (var j = 0; j < elem2.length; j++) {
-          ultimoDiv = elem2[j].children[0].children[0]
-          ultimoDiv.children[ultimoDiv.childElementCount-1].textContent = "expand_less"
+        collElem = elem[i];
+        for (var j = 0; j < collElem.childElementCount; j++) {
+          liElem = collElem.children[j]
+          if (liElem.classList.contains("active")){
+              ultimoDiv = liElem.children[0].children[0]
+              ultimoDiv.children[ultimoDiv.childElementCount - 1].textContent = "expand_less"
+          }
         }
       }
     },
     onCloseEnd: function () {
       var elem = document.querySelectorAll(".collapsible");
       for (var i = 0; i < elem.length; i++) {
-        elem2 = elem[i].querySelectorAll("li:not(.active)");
-        for (var j = 0; j < elem2.length; j++) {
-          ultimoDiv = elem2[j].children[0].children[0]
-          ultimoDiv.children[ultimoDiv.childElementCount-1].textContent = "expand_more"
+        collElem = elem[i];
+        for (var j = 0; j < collElem.childElementCount; j++) {
+          liElem = collElem.children[j]
+          if (!liElem.classList.contains("active")){
+              ultimoDiv = liElem.children[0].children[0]
+              ultimoDiv.children[ultimoDiv.childElementCount - 1].textContent = "expand_more"
+          }
         }
       }
     }
   });
 });
 
+
+document.addEventListener('DOMContentLoaded', function () {
+  var elems = document.querySelectorAll('.datepicker');
+  var instances = M.Datepicker.init(elems, {});
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  var elems = document.querySelectorAll('.timepicker');
+  var instances = M.Timepicker.init(elems, {});
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  var elems = document.querySelectorAll('select');
+  var instances = M.FormSelect.init(elems, {});
+});

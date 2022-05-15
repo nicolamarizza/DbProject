@@ -22,7 +22,7 @@
 		{% if corso -%}
 			{%- if element.isDatetime -%}
 				{%- set date = corso[element.name] -%}
-				value="{{ date.year }}-{{ date.month }}-{{ date.day }}T{{ date.hour }}:{{ date.minute }}"
+				value="{{ date.strftime('%Y-%m-%dT%H:%M') }}"
 			{%- elif element.time -%}
 			{%- else -%}
 				value="{{ corso [element.name] }}"
