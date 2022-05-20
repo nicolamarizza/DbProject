@@ -167,7 +167,46 @@ def disiscrizione_corso_post():
 @app.route('/lezioni')
 @login_required #ti dice che non sei autorizzato se non hai effettuato il login
 def lezioni_get():
-	return render_template('lezioni.html', authenticated=True, name = current_user.nome)
+	user = current_user
+	authenticated = user.is_authenticated
+
+	with user.getSession() as session:
+		corsi_totali = session.query(views.Corsi.dbClass).all()
+		if user.isdocente:
+			i_tuoi_corsi = list(filter(lambda c : user in c.responsabili, corsi_totali))
+		else:
+			i_tuoi_corsi = list(filter(lambda c : user in c.iscritti, corsi_totali))
+
+		return render_template(
+			'lezioni.html', 
+			name=user.nome if authenticated else None,
+			authenticated=True,
+			i_tuoi_corsi=i_tuoi_corsi
+		)
+
+@app.route('/mostra_lezioni', methods=['POST'])
+@login_required #ti dice che non sei autorizzato se non hai effettuato il login
+def mostra_lezioni_post():		
+	id_corso = request.form['idcorso']
+	titolo_corso = request.form['titolo']
+
+	user = current_user
+	authenticated = user.is_authenticated
+
+	#dovrei fare la join con la tabella Aule per prendere il nome dell'aula in base all FK in lezioni
+	#ma non so come farla 
+	with user.getSession() as session:
+		lezioni = session.query(views.Lezioni.dbClass).join(views.Aule.dbClass, views.Aule.dbClass.id == views.Lezioni.dbClass.idaula).filter(views.Lezioni.dbClass.idcorso == id_corso).all()
+
+
+		return render_template(
+			'lezioni.html', 
+			authenticated = True, 
+			name=user.nome if authenticated else None,
+			lezioni = lezioni, 
+			titolo_corso = titolo_corso,
+			mostra_lezioni = True
+		)
 
 @app.route('/test', methods=['GET'])
 def shit_get():
