@@ -203,6 +203,8 @@ def mostra_lezioni_post():
 			'lezioni.html', 
 			authenticated = True, 
 			name=user.nome if authenticated else None,
+			is_docente = user.isdocente,
+			id_corso = id_corso,
 			lezioni = lezioni, 
 			titolo_corso = titolo_corso,
 			mostra_lezioni = True

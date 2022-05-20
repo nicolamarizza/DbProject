@@ -18,11 +18,11 @@
         
         {%- if mostra_lezioni -%}
             <br><br>    
-        
+            
             {%- if lezioni -%}
                 Torna <a href="/lezioni">indietro</a>
                 <h3>Elenco delle lezioni di {{ titolo_corso }}</h3>
-             
+                <hr>
                 {% for lezione in lezioni %}
        
                     
@@ -34,17 +34,32 @@
                             <div><div class="col s4"><b>Durata:</b></div><div class="col s8">{{ lezione.durata }}</div></div>
                             <div><div class="col s4"><b>Modalità:</b></div><div class="col s8">{{ lezione.modalità }}</div></div>
                             
-                        
+                          
                         </div>
                     </div>
               
-
+             
                 {% endfor %}
 
             {%- else -%}       
+                    
             <div class="col s11 offset-s1" >
                 <div class="row" >
                     <b>Nessuna lezione disponibile,</b> torna <a href="/lezioni">indietro</a>
+                </div>
+            </div>
+            {%- endif -%}
+
+            {%- if is_docente -%}
+            <div class="col s11 offset-s1" >
+                <div class="left">
+                    <form action="/aggiungi_lezione" method="POST">
+                        <input name="idcorso" type="number" style="display:none" value="{{ id_corso }}">
+                        <button class="waves-effect waves-light btn deep-orange darken-3 right" type="submit">
+                            aggiungi lezione
+                        </button>
+
+                    </form>
                 </div>
             </div>
             {%- endif -%}
@@ -52,10 +67,11 @@
            
             
             <h2>Lezioni</h2>
-
+          
        
             {% for corso in i_tuoi_corsi %}
-            <div class="collapsible-header" style="display: block;">
+            <div class="col s11 offset-s1" >
+               
                 {{ corso.titolo }}
                 <div class="right">
                     <form action="/mostra_lezioni" method="POST">
@@ -66,8 +82,11 @@
                         </button>
 
                     </form>
-                
+              
+           
                 </div>
+
+                <hr>
             </div>
 
             {% endfor %}
