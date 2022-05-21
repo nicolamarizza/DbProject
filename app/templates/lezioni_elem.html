@@ -1,0 +1,17 @@
+<div class="col s11 offset-s1" >
+    <div class="row" >
+        
+        {%- if lezione[0].idaula -%}
+            <div><div class="col s4"><b>Edificio:</b></div><div class="col s8">{{lezione[2].nome }}</div></div>
+            <div><div class="col s4"><b>Aula:</b></div><div class="col s8">{{lezione[1].nome }}</div></div>
+        {%- endif -%}
+        
+        <div><div class="col s4"><b>Inizio:</b></div><div class="col s8">{{ lezione[0].inizio }}</div></div>
+        <div><div class="col s4"><b>Durata:</b></div><div class="col s8">{{ lezione[0].durata }}</div></div>
+        <div><div class="col s4"><b>Modalità:</b>  <br>
+            <hr></div><div class="col s8">{{ lezione[0].modalità }}  <br>
+            <hr></div></div>
+        
+    
+    </div>
+</div>
