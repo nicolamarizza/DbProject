@@ -24,21 +24,20 @@
                 <h3>Elenco delle lezioni di {{ titolo_corso }}</h3>
                 <hr>
                 {% for lezione in lezioni %}
-       
+                  
                     
                     <div class="col s11 offset-s1" >
                         <div class="row" >
     
-                            <div><div class="col s4"><b>Aula:</b></div><div class="col s8">{{ lezione.idaula}}</div></div>
-                            <div><div class="col s4"><b>Inizio:</b></div><div class="col s8">{{ lezione.inizio }}</div></div>
-                            <div><div class="col s4"><b>Durata:</b></div><div class="col s8">{{ lezione.durata }}</div></div>
-                            <div><div class="col s4"><b>Modalità:</b></div><div class="col s8">{{ lezione.modalità }}</div></div>
+                            <div><div class="col s4"><b>Aula:</b></div><div class="col s8">{{ lezione[1].nome}}</div></div>
+                            <div><div class="col s4"><b>Inizio:</b></div><div class="col s8">{{ lezione[0].inizio }}</div></div>
+                            <div><div class="col s4"><b>Durata:</b></div><div class="col s8">{{ lezione[0].durata }}</div></div>
+                            <div><div class="col s4"><b>Modalità:</b></div><div class="col s8">{{ lezione[0].modalità }}</div></div>
                             
                           
                         </div>
                     </div>
               
-             
                 {% endfor %}
 
             {%- else -%}       

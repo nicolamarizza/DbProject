@@ -92,6 +92,12 @@ class Aule(Base):
 class Lezioni(Base):
 	__tablename__ = 'lezioni'
 	
+	aula = relationship(
+		'Aule',
+		backref='lezioni',
+		uselist=False
+	)
+
 	prenotati = relationship(
 		"User",
 		secondary=prenotazioni_lezioni,

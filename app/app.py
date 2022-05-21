@@ -193,11 +193,13 @@ def mostra_lezioni_post():
 	user = current_user
 	authenticated = user.is_authenticated
 
-	#dovrei fare la join con la tabella Aule per prendere il nome dell'aula in base all FK in lezioni
-	#ma non so come farla 
 	with user.getSession() as session:
-		lezioni = session.query(views.Lezioni.dbClass).join(views.Aule.dbClass, views.Aule.dbClass.id == views.Lezioni.dbClass.idaula).filter(views.Lezioni.dbClass.idcorso == id_corso).all()
+		#query per prendere lezioni e aula in cui si svolgono
+		lezioni = session.query(views.Lezioni.dbClass, views.Aule.dbClass).\
+			filter(views.Lezioni.dbClass.idcorso == id_corso,\
+				 views.Lezioni.dbClass.idaula == views.Aule.dbClass.id).all()
 
+		print(lezioni)
 
 		return render_template(
 			'lezioni.html', 
