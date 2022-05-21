@@ -194,12 +194,17 @@ def mostra_lezioni_post():
 	authenticated = user.is_authenticated
 
 	with user.getSession() as session:
+	
 		#query per prendere lezioni e aula in cui si svolgono
-		lezioni = session.query(views.Lezioni.dbClass, views.Aule.dbClass).\
-			filter(views.Lezioni.dbClass.idcorso == id_corso,\
-				 views.Lezioni.dbClass.idaula == views.Aule.dbClass.id).all()
-
-		print(lezioni)
+		#left join perché ci sono le lezioni online che non hanno un'aula
+		lezioni_prova = session.query(views.Lezioni.dbClass, views.Aule.dbClass, views.Edifici.dbClass).\
+				join(views.Aule.dbClass, views.Aule.dbClass.id == views.Lezioni.dbClass.idaula, isouter=True).\
+				  filter(views.Lezioni.dbClass.idcorso == id_corso,\
+					   or_(views.Aule.dbClass.idedificio == views.Edifici.dbClass.id, views.Lezioni.dbClass.idaula == null())).all() 
+			
+		
+		
+		print(lezioni_prova)
 
 		return render_template(
 			'lezioni.html', 
@@ -207,7 +212,8 @@ def mostra_lezioni_post():
 			name=user.nome if authenticated else None,
 			is_docente = user.isdocente,
 			id_corso = id_corso,
-			lezioni = lezioni, 
+			lezioni = lezioni_prova, 
+	
 			titolo_corso = titolo_corso,
 			mostra_lezioni = True
 		)
