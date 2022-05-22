@@ -32,6 +32,9 @@
         
         {%- if is_docente -%}
         <div>
+           <!-- 
+            credo non serva, dava errore perché è usato corso che non si
+            riferisce a nulla   
             <button class="waves-effect waves-light btn deep-orange darken-3">
                 Crea nuovo corso
             </button>
@@ -39,9 +42,9 @@
             <button class="waves-effect waves-light btn deep-orange darken-3" onclick="">
                 Annulla
             </button>
-            <button type="submit" form="{{ corso.id }}" class="waves-effect waves-light btn deep-orange darken-3" onclick="">
+            <button type="submit" form=" corso.id " class="waves-effect waves-light btn deep-orange darken-3" onclick="">
                 Salva modifiche
-            </button>
+            </button>-->
 
             <ul class="collapsible expandable popout">
                 
@@ -72,6 +75,11 @@
                                         </div>
                                         {%- endif -%}
                                         {%- endfor -%}
+
+
+                                        <button type="submit" class="waves-effect waves-light btn deep-orange darken-3" onclick="">
+                                            Conferma
+                                        </button>
                                     </form>
                                 </div>
                             </div>
