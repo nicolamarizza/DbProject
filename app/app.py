@@ -199,27 +199,8 @@ def lezioni_get():
 			is_docente = user.isdocente,
 			lezioni = lezioni, 
 			attrLezioni = views.Lezioni.attributes,
+			i_tuoi_corsi_lez = i_tuoi_corsi
 		)
-
-
-@app.route('/aggiungi_lezione', methods=['POST'])
-@login_required
-def aggiungi_lezione_post():
-	id_corso = request.form['idcorso']
-
-	user = current_user
-	authenticated = user.is_authenticated
-
-	return render_template(
-		'lezioni.html',
-		authenticated = True, 
-		name=user.nome if authenticated else None,
-		aggiungi = True,
-		id_corso = id_corso,
-
-		attrLezioni = views.Lezioni.attributes
-
-	)
 
 
 @app.route('/test', methods=['GET'])
@@ -259,7 +240,7 @@ def update_post():
 @app.route('/insert', methods=['POST'])
 def insert_post():
 	kwargs = {**request.form}
-
+	
 	results = {}
 	with views.Session() as session:
 		for tableName in getTables(**kwargs):

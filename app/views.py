@@ -300,7 +300,7 @@ class Lezioni(SimpleView):
 	dbClass = getattr(db, 'Lezioni')
 	attributes = {
 		'id' : Attribute('id', int, insertable=False, selectable=False),
-		'idaula' : FkAttribute('idaula', int, 'Aule.id', displayName='aula', getChoiceDisplayName=roomDisplayName),
+		'idaula' : FkAttribute('idaula', int, 'Aule.id', displayName='aula', getChoiceDisplayName=roomDisplayName, defaultValue = None),
 		'idcorso' : FkAttribute('idcorso', int, 'Corsi.id', displayName='corso', getChoiceDisplayName=lambda x : x.titolo),
 		'inizio' : Attribute('inizio', datetime),
 		'durata' : Attribute('durata', timedelta),
