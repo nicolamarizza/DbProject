@@ -61,11 +61,7 @@
                                 <div class="row">
                                     {%- set class_name = 'Corsi' -%}
                                     <form id="nuovo_corso_insert" class="col s12" action="/insert" method="POST">
-                                        <div class="row", style="display: none;">
-                                            <div class="input-field col s8">
-                                                <input name='{{ class_name }}.pk' value=''>
-                                            </div>
-                                        </div>
+                                        
                                         {%- for element in attrList.values() -%}
                                         {%- if element.insertable -%}
                                         <div class="row">

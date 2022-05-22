@@ -35,9 +35,7 @@
                                 <div class="row">
                                     {%- set class_name = 'Lezioni' -%}
                                     <form id="inserisci_nuova_lezione" class="col s12" action="/insert" method="POST">
-                                        <div class="row", style="display: none;">
-                                          
-                                        </div>
+                                        
                                         {%- for element in attrLezioni.values() -%}
                                         {%- if element.insertable -%}
                                         <div class="row">
