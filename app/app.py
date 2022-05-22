@@ -188,7 +188,7 @@ def lezioni_get():
 				  join(views.Corsi.dbClass, views.Corsi.dbClass.id == views.Lezioni.dbClass.idcorso, isouter=False).\
 				  filter(views.Lezioni.dbClass.idcorso.in_(c),\
 				  or_(views.Aule.dbClass.idedificio == views.Edifici.dbClass.id, views.Lezioni.dbClass.idaula == null()),\
-				  ).all() 
+				  ).order_by(views.Lezioni.dbClass.inizio).all() 
 	
 		print(lezioni)
 
