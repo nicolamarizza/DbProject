@@ -166,7 +166,7 @@ def disiscrizione_corso_post():
 
 @app.route('/lezioni')
 @login_required #ti dice che non sei autorizzato se non hai effettuato il login
-def lezioni_get():
+def lezioni_get():		
 	user = current_user
 	authenticated = user.is_authenticated
 
@@ -177,44 +177,50 @@ def lezioni_get():
 		else:
 			i_tuoi_corsi = list(filter(lambda c : user in c.iscritti, corsi_totali))
 
-		return render_template(
-			'lezioni.html', 
-			name=user.nome if authenticated else None,
-			authenticated=True,
-			i_tuoi_corsi=i_tuoi_corsi
-		)
+		#lista degli id dei propri corsi
+		c = [x.id for x in i_tuoi_corsi]
 
-@app.route('/mostra_lezioni', methods=['POST'])
-@login_required #ti dice che non sei autorizzato se non hai effettuato il login
-def mostra_lezioni_post():		
-	id_corso = request.form['idcorso']
-	titolo_corso = request.form['titolo']
-
-	user = current_user
-	authenticated = user.is_authenticated
-
-	with user.getSession() as session:
-	
-		#query per prendere lezioni e aula in cui si svolgono
+		#query per prendere corsi, lezioni e aula in cui si svolgono, compreso l'edificiio
 		#left join perché ci sono le lezioni online che non hanno un'aula
-		lezioni = session.query(views.Lezioni.dbClass, views.Aule.dbClass, views.Edifici.dbClass).\
+	
+		lezioni = session.query(views.Corsi.dbClass, views.Lezioni.dbClass, views.Aule.dbClass, views.Edifici.dbClass).\
 				  join(views.Aule.dbClass, views.Aule.dbClass.id == views.Lezioni.dbClass.idaula, isouter=True).\
-				  filter(views.Lezioni.dbClass.idcorso == id_corso,\
-				  or_(views.Aule.dbClass.idedificio == views.Edifici.dbClass.id, views.Lezioni.dbClass.idaula == null())).all() 
-
-
+				  join(views.Corsi.dbClass, views.Corsi.dbClass.id == views.Lezioni.dbClass.idcorso, isouter=False).\
+				  filter(views.Lezioni.dbClass.idcorso.in_(c),\
+				  or_(views.Aule.dbClass.idedificio == views.Edifici.dbClass.id, views.Lezioni.dbClass.idaula == null()),\
+				  ).all() 
+	
+		print(lezioni)
 
 		return render_template(
 			'lezioni.html', 
 			authenticated = True, 
 			name=user.nome if authenticated else None,
 			is_docente = user.isdocente,
-			id_corso = id_corso,
 			lezioni = lezioni, 
-	
-			titolo_corso = titolo_corso,
-			mostra_lezioni = True
+			attrLezioni = views.Lezioni.attributes,
 		)
+
+
+@app.route('/aggiungi_lezione', methods=['POST'])
+@login_required
+def aggiungi_lezione_post():
+	id_corso = request.form['idcorso']
+
+	user = current_user
+	authenticated = user.is_authenticated
+
+	return render_template(
+		'lezioni.html',
+		authenticated = True, 
+		name=user.nome if authenticated else None,
+		aggiungi = True,
+		id_corso = id_corso,
+
+		attrLezioni = views.Lezioni.attributes
+
+	)
+
 
 @app.route('/test', methods=['GET'])
 def shit_get():

@@ -6,33 +6,28 @@
 {%- endblock -%}
 
 
-
-
-
 {%- block body_base -%}
 
 
 <div class="row">
     <div class="col s8 offset-s2">
-        
-        
-        {%- if mostra_lezioni -%}
-            <br><br>    
-            
+              
+        <h2>Lezioni</h2>
+          
+
+     
             {%- if lezioni -%}
-                Torna <a href="/lezioni">indietro</a>
-                <h3>Elenco delle lezioni di {{ titolo_corso }}</h3>
-                <hr>
+              
+               
                 {% for lezione in lezioni %}
                     {% include 'lezioni_elem.html' %}
                 {% endfor %}
-
-
+              
             {%- else -%}       
                     
             <div class="col s11 offset-s1" >
                 <div class="row" >
-                    <b>Nessuna lezione disponibile,</b> torna <a href="/lezioni">indietro</a>
+                    <b>Nessuna lezione disponibile ☹</a>
                 </div>
             </div>
             {%- endif -%}
@@ -50,37 +45,7 @@
                 </div>
             </div>
             {%- endif -%}
-        {%- else -%}    
-           
-            
-            <h2>Lezioni</h2>
-          
-       
-            {% for corso in i_tuoi_corsi %}
-            <div class="col s11 offset-s1" >
-               
-                {{ corso.titolo }}
-                <div class="right">
-                    <form action="/mostra_lezioni" method="POST">
-                        <input name="idcorso" type="number" style="display:none" value="{{ corso.id }}">
-                        <input name="titolo" type="text" style="display:none" value="{{ corso.titolo }}">
-                        <button class="waves-effect waves-light btn deep-orange darken-3 right" type="submit">
-                            mostra lezioni
-                        </button>
 
-                    </form>
-              
-           
-                </div>
-
-                <hr>
-            </div>
-
-            {% endfor %}
-        {%- endif -%}
-                
-                
- 
     </div>
 </div>
 
