@@ -9,8 +9,18 @@
                     <div><div class="col s11">
                     <div class="deep-orange darken-3 left" style="padding: 5px; color: white;">
                     {{ lezione[0].titolo }}
+                   
                 
                     </div>
+                    {%- if is_docente -%}
+                    <form action="/elimina_lezione" method="POST">
+                        <input name="idlezione" type="number" style="display:none" value="{{ lezione[1].id }}">
+                        <button type="submit" style="background: transparent; border: none; font-size:0; cursor: pointer">
+                            <i  class='fa fa-trash' style="color: black; padding-left: 5px; font-size: 30px;"></i>  
+                        </button>
+                    </form>        
+             
+                    {%- endif -%}
                     </div>
                     {%- if lezione[1].idaula -%}
                         <div><div class="col s4"><b>Edificio:</b></div><div class="col s8">{{lezione[3].nome }}</div></div>
@@ -24,7 +34,7 @@
                     </div></div>
 
                 
-
+                    
                     
                 </div>
             </div>

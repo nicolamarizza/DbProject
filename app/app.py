@@ -154,7 +154,7 @@ def disiscrizione_corso_post():
 	idcorso = request.form['idcorso']
 
 	user = current_user
-	#QUERY CHE INSERISCE ISCRIZIONE
+	#QUERY CHE ELIMINA L'ISCRIZIONE
 	with user.getSession() as session:
 		corso = session.query(views.Corsi.dbClass).get(idcorso)
 		corso.iscritti.remove(user)
@@ -162,6 +162,19 @@ def disiscrizione_corso_post():
 
 
 	return redirect(url_for('corsi_get'))
+
+@app.route('/elimina_lezione', methods=["POST"])
+@login_required 
+def elimina_lezione_post():
+	id_lezione = request.form['idlezione']
+	user = current_user
+
+	with user.getSession() as session:
+		lezione = session.query(views.Lezioni.dbClass).get(id_lezione)
+		session.delete(lezione)
+		session.commit()
+
+	return redirect(url_for('lezioni_get'))
 
 
 @app.route('/lezioni')
