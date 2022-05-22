@@ -2,18 +2,29 @@
 	<select name={{ class_name }}.{{ element.name }}>
 		<option value="" disabled selected>{{ element.displayName }}</option>
 		{%- for pk, displayName in element.options.items() -%}
+			
+			<!--per le lezioni online che non si svolgono in un'aula
+			se si seleziona questa opzione la chiave esterna dell'idaula
+			sarà null di default, vedi views.py: defaultValue = None-->
 			{%- if element.displayName == "aula" -%}
 				<option  disabled selected>aula virtuale</option>
 			{%- endif -%}
-			<option value="{{ pk }}" {% if corso and corso[element.name] == pk -%}selected="selected"{%- endif -%}>{{ displayName }}</option>
-		
-	
-		
-			{%- endfor -%}
 
+			<!--nel menu a tendina quando viene inserita una nuova lezione
+			vengono mostrate solo le opzioni relative ai corsi del prof
+			che sta aggiungendo le lezioni-->
+			{%- if element.displayName == "corso" -%}
+				{%- for lez_corsi in i_tuoi_corsi_lez -%}
+					{%- if lez_corsi.titolo == displayName -%}
+						<option value="{{ pk }}" {% if corso and corso[element.name] == pk -%}selected="selected"{%- endif -%}>{{ displayName }}</option>
+					{%- endif -%}
 
-	
-		
+				{%- endfor -%}
+			{%- else -%}
+				<option value="{{ pk }}" {% if corso and corso[element.name] == pk -%}selected="selected"{%- endif -%}>{{ displayName }}</option>
+			{%- endif -%}
+
+		{%- endfor -%}
 	</select>
 	<label>{{ element.displayName }}</label>
 
