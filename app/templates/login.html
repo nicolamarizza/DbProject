@@ -25,7 +25,7 @@
 
 						<div>
 							<div class="row">
-								<form class="col s12" action='/login' method='POST'>
+								<form id="form_login" class="col s12" action='/login' method='POST'>
 									<div class="row">
 										<div class="input-field col s6">
 											<input id="email_login" name="email" type="text" class="validate">
@@ -57,13 +57,9 @@
 
 						<div>
 							<div class="row">
-								<form class="col s12" action="/registrazione" method="POST">
+								<form id="form_reg"class="col s12" action="/registrazione" method="POST">
 									<div class="row">
-										<!--<div class="input-field col s6">
-											<input placeholder="Placeholder" name="nome" id="first_name" type="text"
-												class="validate">
-											<label for="first_name">First Name</label>
-										</div>-->
+										
 										<div class="input-field col s6">
 											<input id="first_name" name="nome" type="text" class="validate">
 											<label for="first_name">First Name</label>
@@ -73,13 +69,7 @@
 											<label for="last_name">Last Name</label>
 										</div>
 									</div>
-									<!--<div class="row">
-										<div class="input-field col s12">
-											<input disabled value="I am not editable" id="disabled" type="text"
-												class="validate">
-											<label for="disabled">Disabled</label>
-										</div>
-									</div>-->
+									
 									<div class="row">
 										<div class="input-field col s12">
 											<input id="password" name="pwd" type="password" class="validate">
@@ -99,26 +89,21 @@
 											<label for="data_nascita">Data nascita</label>
 										</div>
 									</div>
-									<!--<div class="row">
-										<div class="col s12">
-											This is an inline input field:
-											<div class="input-field inline">
-												<input id="email_inline" type="email" class="validate">
-												<label for="email_inline">Email</label>
-												<span class="helper-text" data-error="wrong" data-success="right">Helper
-													text</span>
-											</div>
-										</div>
-									</div>-->
 
 									{%- if registration_error -%}
 									<div class="col s12">
 										<label class="error red-text">Esiste già un utente con questa email</label>
 									</div>
 									{%- endif -%}
-									<div>
-										<button class="waves-effect waves-light btn deep-orange darken-3 right"
+							
+									<div class="right">
+
+										<input type="button" class="waves-effect waves-light btn deep-orange darken-3 " style="cursor: pointer; color: white;" onclick="resetFormReg()" value="Reset form">
+
+										<button class="waves-effect waves-light btn deep-orange darken-3 "
 											type="submit" name="registrati">Registrati</button>
+
+					
 									</div>
 								</form>
 							</div>
@@ -142,4 +127,12 @@
 
 {%- block base_javascript -%}
 <script src="{{ url_for('static',filename='javascript/login.js') }}"></script>
+
+<script>
+    function resetFormReg() {
+      document.getElementById("form_reg").reset();
+    }
+
+</script>
+
 {%- endblock -%}
