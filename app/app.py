@@ -11,6 +11,7 @@ from flask_login import logout_user
 import views
 import hashlib
 import os
+import db
 
 import warnings
 warnings.simplefilter("ignore")
@@ -126,6 +127,7 @@ def corsi_get():
 			'corsi.html', 
 			authenticated=authenticated,
 			name=user.nome if authenticated else None,
+			email = user.email if authenticated else None,
 			is_docente=user.isdocente if authenticated else False,
 			i_tuoi_corsi=i_tuoi_corsi, 
 			corsi_disponibili=corsi_disponibili,
@@ -253,7 +255,7 @@ def update_post():
 @app.route('/insert', methods=['POST'])
 def insert_post():
 	kwargs = {**request.form}
-	
+
 	results = {}
 	with views.Session() as session:
 		for tableName in getTables(**kwargs):
@@ -261,6 +263,9 @@ def insert_post():
 			obj = View(**kwargs)
 			dbObj = obj.insert(session=session)
 			results[tableName] = dbObj
+
+		if type(dbObj) == db.Corsi:
+			dbObj.responsabili.append(current_user)
 
 		session.commit()
 		return test_response(results)
