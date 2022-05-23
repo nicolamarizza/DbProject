@@ -49,12 +49,27 @@
                 {%- if authenticated -%}
                     {%- if is_docente -%}
                         {%- if corso in i_tuoi_corsi -%}
+                            <div class="left" style="display: block;">
+                                <form action="/elimina_corso" method="POST">
+                                    <input name="idcorsoDel" type="number" style="display:none" value="{{ corso.id }}">
+                                    <button type="submit" style="background: transparent; border: none; font-size:0; cursor: pointer">
+                                        <i  class='fa fa-trash' style="color: black; padding-left: 5px; font-size: 30px;"></i>  
+                                    </button>
+                                </form>   
+                            </div>
                             <div>
+                              
+                               
                                 <div class="right" style="display: block;">
+
                                     <button class="waves-effect waves-light btn deep-orange darken-3" onclick="hideOrShowFormModificaCorso(event)">
                                         Modifica
                                     </button>
+                                    
+                                       
+                                        
                                 </div>
+                              
                                 <div class="right" style="display: none;">
                                     <button class="waves-effect waves-light btn deep-orange darken-3" onclick="hideOrShowFormModificaCorso(event)">
                                         Annulla
@@ -63,6 +78,7 @@
                                         Salva modifiche
                                     </button>
                                 </div>
+                                
                             </div>
                         {%- endif -%}
                     {%- else -%}

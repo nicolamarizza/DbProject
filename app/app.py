@@ -179,6 +179,22 @@ def elimina_lezione_post():
 	return redirect(url_for('lezioni_get'))
 
 
+
+@app.route('/elimina_corso', methods=["POST"])
+@login_required 
+def elimina_corso_post():
+	id_corso = request.form['idcorsoDel']
+	user = current_user
+
+	with user.getSession() as session:
+		corso = session.query(views.Corsi.dbClass).get(id_corso)
+		session.delete(corso)
+		
+		session.commit()
+
+	return redirect(url_for('corsi_get')) 
+
+
 @app.route('/lezioni')
 @login_required #ti dice che non sei autorizzato se non hai effettuato il login
 def lezioni_get():		
