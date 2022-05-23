@@ -95,6 +95,11 @@
     function resetForm() {
       document.getElementById("nuova_lezione_insert").reset();
     }
+
+
+    function confirmDelete(corso, inizio){
+        return confirm("Vuoi davvero cancellare la lezione\ndi "+corso+" del "+inizio+" ?");
+    }
 </script>
 {%- endblock -%}
 
