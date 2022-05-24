@@ -57,7 +57,7 @@
 
 						<div>
 							<div class="row">
-								<form id="form_reg"class="col s12" action="/registrazione" method="POST">
+								<form id="form_reg" class="col s12" action="/registrazione" method="POST">
 									<div class="row">
 										
 										<div class="input-field col s6">
@@ -127,12 +127,5 @@
 
 {%- block base_javascript -%}
 <script src="{{ url_for('static',filename='javascript/login.js') }}"></script>
-
-<script>
-    function resetFormReg() {
-      document.getElementById("form_reg").reset();
-    }
-
-</script>
 
 {%- endblock -%}

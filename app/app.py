@@ -96,7 +96,7 @@ def registrazione():
 
 	#inserisce i dati nel database
 	with current_user.getSession() as session:
-		user = views.User(email=email, nome=nome, cognome=cognome, datanascita = dataNascita, isdocente=False, password=pwd_crypt)
+		user = views.User.dbClass(email=email, nome=nome, cognome=cognome, datanascita = dataNascita, isdocente=False, password=pwd_crypt)
 		session.add(user)
 		try:
 			session.commit()
