@@ -3,6 +3,9 @@
 
 {%- block head_base -%}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/corsi.css') }}">  
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/lezioni.css') }}">
+
 {%- endblock -%}
 
 
@@ -64,11 +67,35 @@
 
      
             {%- if lezioni -%}
-              
-               
-                {% for lezione in lezioni %}
-                    {% include 'lezioni_elem.html' %}
-                {% endfor %}
+        
+            <div class="form-group col-xs-12 form-group-border">
+            
+                <table class="tabel table-custom">
+                    <tbody style="  font-size: 14px;
+                    line-height: 1.428571429;
+                    color: #4b5159;">
+                        <tr class="table-header">
+                            
+                            <th> Corso</th>
+                            <th>Sede</th>
+                            <th>Inizio</th>
+                            <th>Durata</th>
+                            <th>Modalità</th>
+                            <th></th>
+
+
+                        </tr>
+                        {% for lezione in lezioni %}
+                            
+                            {% include 'lezioni_elem.html' %}
+                            
+                        {% endfor %}
+
+
+                    </tbody>
+
+                </table>
+            </div>
               
             {%- else -%}       
                     
@@ -100,6 +127,22 @@
     function confirmDelete(corso, inizio){
         return confirm("Vuoi davvero cancellare la lezione\ndi "+corso+" del "+inizio+" ?");
     }
+
+
+    //jquery
+    $(function() {
+
+        //evento attivato quando il form viene inviato
+        $('#nuova_lezione_insert').submit(function() {
+
+            //trova l'input con id aulavirtuale nel contesto del form
+            //e lo disabilita, così non vengono inviati i dati
+            $('#aulavirtuale', this).prop('disabled', true);
+
+            //rende true per inviare gli altri dati del form
+            return true;
+        });
+    });
 </script>
 {%- endblock -%}
 

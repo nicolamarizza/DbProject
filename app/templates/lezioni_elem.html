@@ -1,39 +1,27 @@
-
-<div>
-    <div class="row" style="margin-bottom: 0px;">
-
-        <div class="col s11 offset-s1" >
-            <div class="row" >
-           
-                  
-                <div>
-                <div class="col s11">
-                <div class="deep-orange darken-3 left" style="padding: 5px; color: white;">
-                    {{ lezione[0].titolo }}
-                </div>
-                {%- if is_docente -%}
-                    <form onsubmit="return confirmDelete('{{ lezione[0].titolo }}', '{{ lezione[1].inizio }}')" action="/elimina_lezione" method="POST">
-                        <input name="idlezione" type="number" style="display:none" value="{{ lezione[1].id }}">
-                        <button type="submit" style="background: transparent; border: none; font-size:0; cursor: pointer">
-                            <i  class='fa fa-trash' style="color: black; padding-left: 5px; font-size: 30px;"></i>  
-                        </button>
-                    </form>        
-             
-                {%- endif -%}
-                    </div>
-                {%- if lezione[1].idaula -%}
-                    <div><div class="col s4"><b>Edificio:</b></div><div class="col s8">{{lezione[3].nome }}</div></div>
-                    <div><div class="col s4"><b>Aula:</b></div><div class="col s8">{{lezione[2].nome }}</div></div>
-                {%- endif -%}
-                    <div><div class="col s4"><b>Inizio:</b></div><div class="col s8">{{ lezione[1].inizio }}</div></div>
-                    <div><div class="col s4"><b>Durata:</b></div><div class="col s8">{{ lezione[1].durata }}</div></div>
-                    <div><div class="col s4"><b>Modalità:</b>  <br><hr></div><div class="col s8">{{ lezione[1].modalità }}  <br><hr>
-                    </div></div>
-
-                </div>
-            </div>
-            
-      
-        </div>
-    </div>
- 
+<tr class="table-row"> 
+    <th> {{ lezione[0].titolo }}</th>     
+    {%- if lezione[1].idaula -%}
+        
+        <th>{{lezione[3].nome }} {{lezione[2].nome }}</th>
+    {%- else -%}    
+        <th> <a href="#!">link zoom</a></th>
+    {%- endif -%}    
+    
+    <th>{{ lezione[1].inizio }}</th>
+    <th>{{ lezione[1].durata }}</th>
+    <th>{{ lezione[1].modalità }}</th>
+    <th>
+    {%- if is_docente -%}
+        <form onsubmit="return confirmDelete('{{ lezione[0].titolo }}', '{{ lezione[1].inizio }}')" action="/elimina_lezione" method="POST">
+            <input name="idlezione" type="number" style="display:none" value="{{ lezione[1].id }}">
+            <button type="submit" style="background: transparent; border: none; font-size:0; cursor: pointer">
+                <i  class='fa fa-trash' style="color: black; padding-left: 5px; font-size: 30px;"></i>  
+            </button>
+        </form>        
+                            
+    {%- else -%}    
+        <th></th>
+    {%- endif -%}
+    </th>
+</tr>
+                      

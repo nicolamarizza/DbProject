@@ -7,7 +7,9 @@
 			se si seleziona questa opzione la chiave esterna dell'idaula
 			sarà null di default, vedi views.py: defaultValue = None-->
 			{%- if element.displayName == "aula" -%}
-				<option  disabled selected>aula virtuale</option>
+				<!--non togliere l'id, serve per disabilitare l'invio dei
+				dati quando viene selezionata questa opzione-->
+				<option id="aulavirtuale"  value="">aula virtuale</option>
 			{%- endif -%}
 
 			<!--nel menu a tendina quando viene inserita una nuova lezione
