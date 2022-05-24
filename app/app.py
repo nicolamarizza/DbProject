@@ -238,13 +238,6 @@ def lezioni_get():
 		)
 
 
-#controlla se la lezione è già stata prenotata o no da quell'utente
-@app.template_filter("is_in_lezioni_prenotate")
-def is_any(lezione="", lezioni_prenotate=None):
-    if (lezione in lezioni_prenotate):
-        return True
-    return False
-
 
 @app.route('/iscrizione_lezione', methods=['POST'])
 @login_required
@@ -337,3 +330,39 @@ def delete_post():
 			obj.delete(session=session)
 		session.commit()
 		return {}
+
+
+
+
+#controlla se la lezione è già stata prenotata o no da quell'utente
+@app.template_filter("is_in_lezioni_prenotate")
+def is_any(lezione="", lezioni_prenotate=None):
+    if (lezione in lezioni_prenotate):
+        return True
+    return False
+
+
+#filtri per formattare la visualizzazione delle date
+@app.template_filter("datetime_format")
+def datetime_format(value, format="%d %b %y ; %H:%M"):
+    return value.strftime(format)
+
+@app.template_filter("datetime_format_openIscrizioni")
+def datetime_format_openIscrizioni(value, format="%d %b %y dalle ore %H:%M"):
+    return value.strftime(format)
+
+@app.template_filter("datetime_format_closeIscrizioni")
+def datetime_format_closeIscrizioni(value, format="%d %b %y alle ore %H:%M"):
+    return value.strftime(format)
+
+#filtro per visualizzare il nome della modalità
+@app.template_filter("prova")
+def prova(value):
+	if value == 'PR':
+		return "duale"
+	
+	if value == 'R':
+		return "remoto"
+	
+	if value == 'P':
+		return "presenza"

@@ -16,8 +16,8 @@
                     <div><div class="col s4"><b>Periodo:</b></div><div class="col s8">{{ corso.periodo }}</div></div>
                     <div><div class="col s4"><b>Modalità:</b></div><div class="col s8">{{ corso.modalità }}</div></div>
                     <div><div class="col s4"><b>Dipartimento:</b></div><div class="col s8">{{ corso.iddipartimento }}</div></div>
-                    <div><div class="col s4"><b>Apertura iscrizioni:</b></div><div class="col s8">{{ corso.inizioiscrizioni }}</div></div>
-                    <div><div class="col s4"><b>Chiusura iscrizioni:</b></div><div class="col s8">{{ corso.scadenzaiscrizioni }}</div></div>
+                    <div><div class="col s4"><b>Apertura iscrizioni:</b></div><div class="col s8">{{ corso.inizioiscrizioni|datetime_format_openIscrizioni }}</div></div>
+                    <div><div class="col s4"><b>Chiusura iscrizioni:</b></div><div class="col s8">{{ corso.scadenzaiscrizioni|datetime_format_closeIscrizioni }}</div></div>
                     <div><div class="col s4"><b>Iscrizioni minime:</b></div><div class="col s8">{{ corso.iscrizioniminime }}</div></div>
                     <div><div class="col s4"><b>Studenti iscritti:</b></div><div class="col s8">{{ num_iscritti }}/{{ corso.iscrizionimassime }}</div></div>
                 </div>

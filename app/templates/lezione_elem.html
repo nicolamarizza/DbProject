@@ -2,14 +2,20 @@
     <th> {{ lezione[0].titolo }}</th>     
     {%- if lezione[1].idaula -%}
         
-        <th>{{lezione[3].nome }} {{lezione[2].nome }}</th>
+        <th>{{lezione[3].nome }} {{lezione[2].nome }} <br>
+            {%- if lezione[1].modalità == 'PR' -%}
+                <a href="#!">link zoom</a>
+            {%- endif -%}
+        </th>
     {%- else -%}    
         <th> <a href="#!">link zoom</a></th>
     {%- endif -%}    
     
-    <th>{{ lezione[1].inizio }}</th>
+    <th>{{ lezione[1].inizio|datetime_format }}</th>
     <th>{{ lezione[1].durata }}</th>
-    <th>{{ lezione[1].modalità }}</th>
+   
+    <th>{{ lezione[1].modalità|prova }}</th>
+
     <th>
     {%- if is_docente -%}
         <form onsubmit="return confirmDelete('{{ lezione[0].titolo }}', '{{ lezione[1].inizio }}')" action="/elimina_lezione" method="POST">
