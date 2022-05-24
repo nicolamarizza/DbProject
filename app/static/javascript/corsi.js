@@ -48,3 +48,12 @@ document.addEventListener('DOMContentLoaded', function () {
   var elems = document.querySelectorAll('select');
   var instances = M.FormSelect.init(elems, {});
 });
+
+
+function resetForm() {
+  document.getElementById("nuovo_corso_insert").reset();
+}
+
+function confirmDelete(titolo){
+    return confirm("Vuoi davvero cancellare il corso di "+titolo+" ?");
+}

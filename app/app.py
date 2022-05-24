@@ -203,10 +203,13 @@ def lezioni_get():
 
 	with user.getSession() as session:
 		corsi_totali = session.query(views.Corsi.dbClass).all()
+		lezioni_totali = session.query(views.Lezioni.dbClass).all()
+
 		if user.isdocente:
 			i_tuoi_corsi = list(filter(lambda c : user in c.responsabili, corsi_totali))
 		else:
 			i_tuoi_corsi = list(filter(lambda c : user in c.iscritti, corsi_totali))
+			lezioni_prenotate = list(filter(lambda l : user in l.prenotati, lezioni_totali))
 
 		#lista degli id dei propri corsi
 		c = [x.id for x in i_tuoi_corsi]
@@ -229,10 +232,47 @@ def lezioni_get():
 			name=user.nome if authenticated else None,
 			is_docente = user.isdocente,
 			lezioni = lezioni, 
+			lezioni_prenotate = lezioni_prenotate if not user.isdocente else None,
 			attrLezioni = views.Lezioni.attributes,
 			i_tuoi_corsi_lez = i_tuoi_corsi
 		)
 
+
+#controlla se la lezione è già stata prenotata o no da quell'utente
+@app.template_filter("is_in_lezioni_prenotate")
+def is_any(lezione="", lezioni_prenotate=None):
+    if (lezione in lezioni_prenotate):
+        return True
+    return False
+
+
+@app.route('/iscrizione_lezione', methods=['POST'])
+@login_required
+def iscrizione_lezione_post():
+	id_lezione = request.form['idlezione']		
+	user = current_user
+	
+	with user.getSession() as session:
+		lezione = session.query(views.Lezioni.dbClass).get(id_lezione)
+		lezione.prenotati.append(user)
+		session.commit()
+
+	return redirect(url_for('lezioni_get'))
+
+@app.route('/cancella_prenotazione', methods=["POST"])
+@login_required
+def cancella_lezione_post():
+	id_lezione = request.form['idlezione']
+
+	user = current_user
+	
+	with user.getSession() as session:
+		lezione = session.query(views.Lezioni.dbClass).get(id_lezione)
+		lezione.prenotati.remove(user)
+		session.commit()
+
+
+	return redirect(url_for('lezioni_get'))
 
 @app.route('/test', methods=['GET'])
 def shit_get():

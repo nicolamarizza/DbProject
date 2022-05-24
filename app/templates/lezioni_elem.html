@@ -19,8 +19,22 @@
             </button>
         </form>        
                             
-    {%- else -%}    
-        <th></th>
+    {%- else -%} 
+        {%- if lezione[1].modalità != 'R'-%}
+            {% if lezione[1]|is_in_lezioni_prenotate(lezioni_prenotate) %}
+            
+                <form action="/cancella_prenotazione" method="POST">
+                    <input name="idlezione" type="number" style="display:none" value="{{ lezione[1].id }}">
+                    <button type="submit"  class="waves-effect waves-light btn" style="background-color: #ff884d; font-size: 12px;">cancella prenotazione</button>
+                </form>
+            {%- else -%}
+                <form action="/iscrizione_lezione" method="POST">
+                    <input name="idlezione" type="number" style="display:none" value="{{ lezione[1].id }}">
+                    <button type="submit"  class="waves-effect waves-light btn deep-orange darken-3" style="font-size: 12px;">iscriviti</button>
+                </form>
+            {%- endif -%}    
+        {%- endif -%}    
+
     {%- endif -%}
     </th>
 </tr>

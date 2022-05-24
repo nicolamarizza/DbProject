@@ -123,14 +123,4 @@
 <script src="{{ url_for('static',filename='javascript/corsi.js') }}"></script>
 <script src="{{ url_for('static',filename='javascript/corso_elem.js') }}"></script>
 
-<script>
-    function resetForm() {
-      document.getElementById("nuovo_corso_insert").reset();
-    }
-
-    function confirmDelete(titolo){
-        return confirm("Vuoi davvero cancellare il corso di "+titolo+" ?");
-    }
-
-</script>
 {%- endblock -%}
