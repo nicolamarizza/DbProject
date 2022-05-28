@@ -1,5 +1,10 @@
 {%- if element.isMultiChoice -%}
-	<select name={{ class_name }}.{{ element.name }}>
+	<div>
+	<label>{{ element.displayName }}</label>
+	</div>
+	<!--NON TOGLIERE class="browser-default" altrimenti succedono cose brutte
+	e le select smettono di fare il loro dovere! ho bestemmiato parecchio-->
+	<select id="{{ element.name }}" class="browser-default" name={{ class_name }}.{{ element.name }}>
 		<option value="" disabled selected>{{ element.displayName }}</option>
 		{%- for pk, displayName in element.options.items() -%}
 			
@@ -9,7 +14,7 @@
 			{%- if element.displayName == "aula" -%}
 				<!--non togliere l'id, serve per disabilitare l'invio dei
 				dati quando viene selezionata questa opzione-->
-				<option id="aulavirtuale"  value="">aula virtuale</option>
+				<option id="aulavirtuale"  value="virtual">aula virtuale</option>
 			{%- endif -%}
 
 			<!--nel menu a tendina quando viene inserita una nuova lezione
@@ -28,7 +33,7 @@
 
 		{%- endfor -%}
 	</select>
-	<label>{{ element.displayName }}</label>
+	
 
 {%- else -%}
 	<input 

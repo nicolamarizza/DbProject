@@ -21,3 +21,41 @@
             return true;
         });
     });
+
+
+
+    /*funzione per eliminare le opzioni di modalità nei vari casi
+     * aula virtuale lascia solo la modalità remoto
+     * altrimenti se si seleziona un'aula reale vengono mostrate solo le modalità presenza e duale*/
+    $(document).ready(function() {
+        var only_remoto = [{
+            display: "remoto",value: "R"}];
+
+        var tutto = [
+            {display: "presenza",value: "P"},
+            {display: "duale",value: "PR"}
+        ];
+
+        /*funzione eseguita quando si cambia l'opzione della select con id idaula*/
+        $("#idaula").change(function() {
+            var select = $("#idaula option:selected").val();
+
+            switch (select) {
+                //se seleziona aula
+                case "virtual":
+                    f(only_remoto);
+                break;
+                
+                default:
+                    $("#modalità").empty();
+                    $("#modalità").append(`<option value="${tutto[0].value}">${tutto[0].display}</option>`)
+                    $("#modalità").append(`<option value="${tutto[1].value}">${tutto[1].display}</option>`)
+                break;
+            }
+        });
+
+        function f(arr) {
+            $("#modalità").empty(); 
+                $("#modalità").append(`<option value="${arr[0].value}">${arr[0].display}</option>`)
+        }
+    });
