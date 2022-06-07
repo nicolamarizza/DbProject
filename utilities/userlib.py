@@ -13,7 +13,7 @@ def genRandomPassword(len):
 host = os.environ['SERVER_HOST']
 port = os.environ['SERVER_PORT']
 
-engine = create_engine(f'postgresql://groupmember:hey@{host}:{port}/PCTO')
+engine = create_engine(f'postgresql://groupmember:groupmember@{host}:{port}/PCTO')
 metadata = MetaData(bind=engine)
 Session = sessionmaker(bind=engine)
 

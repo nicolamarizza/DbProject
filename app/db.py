@@ -8,9 +8,9 @@ from sqlalchemy.ext.declarative import declarative_base
 import os
 host = os.environ['SERVER_HOST']
 port = os.environ['SERVER_PORT']
-engine = create_engine(f'postgresql://groupmember:hey@{host}:{port}/PCTO')
-teacherEngine = create_engine(f'postgresql://docente@{host}:{port}/PCTO')
-studentEngine = create_engine(f'postgresql://studente@{host}:{port}/PCTO')
+engine = create_engine(f'postgresql://groupmember:groupmember@{host}:{port}/PCTO')
+teacherEngine = create_engine(f'postgresql://docente:docente@{host}:{port}/PCTO')
+studentEngine = create_engine(f'postgresql://studente:studente@{host}:{port}/PCTO')
 
 metadata = MetaData(bind=engine)
 
@@ -33,10 +33,6 @@ responsabili_corsi = Table('responsabili_corsi', DeclBase.metadata,
     Column('iddocente', ForeignKey('utenti.email')),
     Column('idcorso', ForeignKey('corsi.id'))
 )
-dipartimenti_sedi = Table('dipartimenti_sedi', DeclBase.metadata,
-    Column('iddipartimento', ForeignKey('dipartimenti.sigla')),
-    Column('idsede', ForeignKey('edifici.id'))
-)
 
 Base = automap_base(DeclBase)
 
@@ -49,7 +45,7 @@ class User(UserMixin, Base):
 	def getSession(self):
 		return TeacherSession() if self.isdocente else StudentSession()
 
-modalita_presenza = {'P': 'presenza', 'R': 'remoto', 'PR': 'duale'}
+modalita_presenza = {'P': 'presenza', 'R': 'remoto', 'D': 'duale'}
 
 class Corsi(Base):
 	__tablename__ = 'corsi'
@@ -71,15 +67,6 @@ class Corsi(Base):
 
 class Edifici(Base):
 	__tablename__ = 'edifici'
-
-	dipartimento = relationship(
-		"Dipartimenti",
-		secondary=dipartimenti_sedi,
-		primaryjoin='Edifici.id==dipartimenti_sedi.c.idsede',
-		secondaryjoin='Dipartimenti.sigla==dipartimenti_sedi.c.iddipartimento',
-		backref='sede',
-		uselist=False
-	)
 
 class Aule(Base):
 	__tablename__ = 'aule'
@@ -108,6 +95,11 @@ class Lezioni(Base):
 
 class Dipartimenti(Base):
 	__tablename__='dipartimenti'
+
+	relationship (
+		'Edifici',
+		backref='dipartimento'
+	)
 
 class Categorie(Base):
 	__tablename__='categorie'

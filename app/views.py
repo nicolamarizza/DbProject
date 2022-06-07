@@ -286,7 +286,7 @@ class Corsi(SimpleView):
 		'iscrizionimassime' : Attribute('iscrizionimassime', int, displayName='limite iscrizioni'),
 		'inizioiscrizioni' : Attribute('inizioiscrizioni', datetime, displayName='inizio iscrizioni'),
 		'scadenzaiscrizioni' : Attribute('scadenzaiscrizioni', datetime, displayName='scadenza iscrizioni'),
-		'modalità' : MultiChoiceAttribute('modalità', str, db.modalita_presenza),
+		'modalita' : MultiChoiceAttribute('modalita', str, db.modalita_presenza),
 		'iddipartimento' : FkAttribute('iddipartimento', str, 'Dipartimenti.sigla', displayName='dipartimento', getChoiceDisplayName=lambda x : x.nome),
 		'categoria' : FkAttribute('categoria', str, 'Categorie.nome'),
 		'durata' : Attribute('durata', timedelta),
@@ -304,7 +304,7 @@ class Lezioni(SimpleView):
 		'idcorso' : FkAttribute('idcorso', int, 'Corsi.id', displayName='corso', getChoiceDisplayName=lambda x : x.titolo),
 		'inizio' : Attribute('inizio', datetime),
 		'durata' : Attribute('durata', timedelta),
-		'modalità' : MultiChoiceAttribute('modalità', str, db.modalita_presenza)
+		'modalita' : MultiChoiceAttribute('modalita', str, db.modalita_presenza)
 	}
 
 	def __init__(self, **kwargs):

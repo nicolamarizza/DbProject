@@ -355,10 +355,10 @@ def datetime_format_openIscrizioni(value, format="%d %b %y dalle ore %H:%M"):
 def datetime_format_closeIscrizioni(value, format="%d %b %y alle ore %H:%M"):
     return value.strftime(format)
 
-#filtro per visualizzare il nome della modalità
+#filtro per visualizzare il nome della modalita
 @app.template_filter("prova")
 def prova(value):
-	if value == 'PR':
+	if value == 'D':
 		return "duale"
 	
 	if value == 'R':

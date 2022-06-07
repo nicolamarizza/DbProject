@@ -1,20 +1,20 @@
     function resetForm() {
         document.getElementById("nuova_lezione_insert").reset();
-        resetModalità(); //reimposta i valori della select modalità
+        resetModalita(); //reimposta i valori della select modalita
     }
 
-    function resetModalità(){
+    function resetModalita(){
         var tutto = [
             {display: "presenza",value: "P"},
             {display: "remoto",value: "R"},
-            {display: "duale",value: "PR"}
+            {display: "duale",value: "D"}
         ];
 
-        $("#modalità").empty();
-        $("#modalità").append(`<option disabled selected value="">modalità</option>`);
+        $("#modalita").empty();
+        $("#modalita").append(`<option disabled selected value="">modalita</option>`);
 
         $(tutto).each(function(i) {
-            $("#modalità").append(`<option value="${tutto[i].value}">${tutto[i].display}</option>`)
+            $("#modalita").append(`<option value="${tutto[i].value}">${tutto[i].display}</option>`)
         });
     }
 
@@ -37,16 +37,16 @@
         });
     });
 
-    /*funzione per eliminare le opzioni di modalità nei vari casi
-     * aula virtuale lascia solo la modalità remoto
-     * altrimenti se si seleziona un'aula reale vengono mostrate solo le modalità presenza e duale*/
+    /*funzione per eliminare le opzioni di modalita nei vari casi
+     * aula virtuale lascia solo la modalita remoto
+     * altrimenti se si seleziona un'aula reale vengono mostrate solo le modalita presenza e duale*/
     $(document).ready(function() {
         var only_remoto = [{
             display: "remoto",value: "R"}];
 
         var only_presenza_duale = [
             {display: "presenza",value: "P"},
-            {display: "duale",value: "PR"}
+            {display: "duale",value: "D"}
         ];
 
         /*funzione eseguita quando si cambia l'opzione della select con id idaula*/
@@ -61,15 +61,15 @@
                 
                 //in caso venga selezionata un'aula reale
                 default:
-                    $("#modalità").empty();
-                    $("#modalità").append(`<option value="${only_presenza_duale[0].value}">${only_presenza_duale[0].display}</option>`)
-                    $("#modalità").append(`<option value="${only_presenza_duale[1].value}">${only_presenza_duale[1].display}</option>`)
+                    $("#modalita").empty();
+                    $("#modalita").append(`<option value="${only_presenza_duale[0].value}">${only_presenza_duale[0].display}</option>`)
+                    $("#modalita").append(`<option value="${only_presenza_duale[1].value}">${only_presenza_duale[1].display}</option>`)
                 break;
             }
         });
 
         function f(arr) {
-            $("#modalità").empty(); 
-                $("#modalità").append(`<option value="${arr[0].value}">${arr[0].display}</option>`)
+            $("#modalita").empty(); 
+                $("#modalita").append(`<option value="${arr[0].value}">${arr[0].display}</option>`)
         }
     });
