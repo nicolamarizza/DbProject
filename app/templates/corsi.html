@@ -60,7 +60,21 @@
                                         {%- if element.insertable -%}
                                         <div class="row">
                                             <div class="input-field col s8">
-                                                {%- include "form_element.html" -%}
+                                                <!--ho dovuto fare così per poter mettere il design carino
+                                                anche su questi timedelta!-->
+                                                {%- if element.name == 'inizioiscrizioni' or  element.name == 'scadenzaiscrizioni' -%}  
+                                                    <input 
+                                                    name="{{ class_name }}.{{ element.name }}"
+                                                    type="text" 
+                                                    class = "{{ element.name }}ins validate"
+                                                    
+                                                    autocomplete="off">
+                                                    
+                                                    <label {%- if element.isDatetime %} class="active" {%- endif %} for={{ element.name }}>{{ element.displayName }}</label>
+
+                                                {%- else -%}
+                                                    {%- include "form_element.html" -%}
+                                                {%- endif -%}
                                             </div>
                                         </div>
                                         {%- endif -%}
@@ -117,6 +131,6 @@
 <script src="{{ url_for('static',filename='javascript/corsi.js') }}"></script>
 <script src="{{ url_for('static',filename='javascript/corso_elem.js') }}"></script>
 
-<script src="{{ url_for('static',filename='javascript/materializedatetimepicker.js') }}"></script>
+<script src="{{ url_for('static',filename='javascript/corsi_materializedatetimepicker.js') }}"></script>
 
 {%- endblock -%}

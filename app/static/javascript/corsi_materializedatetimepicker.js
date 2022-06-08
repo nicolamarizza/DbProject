@@ -3,7 +3,7 @@
  * Materialize Date Time Picker v0.1.1-beta
  * Based on Materialize (http://materializecss.com)
  */
-var MaterialDateTimePicker = {
+var MaterialDateTimePickerCorsi = {
     control: null,
     dateRange: null,
     pickerOptions: null,
@@ -17,14 +17,14 @@ var MaterialDateTimePicker = {
             element.datepicker({
                 format:  'yyyy/mm/dd',
                 selectMonths: true,
-                disableWeekends: true,
+                
                 firstDay: 1,
                 dismissable: false,
                 autoClose: true,
                 onClose: function(){
                     element.datepicker('destroy');
                     element.timepicker({
-                        //twelveHour: false, //togli il commento per avere il formato di 24 ore
+                        twelveHour: false,
                         dismissable: false,
                         onSelect: function(hr, min){
                             element.attr('selectedTime', (hr + ":" + min).toString());

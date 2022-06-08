@@ -1,3 +1,15 @@
+
+//elemento datetime material design
+$(document).ready(function(){
+  MaterialDateTimePickerCorsi.create($('.inizioiscrizioniins'))
+});    
+
+//elemento datetime material design
+$(document).ready(function(){
+  MaterialDateTimePickerCorsi.create($('.scadenzaiscrizioniins'))
+});    
+
+
 document.addEventListener('DOMContentLoaded', function () {
   var elems = document.querySelectorAll('.collapsible');
   var instances = M.Collapsible.init(elems, {
@@ -39,7 +51,6 @@ $(document).ready(function(){
       twelveHour: false
   });
 });   
-
 
 
 

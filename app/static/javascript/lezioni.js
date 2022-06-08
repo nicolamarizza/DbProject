@@ -22,11 +22,12 @@
         return confirm("Vuoi davvero cancellare la lezione\ndi "+corso+" del "+inizio+" ?");
     }
 
+    //elemento datetime material design
     $(document).ready(function(){
-        MaterialDateTimePicker.create($('.datetimecool'))
+        MaterialDateTimePickerLezioni.create($('.datetimecool'))
     });    
 
-    //oggetti timedelta material design
+    //elementi timedelta material design
     $(document).ready(function(){
         $('.timepicker').timepicker({
             twelveHour: false
