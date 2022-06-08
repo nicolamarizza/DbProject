@@ -17,11 +17,14 @@ var MaterialDateTimePicker = {
             element.datepicker({
                 format:  'yyyy/mm/dd',
                 selectMonths: true,
+                disableWeekends: true,
+                firstDay: 1,
                 dismissable: false,
                 autoClose: true,
                 onClose: function(){
                     element.datepicker('destroy');
                     element.timepicker({
+                        //twelveHour: false, //togli il commento per avere il formato di 24 ore
                         dismissable: false,
                         onSelect: function(hr, min){
                             element.attr('selectedTime', (hr + ":" + min).toString());

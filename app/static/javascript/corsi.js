@@ -33,6 +33,13 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
+//oggetti timedelta material design
+$(document).ready(function(){
+  $('.timepicker').timepicker({
+      twelveHour: false
+  });
+});   
+
 
 
 

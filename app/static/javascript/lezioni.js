@@ -22,6 +22,17 @@
         return confirm("Vuoi davvero cancellare la lezione\ndi "+corso+" del "+inizio+" ?");
     }
 
+    $(document).ready(function(){
+        MaterialDateTimePicker.create($('.datetimecool'))
+    });    
+
+    //oggetti timedelta material design
+    $(document).ready(function(){
+        $('.timepicker').timepicker({
+            twelveHour: false
+        });
+      });    
+
 
     //jquery
     $(function() {
@@ -58,7 +69,7 @@
         
             var value_aula = $(this).val();
             var display_aula = $(this).text();
-            
+
             if(value_aula)
                 default_values_idaula.push( {display: display_aula, value: value_aula});
         });

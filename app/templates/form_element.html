@@ -50,13 +50,14 @@
 		{%- if element.secret -%}			"password"
 		{%- elif element.isDate -%}			"date"
 		{%- elif element.isDatetime and class_name != "Lezioni"  -%} "datetime-local"
-		{%- elif element.isTimedelta -%}	"time"
+		{%- elif element.isTimedelta -%}	"text"
 		{%- else -%}						"text"
 		{%- endif %} 
 
 		class = 
 		{%- if element.isDatetime and class_name == "Lezioni"  -%} 	"datetimecool validate" 
-		{%- else -%} 		"validate"
+		{%- elif element.isTimedelta -%} 	"timepicker"
+		{%- else -%} 						"validate"
 		{%- endif %}
 		
 		
