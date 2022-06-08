@@ -13,3 +13,15 @@ function hideOrShowFormModificaCorso(event){
         divButton.children[1].style.display = "block"
     }
 }
+
+
+//elemento datetime material design
+$(document).ready(function(){
+    MaterialDateTimePickerCorsi.create($('.inizioiscrizioni'))
+  });    
+  
+  //elemento datetime material design
+  $(document).ready(function(){
+    MaterialDateTimePickerCorsi.create($('.scadenzaiscrizioni'))
+  });    
+  

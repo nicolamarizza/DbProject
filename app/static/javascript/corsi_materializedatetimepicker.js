@@ -17,7 +17,7 @@ var MaterialDateTimePickerCorsi = {
             element.datepicker({
                 format:  'yyyy/mm/dd',
                 selectMonths: true,
-                
+               
                 firstDay: 1,
                 dismissable: false,
                 autoClose: true,
@@ -25,6 +25,7 @@ var MaterialDateTimePickerCorsi = {
                     element.datepicker('destroy');
                     element.timepicker({
                         twelveHour: false,
+               
                         dismissable: false,
                         onSelect: function(hr, min){
                             element.attr('selectedTime', (hr + ":" + min).toString());

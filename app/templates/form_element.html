@@ -42,6 +42,18 @@
 
 {%- else -%}
 	
+	{%- if element.name == 'inizioiscrizioni' or  element.name == 'scadenzaiscrizioni' -%}  
+	<input 
+		name="{{ class_name }}.{{ element.name }}"
+		type="text" 
+		class = "{{ element.name }} validate"
+		{% if not element.optional and not corso %} required=True {% endif %}
+			{% if corso -%}
+				{%- set date = corso[element.name] -%}
+				value="{{ date.strftime('%Y/%m/%d %H:%M') }}"
+			{%- endif -%}
+		autocomplete="off">
+	{%- else -%}
 	<input 
 		id=	{{ element.name }} 
 		
@@ -49,7 +61,7 @@
 		type=
 		{%- if element.secret -%}			"password"
 		{%- elif element.isDate -%}			"date"
-		{%- elif element.isDatetime and class_name != "Lezioni"  -%} "datetime-local"
+		{%- elif element.isDatetime -%}	"text"
 		{%- elif element.isTimedelta -%}	"text"
 		{%- else -%}						"text"
 		{%- endif %} 
@@ -65,7 +77,7 @@
 		{% if corso -%}
 			{%- if element.isDatetime -%}
 				{%- set date = corso[element.name] -%}
-				value="{{ date.strftime('%Y-%m-%dT%H:%M') }}"
+				value="{{ date.strftime('%Y/%m/%d %H:%M') }}"
 			{%- elif element.isTimedelta -%}
 				{%- set date = corso[element.name] -%}
 				value="{{ (date|string())[0:5] }}"
@@ -77,6 +89,7 @@
 		autocomplete="off"
 	>
 
+	{%- endif -%}
     
 	<label {%- if element.isDatetime %} class="active" {%- endif %} for={{ element.name }}>{{ element.displayName }}</label>
 	{%- if input_error -%}
