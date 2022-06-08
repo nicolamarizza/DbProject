@@ -41,17 +41,25 @@
 	
 
 {%- else -%}
+	
 	<input 
-		id={{ element.name }} 
+		id=	{{ element.name }} 
+		
 		name="{{ class_name }}.{{ element.name }}"
 		type=
 		{%- if element.secret -%}			"password"
 		{%- elif element.isDate -%}			"date"
-		{%- elif element.isDatetime -%}		"datetime-local"
+		{%- elif element.isDatetime and class_name != "Lezioni"  -%} "datetime-local"
 		{%- elif element.isTimedelta -%}	"time"
 		{%- else -%}						"text"
 		{%- endif %} 
-		class="validate"
+
+		class = 
+		{%- if element.isDatetime and class_name == "Lezioni"  -%} 	"datetimecool validate" 
+		{%- else -%} 		"validate"
+		{%- endif %}
+		
+		
 		{% if not element.optional and not corso %} required=True {% endif %}
 		{% if corso -%}
 			{%- if element.isDatetime -%}
@@ -64,7 +72,11 @@
 				value="{{ corso[element.name] }}"
 			{%- endif -%}
 		{%- endif -%}
+
+		autocomplete="off"
 	>
+
+    
 	<label {%- if element.isDatetime %} class="active" {%- endif %} for={{ element.name }}>{{ element.displayName }}</label>
 	{%- if input_error -%}
 		{%- if element.name == input_error.elementName -%}

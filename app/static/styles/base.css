@@ -11,3 +11,44 @@ main {
 .input-field label {
 	pointer-events: none;
 }
+
+
+/*è arancione, prima era turchese brutto*/
+.datepicker-date-display{
+    background-color: #d84315;
+}
+
+.timepicker-digital-display{
+    background-color: #d84315;
+}
+
+.timepicker-canvas-bg{
+    fill: #f44f1d;
+    stroke: #f44f1d;
+}
+
+.timepicker-canvas-bearing{
+    fill: #f44f1d;
+    stroke: #f44f1d;
+}
+
+.timepicker-canvas line {
+    stroke: #f44f1d;
+   
+}
+
+.timepicker-tick.active, .timepicker-tick:hover {
+    background-color: #d8421580;
+}
+
+.datepicker-table td.is-today {
+    color: #d84315;
+}
+
+.datepicker-day-button:focus {
+    background-color: #d8421580;
+}
+
+.timepicker-close {
+    color: #d84315;
+}
