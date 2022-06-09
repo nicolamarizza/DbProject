@@ -1,6 +1,7 @@
 <li>
     <div class="collapsible-header" style="display: block;">
         {{ corso.titolo }}
+    
         <div class="right">
             <i class="material-icons">expand_more</i>
         </div>
@@ -22,7 +23,7 @@
                     <div><div class="col s4"><b>Studenti iscritti:</b></div><div class="col s8">{{ num_iscritti }}/{{ corso.iscrizionimassime }}</div></div>
                 </div>
 
-                <div class="row" style="display: none;">
+                <div class="row" id="boh" style="display: none;">
 					{%- set class_name = 'Corsi' -%}
                     <form id="{{ corso.id }}" class="col s12" action="/update" method="POST">
 						<div class="row", style="display: none;">
@@ -45,6 +46,7 @@
                         </div>
                             <div class="input-field col s8">
                                 {%- include "form_element.html" -%}
+                                
                             </div>
                         </div>
                         {%- endif -%}
@@ -72,7 +74,7 @@
                                
                                 <div class="right" style="display: block;">
 
-                                    <button class="waves-effect waves-light btn deep-orange darken-3" onclick="hideOrShowFormModificaCorso(event)">
+                                    <button class="waves-effect waves-light btn deep-orange darken-3" onclick="hideOrShowFormModificaCorso(event, `{{ corso.id }}`)">
                                         Modifica <i class="material-icons right">create</i>
                                     </button>
                                     

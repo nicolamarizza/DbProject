@@ -87,9 +87,9 @@
 
 			class = 
 			{%- if element.isDatetime and class_name == "Lezioni"  -%} 	"datetimecool validate" 
-			{%- elif element.isDatetime and
+			{%- elif corso and element.isDatetime and
 				(element.name == 'inizioiscrizioni' or 
-				element.name == 'scadenzaiscrizioni') -%} "{{ element.name }} validate"
+				element.name == 'scadenzaiscrizioni') -%} "{{ element.name }}{{ corso.id }} validate"
 
 			{%- elif element.isTimedelta -%} 	"timepicker validate"
 			{%- elif element.isDate -%}			"datepicker validate"
