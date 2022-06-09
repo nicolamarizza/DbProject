@@ -77,6 +77,7 @@
                                                     name="{{ class_name }}.{{ element.name }}"
                                                     type="text" 
                                                     class = "{{ element.name }}ins validate"
+			                                        {% if not element.optional and not corso %} required=True {% endif %}
                                                     
                                                     autocomplete="off">
                                                     

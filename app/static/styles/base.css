@@ -148,3 +148,8 @@ input[type=range]::-webkit-slider-thumb {
 }
    
 
+.month-prev:active,
+.month-next:active{
+
+    background:#d8421580;
+}
