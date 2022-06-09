@@ -45,10 +45,68 @@ main {
     color: #d84315;
 }
 
+.datepicker-table td.is-selected {
+    background-color:#d84315;
+   }
+
 .datepicker-day-button:focus {
     background-color: #d8421580;
 }
 
-.timepicker-close {
+
+.timepicker-close, .datepicker-cancel, .datepicker-clear, .datepicker-today, .datepicker-done {
     color: #d84315;
 }
+
+/*colore menu profilo*/
+.dropdown-content li > a, .dropdown-content li > span {
+    color: black;
+}
+
+/*colore focus input*/
+input:not([type]):focus:not([readonly]),
+input[type=text]:not(.browser-default):focus:not([readonly]),
+input[type=password]:not(.browser-default):focus:not([readonly]),
+input[type=email]:not(.browser-default):focus:not([readonly]),
+input[type=url]:not(.browser-default):focus:not([readonly]),
+input[type=time]:not(.browser-default):focus:not([readonly]),
+input[type=date]:not(.browser-default):focus:not([readonly]),
+input[type=datetime]:not(.browser-default):focus:not([readonly]),
+input[type=datetime-local]:not(.browser-default):focus:not([readonly]),
+input[type=tel]:not(.browser-default):focus:not([readonly]),
+input[type=number]:not(.browser-default):focus:not([readonly]),
+input[type=search]:not(.browser-default):focus:not([readonly]),
+textarea.materialize-textarea:focus:not([readonly]) {
+    border-bottom:1px solid #9c2400;
+    -webkit-box-shadow:0 1px 0 0 #9c2400;
+    box-shadow:0 1px 0 0 #9c2400;
+}
+input:not([type]):focus:not([readonly])+label,
+input[type=text]:not(.browser-default):focus:not([readonly])+label,
+input[type=password]:not(.browser-default):focus:not([readonly])+label,
+input[type=email]:not(.browser-default):focus:not([readonly])+label,
+input[type=url]:not(.browser-default):focus:not([readonly])+label,
+input[type=time]:not(.browser-default):focus:not([readonly])+label,
+input[type=date]:not(.browser-default):focus:not([readonly])+label,
+input[type=datetime]:not(.browser-default):focus:not([readonly])+label,
+input[type=datetime-local]:not(.browser-default):focus:not([readonly])+label,
+input[type=tel]:not(.browser-default):focus:not([readonly])+label,
+input[type=number]:not(.browser-default):focus:not([readonly])+label,
+input[type=search]:not(.browser-default):focus:not([readonly])+label,
+textarea.materialize-textarea:focus:not([readonly])+label {
+ color:#9c2400;
+}
+
+select:focus {
+    border:1px solid #9c2400;
+    -webkit-box-shadow:0 1px 0 0 #9c2400;
+    box-shadow:0 1px 0 0 #9c2400;
+}
+
+select:focus+label {
+    border:1px solid #9c2400;
+    -webkit-box-shadow:0 1px 0 0 #9c2400;
+    box-shadow:0 1px 0 0 #9c2400;
+}
+
+
