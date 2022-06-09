@@ -59,6 +59,16 @@
                                         {%- for element in attrList.values() -%}
                                         {%- if element.insertable -%}
                                         <div class="row">
+                                            <div class="col s0" style="padding-top: 25px;">
+                                                <!--icone-->
+                                               	<i class="small material-icons">
+                                                    {%- if element.isDatetime -%}      calendar_month
+                                                    {%- elif element.isTimedelta -%}   access_time
+                                                    {%- elif element.isMultiChoice -%} arrow_drop_down
+                                                    {%- else -%}                       text_fields
+		                                            {%- endif %} 
+                                                </i>
+                                            </div>
                                             <div class="input-field col s8">
                                                 <!--ho dovuto fare così per poter mettere il design carino
                                                 anche su questi timedelta!-->

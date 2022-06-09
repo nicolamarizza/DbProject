@@ -62,7 +62,7 @@ var MaterialDateTimePickerCorsi = {
                         element.removeAttr("selectedDate");
                         element.removeAttr("selectedTime");
                         localStorage.setItem('element', element.attr('id'));
-                        MaterialDateTimePicker.create.call(element);
+                        MaterialDateTimePickerCorsi.create.call(element);
                         element.trigger('click');
                     });
                 }

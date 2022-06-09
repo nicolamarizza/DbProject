@@ -25,13 +25,20 @@
 
 						<div>
 							<div class="row">
+								<br>
 								<form id="form_login" class="col s12" action='/login' method='POST'>
 									<div class="row">
-										<div class="input-field col s6">
+										<div class="col s0" style="padding-top: 25px;">
+											<i class="small material-icons">email</i>
+										</div>
+										<div class="input-field col s5">
 											<input id="email_login" name="email" type="text" class="validate">
 											<label for="email">Email</label>
 										</div>
-										<div class="input-field col s6">
+										<div class="col s0" style="padding-top: 25px;">
+											<i class="small material-icons">password</i>
+										</div>
+										<div class="input-field col s5">
 											<input id="pwd_login" name="pwd" type="password" class="validate">
 											<label for="pwd">Password</label>
 										</div>
@@ -57,35 +64,51 @@
 
 						<div>
 							<div class="row">
+								<br>
 								<form id="form_reg" class="col s12" action="/registrazione" method="POST">
 									<div class="row">
 										
-										<div class="input-field col s6">
-											<input id="first_name" name="nome" type="text" class="validate">
+										<div class="col s0" style="padding-top: 25px;">
+											<i class="small material-icons">text_fields</i>
+										</div>
+										<div class="input-field col s5">
+											<input id="first_name" name="nome" type="text" class="validate" autocomplete="off">
 											<label for="first_name">First Name</label>
 										</div>
-										<div class="input-field col s6">
-											<input id="last_name" name="cognome" type="text" class="validate">
+										<div class="col s0" style="padding-top: 25px;">
+											<i class="small material-icons">text_fields</i>
+										</div>
+										<div class="input-field col s5">
+											<input id="last_name" name="cognome" type="text" class="validate" autocomplete="off">
 											<label for="last_name">Last Name</label>
 										</div>
 									</div>
 									
 									<div class="row">
-										<div class="input-field col s12">
-											<input id="password" name="pwd" type="password" class="validate">
+										<div class="col s0" style="padding-top: 25px;">
+											<i class="small material-icons">password</i>
+										</div>
+										<div class="input-field col s10">
+											<input id="password" name="pwd" type="password" class="validate" autocomplete="off">
 											<label for="password">Password</label>
 										</div>
 									</div>
 									<div class="row">
-										<div class="input-field col s12">
+										<div class="col s0" style="padding-top: 25px;">
+											<i class="small material-icons">email</i>
+										</div>
+										<div class="input-field col s10">
 											<input id="email" name="email" type="email" class={%- if registration_error
-												-%}"invalid"{%- else -%}"validate"{%- endif -%}>
+												-%}"invalid"{%- else -%}"validate"{%- endif -%} autocomplete="off">
 											<label for="email">Email</label>
 										</div>
 									</div>
 									<div class="row">
-										<div class="input-field col s12">
-											<input id="data_nascita" name="dataN" type="text" class="timepicker validate">
+										<div class="col s0" style="padding-top: 25px;">
+											<i class="small material-icons">calendar_month</i>
+										</div>
+										<div class="input-field col s10">
+											<input id="data_nascita" name="dataN" type="text" class="datepicker validate" autocomplete="off">
 											<label for="data_nascita">Data nascita</label>
 										</div>
 									</div>

@@ -2,9 +2,12 @@ function resetFormReg() {
     document.getElementById("form_reg").reset();
 }
 
-//oggetti timedelta material design
+//oggetti datetime material design
 $(document).ready(function(){
-    $('.timepicker').timepicker({
-        twelveHour: false
+    $('.datepicker').datepicker({
+        format:  'yyyy/mm/dd',
+        selectMonths: true,
+               
+        firstDay: 1,
     });
-  });
+});

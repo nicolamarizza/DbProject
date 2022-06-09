@@ -43,6 +43,7 @@
 {%- else -%}
 	
 	{%- if element.name == 'inizioiscrizioni' or  element.name == 'scadenzaiscrizioni' -%}  
+	
 	<input 
 		name="{{ class_name }}.{{ element.name }}"
 		type="text" 
@@ -54,21 +55,24 @@
 			{%- endif -%}
 		autocomplete="off">
 	{%- else -%}
+
+
 	<input 
 		id=	{{ element.name }} 
 		
 		name="{{ class_name }}.{{ element.name }}"
 		type=
 		{%- if element.secret -%}			"password"
-		{%- elif element.isDate -%}			"date"
-		{%- elif element.isDatetime -%}	"text"
+		{%- elif element.isDate -%}			"text"
+		{%- elif element.isDatetime -%}		"text"
 		{%- elif element.isTimedelta -%}	"text"
 		{%- else -%}						"text"
 		{%- endif %} 
 
 		class = 
 		{%- if element.isDatetime and class_name == "Lezioni"  -%} 	"datetimecool validate" 
-		{%- elif element.isTimedelta -%} 	"timepicker"
+		{%- elif element.isTimedelta -%} 	"timepicker validate"
+		{%- elif element.isDate -%}			"datepicker validate"
 		{%- else -%} 						"validate"
 		{%- endif %}
 		
@@ -89,12 +93,17 @@
 		autocomplete="off"
 	>
 
+
 	{%- endif -%}
     
+
+ 
 	<label {%- if element.isDatetime %} class="active" {%- endif %} for={{ element.name }}>{{ element.displayName }}</label>
 	{%- if input_error -%}
 		{%- if element.name == input_error.elementName -%}
 		<span class="helper-text" data-error="wrong" data-success="right">{{ input_error.message }}</span>
 		{%- endif -%}
 	{%- endif -%}
+	
+
 {%- endif -%}

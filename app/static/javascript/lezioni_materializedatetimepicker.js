@@ -61,7 +61,7 @@ var MaterialDateTimePickerLezioni = {
                         element.removeAttr("selectedDate");
                         element.removeAttr("selectedTime");
                         localStorage.setItem('element', element.attr('id'));
-                        MaterialDateTimePicker.create.call(element);
+                        MaterialDateTimePickerLezioni.create.call(element);
                         element.trigger('click');
                     });
                 }
