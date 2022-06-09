@@ -110,3 +110,41 @@ select:focus+label {
 }
 
 
+
+input[type=range]+.thumb {
+    background-color:#d84315;
+}
+input[type=range]+.thumb .value {
+    display:block;
+    width: 100px;
+    height: 10px;
+    text-align:center;
+    color:#d84315;
+    font-size:0;
+    -webkit-transform:rotate(45deg);
+    transform:rotate(45deg)
+}
+input[type=range]+.thumb.active {
+    background-color: #d84315;
+    border-radius:50% 50% 50% 0
+}
+input[type=range]+.thumb.active .value {
+    color: #9c2400;
+    font-size: 15px
+}
+
+
+input[type=range]::-moz-range-thumb {
+    background:#d84315;
+}
+
+
+input[type=range]::-ms-thumb {
+    background:#d84315;
+}
+input[type=range]::-webkit-slider-thumb {
+    background:#d84315;
+    background-color:#d84315;
+}
+   
+

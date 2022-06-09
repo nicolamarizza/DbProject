@@ -35,12 +35,9 @@ var MaterialDateTimePickerLezioni = {
                     });
                     $('button.btn-flat.timepicker-close.waves-effect')[0].remove();
                     
-                    if(element.val() != "")
-                    {
+                    if(element.val() != ""){
                         element.attr('selectedDate', element.val().toString());
-                    }
-                    else
-                    {
+                    }else{
                         element.val(defaultDate.getFullYear().toString() + "/" + (defaultDate.getMonth() + 1).toString() + "/" + defaultDate.getDate().toString())
                         element.attr('selectedDate', element.val().toString());
                     }

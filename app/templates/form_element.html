@@ -56,45 +56,74 @@
 		autocomplete="off">
 	{%- else -%}
 
+		{%- if class_name == "Corsi" and element.name == "durata" -%}
+			<p class="range-field">
+				<input 
+					id=	{{ element.name }} 
+			
+					name="{{ class_name }}.{{ element.name }}"
+					type = "range" 
+					class = "validate"
+					min="0" max="500" 
+					onchange="$('~ output', this).val(value)" 
+					oninput="$('~ output', this).val(value)"
 
-	<input 
-		id=	{{ element.name }} 
-		
-		name="{{ class_name }}.{{ element.name }}"
-		type=
-		{%- if element.secret -%}			"password"
-		{%- elif element.isDate -%}			"text"
-		{%- elif element.isDatetime -%}		"text"
-		{%- elif element.isTimedelta -%}	"text"
-		{%- else -%}						"text"
-		{%- endif %} 
+					{% if not element.optional and not corso %} required=True {% endif %}
+						{% if corso -%}
+							value="{{ corso[element.name] }}"
+						{%- else -%}
+							value = "0"
+						{%- endif -%}
+					autocomplete="off"
+					/>
+						
+						durate selezionata: 
+						<output>{% if corso -%}{{ corso[element.name] }}
+						{%- else -%} 0  
+						{%- endif -%}</output> ore
+		</p>
+		{%- else -%}
 
-		class = 
-		{%- if element.isDatetime and class_name == "Lezioni"  -%} 	"datetimecool validate" 
-		{%- elif element.isTimedelta -%} 	"timepicker validate"
-		{%- elif element.isDate -%}			"datepicker validate"
-		{%- else -%} 						"validate"
-		{%- endif %}
-		
-		
-		{% if not element.optional and not corso %} required=True {% endif %}
-		{% if corso -%}
-			{%- if element.isDatetime -%}
-				{%- set date = corso[element.name] -%}
-				value="{{ date.strftime('%Y/%m/%d %H:%M') }}"
-			{%- elif element.isTimedelta -%}
-				{%- set date = corso[element.name] -%}
-				value="{{ (date|string())[0:5] }}"
-			{%- else -%}
-				value="{{ corso[element.name] }}"
+		<input 
+			id=	{{ element.name }} 
+			
+			name="{{ class_name }}.{{ element.name }}"
+			type=
+			{%- if element.secret -%}			"password"
+			{%- elif element.isDate -%}			"text"
+			{%- elif element.isDatetime -%}		"text"
+			{%- elif element.isTimedelta -%}	"text"
+			{%- else -%}						"text"
+			{%- endif %} 
+
+			class = 
+			{%- if element.isDatetime and class_name == "Lezioni"  -%} 	"datetimecool validate" 
+			{%- elif element.isTimedelta -%} 	"timepicker validate"
+			{%- elif element.isDate -%}			"datepicker validate"
+			{%- else -%} 						"validate"
+			{%- endif %}
+			
+			
+			{% if not element.optional and not corso %} required=True {% endif %}
+			{% if corso -%}
+				{%- if element.isDatetime -%}
+					{%- set date = corso[element.name] -%}
+					value="{{ date.strftime('%Y/%m/%d %H:%M') }}"
+				{%- elif element.isTimedelta -%}
+					{%- set date = corso[element.name] -%}
+					value="{{ (date|string())[0:5] }}"
+				{%- else -%}
+					value="{{ corso[element.name] }}"
+				{%- endif -%}
 			{%- endif -%}
+
+			autocomplete="off"
+		>
+
+
 		{%- endif -%}
-
-		autocomplete="off"
-	>
-
-
 	{%- endif -%}
+
     
 
  
