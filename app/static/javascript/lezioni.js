@@ -24,7 +24,7 @@
 
     //elemento datetime material design
     $(document).ready(function(){
-        MaterialDateTimePickerLezioni.create($('.datetimecool'))
+        MaterialDateTimePicker.create($('.datetimecool'), true, new Date())
     });    
 
     //elementi timedelta material design

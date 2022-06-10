@@ -1,12 +1,12 @@
 
 //elemento datetime material design
 $(document).ready(function(){
-  MaterialDateTimePickerCorsi.create($('.inizioiscrizioniins'))
+  MaterialDateTimePicker.create($('.inizioiscrizioniins'), false, new Date())
 });    
 
 //elemento datetime material design
 $(document).ready(function(){
-  MaterialDateTimePickerCorsi.create($('.scadenzaiscrizioniins'))
+  MaterialDateTimePicker.create($('.scadenzaiscrizioniins'), false, new Date())
 });    
 
 

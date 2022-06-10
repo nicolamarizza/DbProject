@@ -3,21 +3,23 @@
  * Materialize Date Time Picker v0.1.1-beta
  * Based on Materialize (http://materializecss.com)
  */
-var MaterialDateTimePickerLezioni = {
+var MaterialDateTimePicker = {
     control: null,
     dateRange: null,
     pickerOptions: null,
-    create: function(element){
+    create: function(element, disable_weekends, min_date){
         this.control = element == undefined? $('#' + localStorage.getItem('element')) : element;
         element = this.control;
         if (this.control.is("input[type='text']"))
         {
             var defaultDate = new Date();
+            
             element.off('click');
             element.datepicker({
                 format:  'yyyy/mm/dd',
+                minDate: min_date,
                 selectMonths: true,
-                disableWeekends: true,
+                disableWeekends: disable_weekends,
                 firstDay: 1,
                 dismissable: false,
                 autoClose: true,
@@ -58,7 +60,7 @@ var MaterialDateTimePickerLezioni = {
                         element.removeAttr("selectedDate");
                         element.removeAttr("selectedTime");
                         localStorage.setItem('element', element.attr('id'));
-                        MaterialDateTimePickerLezioni.create.call(element);
+                        MaterialDateTimePicker.create.call(element);
                         element.trigger('click');
                     });
                 }
