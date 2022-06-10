@@ -110,6 +110,11 @@ select:focus+label {
 }
 
 
+.input-field .prefix.active{
+    color:#9c2400;
+}
+
+/*selettore del range della durata, lo slider*/
 
 input[type=range]+.thumb {
     background-color:#d84315;
@@ -150,6 +155,8 @@ input[type=range]::-webkit-slider-thumb {
 
 .month-prev:active,
 .month-next:active{
-
     background:#d8421580;
 }
+
+
+

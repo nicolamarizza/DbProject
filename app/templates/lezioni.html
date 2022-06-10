@@ -39,17 +39,25 @@
                                         {%- for element in attrLezioni.values() -%}
                                         {%- if element.insertable -%}
                                         <div class="row">
-                                            <div class="col s0" style="padding-top: 25px;">
+                                            {%- if element.isMultiChoice -%}
+                                            <div class="col s0" style="padding-top: 25px; padding-right: 0px;">
+                                                 <!--icone-->
+                                                 <i class="small material-icons">arrow_drop_down</i>
+                                            </div>
+                                            <div class="input-field col s9">
+                                            {%- else -%}
+
+                                            <div class="input-field col s10">
+                                          
                                                 <!--icone-->
-                                               	<i class="small material-icons">
+                                               	<i class="small material-icons prefix">
                                                     {%- if element.isDatetime -%}      calendar_month
                                                     {%- elif element.isTimedelta -%}   access_time
                                                     {%- elif element.isMultiChoice -%} arrow_drop_down
                                                     {%- else -%}                       text-fields
 		                                            {%- endif %} 
                                                 </i>
-                                            </div>
-                                            <div class="input-field col s8">
+                                                {%- endif -%}
                                                 {%- include "form_element.html" -%}
                                             </div>
                                         </div>
@@ -130,7 +138,7 @@
 <script src="{{ url_for('static',filename='javascript/corsi.js') }}"></script>
 <script src="{{ url_for('static',filename='javascript/lezioni.js') }}"></script>
 
-<script src="{{ url_for('static',filename='javascript/lezioni_materializedatetimepicker.js') }}"></script>
+<script src="{{ url_for('static',filename='javascript/materializedatetimepicker.js') }}"></script>
 
 
 {%- endblock -%}
