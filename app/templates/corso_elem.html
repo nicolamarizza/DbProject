@@ -31,6 +31,7 @@
                                 <input name='{{ class_name }}.pk' value='{{ corso.id }}'>
                             </div>
                         </div>
+                        {%- set old_obj_values = corso -%}
                         {%- for element in attrList.values() -%}
                         {%- if element.insertable -%}
                         <div class="row">

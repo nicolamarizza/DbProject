@@ -28,12 +28,12 @@
 				{%- for lez_corsi in i_tuoi_corsi_lez -%}
 					{%- if lez_corsi.titolo == displayName -%}
 						<!--l'id assicura il controllo della coerenza dei dati tra modalità corso e lezioni-->
-						<option id="{{ lez_corsi.modalita }}" value="{{ pk }}" {% if corso and corso[element.name] == pk -%}selected="selected"{%- endif -%}>{{ displayName }}</option>
+						<option id="{{ lez_corsi.modalita }}" value="{{ pk }}" {% if old_obj_values and old_obj_values[element.name] == pk -%}selected="selected"{%- endif -%}>{{ displayName }}</option>
 					{%- endif -%}
 
 				{%- endfor -%}
 			{%- else -%}
-				<option value="{{ pk }}" {% if corso and corso[element.name] == pk -%}selected="selected"{%- endif -%}>{{ displayName }}</option>
+				<option value="{{ pk }}" {% if old_obj_values and old_obj_values[element.name] == pk -%}selected="selected"{%- endif -%}>{{ displayName }}</option>
 			{%- endif -%}
 
 		{%- endfor -%}
@@ -56,9 +56,9 @@
 				onchange="$('~ output', this).val(value)" 
 				oninput="$('~ output', this).val(value)"
 
-				{% if not element.optional and not corso %} required=True {% endif %}
-					{% if corso -%}
-						value="{{ corso[element.name] }}"
+				{% if not element.optional and not old_obj_values %} required=True {% endif %}
+					{% if old_obj_values -%}
+						value="{{ old_obj_values[element.name] }}"
 					{%- else -%}
 						value = "0"
 					{%- endif -%}
@@ -66,7 +66,7 @@
 			/>
 						
 			durate selezionata: 
-			<output>{% if corso -%}{{ corso[element.name] }}
+			<output>{% if old_obj_values -%}{{ old_obj_values[element.name] }}
 					{%- else -%} 0  
 					{%- endif -%}
 			</output> ore
@@ -87,9 +87,9 @@
 
 			class = 
 			{%- if element.isDatetime and class_name == "Lezioni"  -%} 	"datetimecool validate" 
-			{%- elif corso and element.isDatetime and
+			{%- elif old_obj_values and element.isDatetime and
 				(element.name == 'inizioiscrizioni' or 
-				element.name == 'scadenzaiscrizioni') -%} "{{ element.name }}{{ corso.id }} validate"
+				element.name == 'scadenzaiscrizioni') -%} "{{ element.name }}{{ old_obj_values.id }} validate"
 
 			{%- elif element.isTimedelta -%} 	"timepicker validate"
 			{%- elif element.isDate -%}			"datepicker validate"
@@ -97,16 +97,19 @@
 			{%- endif %}
 			
 			
-			{% if not element.optional and not corso %} required=True {% endif %}
-			{% if corso -%}
+			{% if not element.optional and not old_obj_values %} required=True {% endif %}
+			{% if old_obj_values -%}
 				{%- if element.isDatetime -%}
-					{%- set date = corso[element.name] -%}
+					{%- set date = old_obj_values[element.name] -%}
 					value="{{ date.strftime('%Y/%m/%d %H:%M') }}"
 				{%- elif element.isTimedelta -%}
-					{%- set date = corso[element.name] -%}
+					{%- set date = old_obj_values[element.name] -%}
 					value="{{ (date|string())[0:5] }}"
+				{%- elif element.secret -%}
+					
+					value="{{ old_obj_values[element.name] }}"
 				{%- else -%}
-					value="{{ corso[element.name] }}"
+					value="{{ old_obj_values[element.name] }}"
 				{%- endif -%}
 			{%- endif -%}
 

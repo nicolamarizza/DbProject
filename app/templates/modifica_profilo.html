@@ -1,0 +1,74 @@
+
+{%- extends 'base.html' -%}
+
+{%- block head_base -%}
+{%- endblock -%}
+
+
+{%- block body_base -%}
+
+<div class="row">
+    <div class="col s8 offset-s2">
+
+        <h2>Modifica profilo</h2>
+
+        {%- set class_name = 'User' -%}
+        <form id="form_edit_profile" class="col s12" action="/update" method="POST">
+            <div class="row", style="display: none;">
+                <div class="input-field col s8">
+                    <input name='{{ class_name }}.pk' value='{{ old_obj_values.email }}'>
+                </div>
+            </div>
+            {%- for element in attrUtente.values() -%}
+            {%- if element.insertable -%}
+            <div class="row">
+                {%- if element.isMultiChoice or element.isTimedelta -%}
+                <div class="col s0" style="padding-top: 25px; padding-right: 0px;">
+                     <!--icone-->
+                     <i class="small material-icons">
+                        {%- if element.isTimedelta -%}   access_time
+                        {%- elif element.isMultiChoice -%} arrow_drop_down
+                        {%- endif %} 
+
+                     </i>
+                </div>
+                <div class="input-field col s9">
+                {%- else -%}
+
+                <div class="input-field col s10">
+                
+
+                <!--icone-->
+                   <i class="small material-icons prefix">
+                    {%- if element.isDatetime -%}      calendar_month
+                    {%- elif element.isTimedelta -%}   access_time
+                    {%- elif element.isMultiChoice -%} arrow_drop_down
+                    {%- else -%}                       text_fields
+                    {%- endif %} 
+                </i>
+                {%- endif -%}
+                    {%- include "form_element.html" -%}
+                    
+                </div>
+            </div>
+            {%- endif -%}
+            {%- endfor -%}
+            <div class="center" >
+                                     
+                <button type="submit" form="form_edit_profile" class="waves-effect waves-light btn deep-orange darken-3" >
+                    Salva modifiche <i class="material-icons right">create</i>
+                </button>
+            </div>
+        </form>
+       
+    </div>
+</div>
+
+
+
+{%- endblock -%}
+
+
+{%- block base_javascript -%}
+
+{%- endblock -%}

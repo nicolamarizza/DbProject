@@ -281,6 +281,20 @@ def cancella_lezione_post():
 
 	return redirect(url_for('lezioni_get'))
 
+@app.route('/modifica_profilo')
+@login_required
+def modifica_profilo():
+	user = current_user
+
+
+	return render_template(
+		'modifica_profilo.html', 
+		authenticated = True, 
+		name=user.nome,
+		old_obj_values = user,
+		attrUtente = views.User.attributes
+	)
+
 @app.route('/test', methods=['GET'])
 def shit_get():
 	return render_template("test.html", attrList=views.Corsi.attributes)
@@ -419,5 +433,10 @@ def is_date_ok(data):
 @app.template_filter("is_datetime_ok")
 def is_datetime_ok(data):
 	return data >= datetime.now()
+
+
+
+
+
 
 
