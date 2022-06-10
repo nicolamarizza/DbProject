@@ -93,6 +93,7 @@
 
 			{%- elif element.isTimedelta -%} 	"timepicker validate"
 			{%- elif element.isDate -%}			"datepicker validate"
+			{%- elif element.secret and old_obj_values -%} "validate tooltipped"
 			{%- else -%} 						"validate"
 			{%- endif %}
 			
@@ -109,8 +110,9 @@
 					{%- set date = old_obj_values[element.name] -%}
 					value="{{ (date|string())[0:5] }}"
 				{%- elif element.secret -%}
-					
-					value="{{ old_obj_values[element.name] }}"
+					value=""
+					data-position="left" data-tooltip="inserisci password vecchia o nuova!"
+
 				{%- else -%}
 					value="{{ old_obj_values[element.name] }}"
 				{%- endif -%}

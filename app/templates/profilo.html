@@ -1,4 +1,7 @@
 
+
+<!--TODO: sistemare il cambio password-->
+
 {%- extends 'base.html' -%}
 
 {%- block head_base -%}
@@ -43,7 +46,7 @@
                 <li class="collection-item" style="display: none;"></li>
                 
             </ul>
-            
+
         </div>
         </div>
   
@@ -64,5 +67,7 @@
 
 
 {%- block base_javascript -%}
+
+<script src="{{ url_for('static',filename='javascript/profilo.js') }}"></script>
 
 {%- endblock -%}
