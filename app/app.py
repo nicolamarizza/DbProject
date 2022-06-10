@@ -288,12 +288,29 @@ def modifica_profilo():
 
 
 	return render_template(
-		'modifica_profilo.html', 
+		'profilo.html', 
 		authenticated = True, 
 		name=user.nome,
+		edit = True,
 		old_obj_values = user,
 		attrUtente = views.User.attributes
 	)
+
+
+
+@app.route('/profilo')
+@login_required
+def profilo():
+	user = current_user
+
+
+	return render_template(
+		'profilo.html', 
+		authenticated = True, 
+		name=user.nome,
+		user = user
+	)
+
 
 @app.route('/test', methods=['GET'])
 def shit_get():

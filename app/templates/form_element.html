@@ -102,6 +102,9 @@
 				{%- if element.isDatetime -%}
 					{%- set date = old_obj_values[element.name] -%}
 					value="{{ date.strftime('%Y/%m/%d %H:%M') }}"
+				{%- elif element.isDate -%}
+					{%- set date = old_obj_values[element.name] -%}
+					value="{{ date.strftime('%Y/%m/%d') }}"
 				{%- elif element.isTimedelta -%}
 					{%- set date = old_obj_values[element.name] -%}
 					value="{{ (date|string())[0:5] }}"
