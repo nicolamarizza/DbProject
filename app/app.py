@@ -13,6 +13,10 @@ import hashlib
 import os
 import db
 
+import time
+from datetime import datetime, date
+from string import Template
+
 import warnings
 warnings.simplefilter("ignore")
 
@@ -209,14 +213,18 @@ def lezioni_get():
 			i_tuoi_corsi = list(filter(lambda c : user in c.responsabili, corsi_totali))
 		else:
 			i_tuoi_corsi = list(filter(lambda c : user in c.iscritti, corsi_totali))
-			lezioni_prenotate = list(filter(lambda l : user in l.prenotati, lezioni_totali))
+			#lezioni future prenotate
+			lezioni_prenotate = list(filter(lambda l : user in l.prenotati and l.inizio.date() >= date.today(), lezioni_totali))
+			#lezioni prenotate già svolte
+			lezioni_passate_stud = list(filter(lambda l : user in l.prenotati and l.inizio.date() < date.today(), lezioni_totali))
+		
+		
 
 		#lista degli id dei propri corsi
 		c = [x.id for x in i_tuoi_corsi]
 
 		#query per prendere corsi, lezioni e aula in cui si svolgono, compreso l'edificiio
 		#left join perché ci sono le lezioni online che non hanno un'aula
-	
 		lezioni = session.query(views.Corsi.dbClass, views.Lezioni.dbClass, views.Aule.dbClass, views.Edifici.dbClass).\
 				  join(views.Aule.dbClass, views.Aule.dbClass.id == views.Lezioni.dbClass.idaula, isouter=True).\
 				  join(views.Corsi.dbClass, views.Corsi.dbClass.id == views.Lezioni.dbClass.idcorso, isouter=False).\
@@ -224,8 +232,13 @@ def lezioni_get():
 				  or_(views.Aule.dbClass.idedificio == views.Edifici.dbClass.id, views.Lezioni.dbClass.idaula == null()),\
 				  ).order_by(views.Lezioni.dbClass.inizio).all() 
 	
-		print(lezioni)
 
+
+		#lezioni passate dei docenti
+		if user.isdocente:
+			lezioni_passate_prof = list(filter(lambda lez : lez.Lezioni.inizio.date() < date.today(), lezioni))
+			
+	
 		return render_template(
 			'lezioni.html', 
 			authenticated = True, 
@@ -233,6 +246,7 @@ def lezioni_get():
 			is_docente = user.isdocente,
 			lezioni = lezioni, 
 			lezioni_prenotate = lezioni_prenotate if not user.isdocente else None,
+			lezioni_passate = lezioni_passate_stud if not user.isdocente else lezioni_passate_prof,
 			attrLezioni = views.Lezioni.attributes,
 			i_tuoi_corsi_lez = i_tuoi_corsi
 		)
@@ -341,10 +355,38 @@ def is_any(lezione="", lezioni_prenotate=None):
         return True
     return False
 
+#filtro per formattare la visualizzazione dei timedelta
+@app.template_filter("timedelta_format")
+def timedelta_format(time):
+	return strfdelta(time, "%H:%M")
+
+class DeltaTemplate(Template):
+    delimiter = "%"
+
+#converte la stringa del tempo in un formato specificato da fmt
+def strfdelta(tdelta, fmt):
+    d = {"D": tdelta.days}
+    hours, rem = divmod(tdelta.seconds, 3600)
+    minutes, seconds = divmod(rem, 60)
+    d["H"] = '{:02d}'.format(hours)
+    d["M"] = '{:02d}'.format(minutes)
+    d["S"] = '{:02d}'.format(seconds)
+    t = DeltaTemplate(fmt)
+    return t.substitute(**d)
 
 #filtri per formattare la visualizzazione delle date
 @app.template_filter("datetime_format")
 def datetime_format(value, format="%d %b %y ; %H:%M"):
+    return value.strftime(format)
+
+#estrae la data da un datetime
+@app.template_filter("extract_date")
+def extract_date(value, format="%d %b %y"):
+    return value.strftime(format)
+
+#estre l'ora da un datetime
+@app.template_filter("extract_time")
+def extract_time(value, format="%H:%M"):
     return value.strftime(format)
 
 @app.template_filter("datetime_format_openIscrizioni")
@@ -366,3 +408,16 @@ def prova(value):
 	
 	if value == 'P':
 		return "presenza"
+
+
+#filtro per controllare che la data sia maggiore della data corrente
+@app.template_filter("is_date_ok")
+def is_date_ok(data):
+	return data.date() >= date.today()
+
+
+@app.template_filter("is_datetime_ok")
+def is_datetime_ok(data):
+	return data >= datetime.now()
+
+

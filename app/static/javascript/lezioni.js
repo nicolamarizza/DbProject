@@ -24,13 +24,14 @@
 
     //elemento datetime material design
     $(document).ready(function(){
-        MaterialDateTimePicker.create($('.datetimecool'), true, new Date())
+        MaterialDateTimePicker.create($('.datetimecool'), true, new Date(), false)
     });    
 
     //elementi timedelta material design
     $(document).ready(function(){
         $('.timepicker').timepicker({
-            twelveHour: false
+            twelveHour: false,
+            defaultTime: "01:30"
         });
       });    
 

@@ -7,7 +7,7 @@ var MaterialDateTimePicker = {
     control: null,
     dateRange: null,
     pickerOptions: null,
-    create: function(element, disable_weekends, min_date){
+    create: function(element, disable_weekends, min_date, twelve_hour){
         this.control = element == undefined? $('#' + localStorage.getItem('element')) : element;
         element = this.control;
         if (this.control.is("input[type='text']"))
@@ -26,7 +26,7 @@ var MaterialDateTimePicker = {
                 onClose: function(){
                     element.datepicker('destroy');
                     element.timepicker({
-                        twelveHour: false,
+                        twelveHour: twelve_hour,
                         dismissable: false,
                         onSelect: function(hr, min){
                             element.attr('selectedTime', (hr + ":" + min).toString());

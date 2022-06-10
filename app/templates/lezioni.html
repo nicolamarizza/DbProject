@@ -85,36 +85,71 @@
 
      
             {%- if lezioni -%}
-        
-            <div class="form-group col-xs-12 form-group-border">
+            <!--visualizza solo le lezioni future-->
             
-                <table class="tabel table-custom">
-                    <tbody style="  font-size: 14px;
-                    line-height: 1.428571429;
-                    color: #4b5159;">
-                        <tr class="table-header">
-                            
-                            <th> Corso</th>
-                            <th>Sede</th>
-                            <th>Data e ora</th>
-                            <th>Durata</th>
-                            <th>Modalita</th>
-                            <th></th>
+                <h4>Le tue lezioni</h4>
+                <div class="form-group col-xs-12 form-group-border">
+                
+                    <table class="tabel table-custom">
+                        <tbody style="  font-size: 14px;
+                        line-height: 1.428571429;
+                        color: #4b5159;">
+                            <tr class="table-header">
+                                
+                                <th> CORSO</th>
+                                <th>SEDE</th>
+                                <th>DATA</th>
+                                <th>ORA</th>
+                                <th>DURATA</th>
+                                <th>MODALITÀ</th>
+                                <th></th>
+                            </tr>
 
+                            {% for lezione in lezioni %}
+                            {%- if lezione[1].inizio|is_datetime_ok -%}
+                                {% include 'lezione_elem.html' %}
+                            {%- endif -%}
 
-                        </tr>
-                        {% for lezione in lezioni %}
+                            {% endfor %}
                             
+                        </tbody>
+
+                    </table>
+                </div>
+                {%- if lezioni_passate -%}
+            
+                <div style="padding-top: 30px;"></div>
+                <h4>Lezioni passate</h4>
+                <div class="form-group col-xs-12 form-group-border">
+                
+                    <table class="tabel table-custom">
+                        <tbody style="  font-size: 14px;
+                        line-height: 1.428571429;
+                        color: #4b5159;">
+                            <tr class="table-header">
+                                <th> CORSO</th>
+                                <th>SEDE</th>
+                                <th>DATA</th>
+                                <th>ORA</th>
+                                <th>DURATA</th>
+                                <th>MODALITÀ</th>
+                                <th></th>
+                            </tr>
+
+                        {% for lezione in lezioni_passate %}
+                            <!--visualizza solo le lezioni passate-->
                             {% include 'lezione_elem.html' %}
-                            
+            
                         {% endfor %}
-
-
+                            
                     </tbody>
 
                 </table>
-            </div>
-              
+                </div>
+
+                {%- endif -%}
+           
+            
             {%- else -%}       
                     
             <div class="col s11 offset-s1" >
