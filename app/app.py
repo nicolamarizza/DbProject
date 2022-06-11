@@ -14,7 +14,7 @@ import os
 import db
 
 import time
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from string import Template
 
 import warnings
@@ -169,20 +169,6 @@ def disiscrizione_corso_post():
 
 	return redirect(url_for('corsi_get'))
 
-@app.route('/elimina_lezione', methods=["POST"])
-@login_required 
-def elimina_lezione_post():
-	id_lezione = request.form['idlezione']
-	user = current_user
-
-	with user.getSession() as session:
-		lezione = session.query(views.Lezioni.dbClass).get(id_lezione)
-		session.delete(lezione)
-		session.commit()
-
-	return redirect(url_for('lezioni_get'))
-
-
 
 @app.route('/elimina_corso', methods=["POST"])
 @login_required 
@@ -250,6 +236,22 @@ def lezioni_get():
 			attrLezioni = views.Lezioni.attributes,
 			i_tuoi_corsi_lez = i_tuoi_corsi
 		)
+
+
+
+
+@app.route('/elimina_lezione', methods=["POST"])
+@login_required 
+def elimina_lezione_post():
+	id_lezione = request.form['idlezione']
+	user = current_user
+
+	with user.getSession() as session:
+		lezione = session.query(views.Lezioni.dbClass).get(id_lezione)
+		session.delete(lezione)
+		session.commit()
+
+	return redirect(url_for('lezioni_get'))
 
 
 
@@ -376,6 +378,59 @@ def delete_post():
 		session.commit()
 		return {}
 
+
+
+
+#controllo dati form lezioni, tramite ajax
+@app.route('/check_lesson', methods=["POST"])
+def check_lesson():
+	id_corso = request.form['idcorso']
+	inizio = request.form['inizio']
+	durata = request.form['durata']
+
+	#conversione da stringa in datetime
+	inizioDatetimeobj = datetime.strptime(inizio, "%Y/%m/%d %H:%M")
+	#estrae il time
+	inizioTime = inizioDatetimeobj.time()
+	#conversione da time a time delta
+	inizioLezione = timedelta(hours= int(inizioTime.hour), minutes=int(inizioTime.minute))
+
+	#conversione da stringa a time
+	durataTimeobj = time.strptime(durata, '%H:%M')
+	#conversione da time a timedelta
+	durataLezione = timedelta(hours = int(durataTimeobj.tm_hour), minutes = int(durataTimeobj.tm_min))
+
+	#calcola l'orario di fine lezione
+	fineLezione = inizioLezione + durataLezione
+	
+	user = current_user
+
+	#seleziono le lezioni di quel corso
+	with user.getSession() as session:
+		lezioni = session.query(views.Corsi.dbClass, views.Lezioni.dbClass).\
+			join(views.Corsi.dbClass, views.Corsi.dbClass.id == views.Lezioni.dbClass.idcorso, isouter=False).\
+			filter(views.Lezioni.dbClass.idcorso == id_corso).all()
+
+	for l in lezioni:
+		#se le lezioni di quel corso sono lo stesso giorno
+		if l[1].inizio.date() == inizioDatetimeobj.date():
+			
+			#controlla se sono esattamente alla stessa ora, impedendone l'inserimento con avviso all'utente
+			if l[1].inizio.time() == inizioDatetimeobj.time():
+				return "esiste già una lezione di "+l[0].titolo+"\nnon possono esserci due lezioni dello stesso corso contemporaneamente"
+			
+			#estrae il time dal time datetime e ne crea un timedelta
+			inizio_l =timedelta(hours= int(l[1].inizio.time().hour), minutes=int(l[1].inizio.time().minute))\
+			#calcolo orario fine lezione
+			fine_l = inizio_l + l[1].durata
+			
+			#se le lezioni si sovrappongono, impedisce l'inserimento e avvisa l'utente
+			if (inizio_l > inizioLezione and inizio_l < fineLezione) or\
+				(fine_l > inizioLezione and fine_l < fineLezione):
+				return "ATTENZIONE\nesiste già una lezione di "+l[0].titolo+"\n si prega di selezionare un orario differente"
+			
+	#se è andato tutto bene permette l'inserimento
+	return "ok"
 
 
 
