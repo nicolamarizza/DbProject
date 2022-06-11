@@ -102,6 +102,12 @@ class Lezioni(Base):
 		backref='prenotatoPer'
 	)
 
+	corso = relationship (
+		'Corsi',
+		backref='lezioni',
+		uselist=False
+	)
+
 class Dipartimenti(Base):
 	__tablename__='dipartimenti'
 	sigla = Column(String, primary_key=True)
