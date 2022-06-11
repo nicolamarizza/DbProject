@@ -1,6 +1,6 @@
 
 {%- set class_name = 'User' -%}
-<form id="form_edit_profile" class="col s12" action="/update" method="POST">
+<form id="form_edit_profile" onsubmit="return validateForm('{{ current_user.password }}')" class="col s12" action="/update" method="POST">
     <div class="row", style="display: none;">
         <div class="input-field col s8">
         <input name='{{ class_name }}.pk' value='{{ old_obj_values.email }}'>
@@ -10,17 +10,41 @@
         {%- if element.insertable -%}
         <div class="row">
             
-            <div class="input-field col s12">
+                <!--se si tratta della password allora ci dovranno essere 
+                due caselle di testo, una per la vecchia password e una 
+                per la nuova
+                check password vecchia all'invio dei dati-->
+                {%- if element.secret -%}
+                    <div class="input-field col s6">
                
+                    <i class="small material-icons prefix">
+                        password
+                    </i>
+                    <input type = "password"
+                        id = "old" class = "validate tooltipped"
+                        name = "old"
+                        data-position="top" data-tooltip="inserisci vecchia password"
+                        required="True"
+                        autocomplete="off"/>
+                        <label for="old">vecchia {{ element.displayName }}</label>
+
+                    </div>
+        
+                    <div class="input-field col s6">
+                {%- else -%}
+                <div class="input-field col s12">
+
+                {%- endif -%}
+
                 <!--icone-->
                 <i class="small material-icons prefix">
                 {%- if element.isDatetime or element.isDate -%}  calendar_month
                 {%- elif element.isTimedelta -%}   access_time
                 {%- elif element.isMultiChoice -%} arrow_drop_down
+                {%- elif element.secret -%}        password
                 {%- else -%}                       text_fields
                 {%- endif %} 
                 </i>
-            
             
                 {%- include "form_element.html" -%}
                
@@ -33,9 +57,8 @@
 
     <div class="left" >                        
      
-       
         <a class="waves-effect waves-light btn deep-orange darken-3" onclick="location.href='/profilo'">ANNULLA</a>
-        <button type="submit" form="form_edit_profile" class="waves-effect waves-light btn deep-orange darken-3" >
+        <button type="submit"  class="waves-effect waves-light btn deep-orange darken-3" >
             Salva modifiche <i class="material-icons right">create</i>
         </button>
     

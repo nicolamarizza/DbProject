@@ -57,11 +57,12 @@
 				oninput="$('~ output', this).val(value)"
 
 				{% if not element.optional and not old_obj_values %} required=True {% endif %}
-					{% if old_obj_values -%}
-						value="{{ old_obj_values[element.name] }}"
-					{%- else -%}
-						value = "0"
-					{%- endif -%}
+
+				{% if old_obj_values -%}
+					value="{{ old_obj_values[element.name] }}"
+				{%- else -%}
+					value = "0"
+				{%- endif -%}
 				autocomplete="off"
 			/>
 						
@@ -98,7 +99,7 @@
 			{%- endif %}
 			
 			
-			{% if not element.optional and not old_obj_values %} required=True {% endif %}
+			{% if not element.optional %} required=True {% endif %}
 			{% if old_obj_values -%}
 				{%- if element.isDatetime -%}
 					{%- set date = old_obj_values[element.name] -%}
@@ -111,7 +112,7 @@
 					value="{{ (date|string())[0:5] }}"
 				{%- elif element.secret -%}
 					value=""
-					data-position="left" data-tooltip="inserisci password vecchia o nuova!"
+					data-position="top" data-tooltip="inserisci nuova password"
 
 				{%- else -%}
 					value="{{ old_obj_values[element.name] }}"
@@ -124,10 +125,13 @@
 
 	{%- endif -%}
 	
-    
 
  
-	<label {%- if element.isDatetime %} class="active" {%- endif %} for={{ element.name }}>{{ element.displayName }}</label>
+	<label {%- if element.isDatetime %} class="active" {%- endif %} for={{ element.name }}>
+		{%- if element.secret and old_obj_values -%}nuova {{ element.displayName }}
+		{%- else -%} {{ element.displayName }}
+		{%- endif -%}
+	</label>
 	{%- if input_error -%}
 		{%- if element.name == input_error.elementName -%}
 		<span class="helper-text" data-error="wrong" data-success="right">{{ input_error.message }}</span>

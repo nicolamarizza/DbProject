@@ -1,7 +1,4 @@
 
-
-<!--TODO: sistemare il cambio password-->
-
 {%- extends 'base.html' -%}
 
 {%- block head_base -%}
@@ -16,9 +13,9 @@
 <div class="row">
     <div class="col s8 offset-s2">
 
-            {%- if edit -%}
+        {%- if edit -%}
             <h2>Modifica profilo</h2>
-
+            <!--include la pagina dove verrà generato il form -->
             {%- include "modifica_profilo.html" -%}
         {%- else -%}
         <h2>I tuoi dati</h2>
@@ -35,8 +32,6 @@
             </ul>
         </div>
       
-
-
         <div class="col s8">
             <ul class="collection">
                 <li class="collection-item">{{ current_user.email }}</li>
