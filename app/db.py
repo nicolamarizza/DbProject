@@ -123,6 +123,24 @@ class Dipartimenti(Base):
 class Categorie(Base):
 	__tablename__='categorie'
 
+class ZoomTokens(Base):
+	__tablename__='zoomtokens'
+
+	holder = relationship(
+		'User',
+		backref='tokens',
+		uselist=False
+	)
+
+class LezioniZoom(Base):
+	__tablename__='lezionizoom'
+
+	lezione = relationship(
+		'Lezioni',
+		backref='zoom',
+		uselist=False
+	)
+
 def generate_relationships(base, direction, return_fn, attrname, local_cls, referred_cls, **kw):
     return None
 Base.prepare(engine=engine, reflect=True, generate_relationship=generate_relationships)
