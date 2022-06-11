@@ -18,6 +18,24 @@
             <!--include la pagina dove verrà generato il form -->
             {%- include "modifica_profilo.html" -%}
         {%- else -%}
+
+        {%- if updated -%}
+
+        <!-- Modal Structure -->
+
+        <input type="text" id = "updated" value = "updated" style="display: none;"></a>
+        <div id="modal_update_profile" class="modal">
+            <div class="modal-content">
+            <h4>Profilo aggiornato</h4>
+            <p style="font-size: 20px;">Il tuo profilo è stato modificato correttamente, ora sei una nuova persona.</p>
+            </div>
+            <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-orange btn-flat">OK</a>
+            </div>
+        </div>
+
+        {%- endif -%}
+
         <h2>I tuoi dati</h2>
         
         <div class="row">

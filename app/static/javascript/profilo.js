@@ -3,6 +3,17 @@ $(document).ready(function(){
   });
 
 
+
+$(document).ready(function(){
+  if($('#updated').val() == "updated"){
+    $('#modal_update_profile').modal();
+    $('#modal_update_profile').modal('open'); 
+  }
+});
+
+
+
+
 //check password
 function validateForm(real_psw) {
   let old_psw = document.forms["form_edit_profile"]["old"].value;

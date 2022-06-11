@@ -306,7 +306,7 @@ def modifica_profilo():
 
 @app.route('/profilo')
 @login_required
-def profilo():
+def profilo(updated = False):
 	user = current_user
 
 
@@ -314,7 +314,8 @@ def profilo():
 		'profilo.html', 
 		authenticated = True, 
 		name=user.nome,
-		user = user
+		user = user,
+		updated = updated
 	)
 
 
@@ -350,6 +351,17 @@ def update_post():
 			results[tableName] = dbObj
 
 		session.commit()
+
+		if type(dbObj) == db.Corsi:
+			return redirect(url_for('corsi_get'))
+
+		if type(dbObj) == db.Lezioni:
+			return redirect(url_for('lezioni_get'))
+			
+		if type(dbObj) == db.User:
+			return profilo(True)
+			
+		
 		return test_response(results)
 
 @app.route('/insert', methods=['POST'])
@@ -368,6 +380,13 @@ def insert_post():
 			dbObj.responsabili.append(current_user)
 
 		session.commit()
+
+		if type(dbObj) == db.Corsi:
+			return redirect(url_for('corsi_get'))
+
+		if type(dbObj) == db.Lezioni:
+			return redirect(url_for('lezioni_get'))
+		
 		return test_response(results)
 
 @app.route('/delete', methods=['POST'])
@@ -462,7 +481,7 @@ def is_datetime_ok(data):
 
 
 
-#controllo dati form lezioni, tramite ajax
+#controllo dati form lezioni
 @app.route('/check_lesson', methods=["POST"])
 def check_lesson():
 	idcorso = request.form['Lezioni.idcorso']
@@ -519,8 +538,7 @@ def check_lesson():
 				return lezioni_get(True, False, msg_error)
 
 				
-
-
+	#inserisce la lezione
 	with user.getSession() as session:
 		if idaula != "virtual":
 			new_lez = views.Lezioni.dbClass(idaula = idaula, idcorso = idcorso, inizio = inizio, durata = durata, modalita = modalita)
