@@ -57,7 +57,7 @@
 				onchange="$('~ output', this).val(value)" 
 				oninput="$('~ output', this).val(value)"
 
-				{% if not element.optional and not old_obj_values %} required=True {% endif %}
+				{% if not element.optional or not old_obj_values %} required=True {% endif %}
 
 				{% if old_obj_values -%}
 					value="{{ old_obj_values[element.name] }}"

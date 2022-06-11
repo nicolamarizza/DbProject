@@ -76,3 +76,10 @@ table.table-custom tr.table-row:hover {
     background-color: #eee;
 }
 
+
+.waves-effect.waves-orange .waves-ripple {
+    /* The alpha value allows the text and background color
+    of the button to still show through. */
+     background-color: rgba(216, 67, 21, 0.65);
+   }
+

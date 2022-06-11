@@ -45,7 +45,7 @@ $(function () {
   $("#nuova_lezione_insert").submit(function () {
     //trova l'input con id aulavirtuale nel contesto del form
     //e lo disabilita, così non vengono inviati i dati
-    $("#aulavirtuale", this).prop("disabled", true);
+    //$("#aulavirtuale", this).prop("disabled", true);
 
     //rende true per inviare gli altri dati del form
     return true;
@@ -198,25 +198,15 @@ $(document).ready(function () {
   }
 });
 
-//controlla i dati prima di inviarli
-function validateForm() {
-  $.ajax({
-    type: "POST",
-    url: "/check_lesson",
-    data: {
-      inizio: $("#inizio").val(),
-      idcorso: $("#idcorso option:selected").val(),
-      durata: $("#durata").val(),
-    },
-  }).done(function (response) {
-    if (response == "ok") 
-        return true;
 
-    alert(response);
-  });
+$(document).ready(function(){
+  if($('#error').val() == "error"){
+    $('#modal_err').modal();
+    $('#modal_err').modal('open'); 
+  }else if($('#success').val() == "success"){
+    $('#modal_suc').modal();
+    $('#modal_suc').modal('open');
 
-  return false;
-}
-
-
+  }
+});
 

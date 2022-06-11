@@ -18,6 +18,36 @@
         <h4>Le tue lezioni</h4>
         {%- if is_docente -%}
         
+        {%- if error -%}
+
+        <!-- Modal Structure -->
+
+        <input type="text" id = "error" value = "error" style="display: none;"></a>
+        <div id="modal_err" class="modal">
+            <div class="modal-content">
+            <h4>Errore inserimento lezione</h4>
+            <p style="font-size: 20px;">{{ msg_error }}</p>
+            </div>
+            <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-orange btn-flat">OK</a>
+            </div>
+        </div>
+
+        {%- endif -%}
+
+        {%- if success -%}
+        <input type="text" id = "success" value = "success" style="display: none;"></a>
+        <div id="modal_suc" class="modal">
+            <div class="modal-content">
+            <h4>Successo inserimento lezione</h4>
+            <p style="font-size: 20px;">{{ msg_error }}</p>
+            </div>
+            <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-orange btn-flat">OK</a>
+            </div>
+        </div>
+
+        {%- endif -%}
         
         <div>
 
@@ -35,7 +65,7 @@
                             <div class="col s11 offset-s1">                
                                 <div class="row">
                                     {%- set class_name = 'Lezioni' -%}
-                                    <form id="nuova_lezione_insert" name="nuova_lezione_insert" onsubmit="return validateForm()"  class="col s12" action="/insert" method="POST">
+                                    <form id="nuova_lezione_insert"  class="col s12" action="/check_lesson" method="POST">
                                         
                                         {%- for element in attrLezioni.values() -%}
                                         {%- if element.insertable -%}
@@ -66,7 +96,7 @@
                                         {%- endfor -%}
 
 
-                                        <button type="submit" class="waves-effect waves-light btn deep-orange darken-3" onclick="">
+                                        <button type="submit" fomr="nuova_lezione_insert" class="waves-effect waves-light btn deep-orange darken-3" onclick="">
                                             Conferma<i class="material-icons right">check</i>
                                         </button>
 
