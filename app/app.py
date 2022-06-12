@@ -510,9 +510,15 @@ def check_lesson():
 
 	#seleziono le lezioni di quel corso
 	with user.getSession() as session:
+		
+		corsi_totali = session.query(views.Corsi.dbClass).all()
+		i_tuoi_corsi = list(filter(lambda c : user in c.responsabili, corsi_totali))
+		#lista degli id dei propri corsi
+		c = [x.id for x in i_tuoi_corsi]
+
 		lezioni = session.query(views.Corsi.dbClass, views.Lezioni.dbClass).\
 			join(views.Corsi.dbClass, views.Corsi.dbClass.id == views.Lezioni.dbClass.idcorso, isouter=False).\
-			filter(views.Lezioni.dbClass.idcorso == idcorso).all()
+			filter(views.Lezioni.dbClass.idcorso.in_(c)).all()
 
 	for l in lezioni:
 		#se le lezioni di quel corso sono lo stesso giorno
