@@ -510,16 +510,40 @@ def check_lesson():
 
 	#seleziono le lezioni di quel corso
 	with user.getSession() as session:
-		
+
 		corsi_totali = session.query(views.Corsi.dbClass).all()
+
 		i_tuoi_corsi = list(filter(lambda c : user in c.responsabili, corsi_totali))
 		#lista degli id dei propri corsi
 		c = [x.id for x in i_tuoi_corsi]
 
+		#lezioni dei suoi corsi
 		lezioni = session.query(views.Corsi.dbClass, views.Lezioni.dbClass).\
 			join(views.Corsi.dbClass, views.Corsi.dbClass.id == views.Lezioni.dbClass.idcorso, isouter=False).\
 			filter(views.Lezioni.dbClass.idcorso.in_(c)).all()
 
+
+	#controllare che l'aula sia libera, se la lezione non è virtuale
+	if idaula != "virtual":
+
+		with user.getSession() as session:
+
+			#prende le lezioni di altri, escludendo quelle online
+			lezioni_altri = session.query(views.Corsi.dbClass, views.Lezioni.dbClass, views.Aule.dbClass, views.Edifici.dbClass).\
+				join(views.Aule.dbClass, views.Aule.dbClass.id == views.Lezioni.dbClass.idaula, isouter=False).\
+				join(views.Corsi.dbClass, views.Corsi.dbClass.id == views.Lezioni.dbClass.idcorso, isouter=False).\
+				filter(views.Lezioni.dbClass.idcorso.not_in(c), 
+					   views.Aule.dbClass.idedificio == views.Edifici.dbClass.id).all()
+
+		for l in lezioni_altri:
+			if l[1].idaula == int(idaula):
+				msg_error = "Aula occupata: esiste già una lezione di "+l[0].titolo+\
+							" in "+l[2].nome+" (edificio "+l[3].nome+"). Selezionare un posto differente."
+				
+				return lezioni_get(True, False, msg_error)
+		
+
+	#controllo sulle lezioni dei suoi corsi, evitare la sovrapposizione
 	for l in lezioni:
 		#se le lezioni di quel corso sono lo stesso giorno
 		if l[1].inizio.date() == inizioDatetimeobj.date():
@@ -543,12 +567,13 @@ def check_lesson():
 				
 				return lezioni_get(True, False, msg_error)
 
-				
+
 	#inserisce la lezione
 	with user.getSession() as session:
 		if idaula != "virtual":
 			new_lez = views.Lezioni.dbClass(idaula = idaula, idcorso = idcorso, inizio = inizio, durata = durata, modalita = modalita)
 		else:
+			#aula virtuale, lascio che di default venga messo a null l'attributo idaula
 			new_lez = views.Lezioni.dbClass(idcorso = idcorso, inizio = inizio, durata = durata, modalita = modalita)
 
 		session.add(new_lez)
