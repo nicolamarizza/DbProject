@@ -113,7 +113,19 @@
         </div>
 
         {%- endif -%}
-
+            <!--studente-->
+            {%- if error_p -%}
+            <input type="text" id = "error_p" value = "error" style="display: none;"></a>
+            <div id="modal_err_p" class="modal">
+                <div class="modal-content">
+                <h4>Impossibile effettuare la prenotazione</h4>
+                <p style="font-size: 20px;">{{ msg_error }}</p>
+                </div>
+                <div class="modal-footer">
+                <a href="/lezioni" class="modal-close waves-effect waves-orange btn-flat">OK</a>
+                </div>
+            </div>
+            {%- endif -%}
      
             {%- if lezioni -%}
             <!--visualizza solo le lezioni future-->

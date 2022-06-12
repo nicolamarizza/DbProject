@@ -207,6 +207,12 @@ $(document).ready(function(){
     $('#modal_suc').modal();
     $('#modal_suc').modal('open');
 
+  }else if($('#error_p').val() == "error"){
+    $('#modal_err_p').modal();
+    $('#modal_err_p').modal('open');
   }
 });
+
+
+
 

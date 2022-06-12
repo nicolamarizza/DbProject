@@ -187,7 +187,7 @@ def elimina_corso_post():
 
 @app.route('/lezioni')
 @login_required #ti dice che non sei autorizzato se non hai effettuato il login
-def lezioni_get(error = False, success = False, msg_error = ""):		
+def lezioni_get(error = False, success = False, msg_error = "", error_p = False):		
 	user = current_user
 	authenticated = user.is_authenticated
 
@@ -238,7 +238,8 @@ def lezioni_get(error = False, success = False, msg_error = ""):
 
 			error = error,
 			msg_error = msg_error,
-			success = success
+			success = success,
+			error_p = error_p
 		)
 
 
@@ -265,12 +266,61 @@ def iscrizione_lezione_post():
 	id_lezione = request.form['idlezione']		
 	user = current_user
 	
+	if check_prenotazione_lezioni(id_lezione, user):
+		with user.getSession() as session:
+			lezione = session.query(views.Lezioni.dbClass).get(id_lezione)
+			lezione.prenotati.append(user)
+			
+			try:
+				session.commit()
+			except IntegrityError:
+				msg_error = "errore inserimento dati nel database"
+				return lezioni_get(False, False, msg_error, True)
+
+		return redirect(url_for('lezioni_get'))
+
+	msg_error = "Esiste già una prenotazione nella fascia oraria selezionata"
+	return lezioni_get(False, False, msg_error, True)
+
+
+#controllo che non ci sia un'altra prenotazione nella stessa fascia oraria
+def check_prenotazione_lezioni(id_lezione, user):
+
 	with user.getSession() as session:
 		lezione = session.query(views.Lezioni.dbClass).get(id_lezione)
-		lezione.prenotati.append(user)
-		session.commit()
 
-	return redirect(url_for('lezioni_get'))
+		#estrae il time dal time datetime e ne crea un timedelta
+		inizio_lez = timedelta(hours= int(lezione.inizio.time().hour), minutes=int(lezione.inizio.time().minute))\
+		#calcolo orario fine lezione
+		fine_lez = inizio_lez + lezione.durata
+			
+	
+		lezioni_totali = session.query(views.Lezioni.dbClass).all()
+		#lezioni future prenotate
+		lezioni_prenotate = list(filter(lambda l : user in l.prenotati and l.inizio.date() >= date.today(), lezioni_totali))
+		
+
+		for l in lezioni_prenotate:
+			#stesso giorno
+			if l.inizio.date() == lezione.inizio.date():
+				#stessa ora
+				if l.inizio.time() == lezione.inizio.time():
+					#errore
+					return False
+
+				#estrae il time dal time datetime e ne crea un timedelta
+				inizio_l = timedelta(hours= int(l.inizio.time().hour), minutes=int(l.inizio.time().minute))\
+				#calcolo orario fine lezione
+				fine_l = inizio_l + l.durata
+				
+				if (inizio_l > inizio_lez and inizio_l < fine_lez) or\
+				(fine_l > inizio_lez and fine_l < fine_lez):
+					return False
+
+	return True
+
+
+
 
 @app.route('/cancella_prenotazione', methods=["POST"])
 @login_required
@@ -527,7 +577,6 @@ def check_lesson():
 	if idaula != "virtual":
 
 		with user.getSession() as session:
-
 			#prende le lezioni di altri, escludendo quelle online
 			lezioni_altri = session.query(views.Corsi.dbClass, views.Lezioni.dbClass, views.Aule.dbClass, views.Edifici.dbClass).\
 				join(views.Aule.dbClass, views.Aule.dbClass.id == views.Lezioni.dbClass.idaula, isouter=False).\
@@ -536,14 +585,34 @@ def check_lesson():
 					   views.Aule.dbClass.idedificio == views.Edifici.dbClass.id).all()
 
 		for l in lezioni_altri:
-			if l[1].idaula == int(idaula):
+			#stesso giorno, stesso orario e stessa aula
+			if l[1].inizio.date() == inizioDatetimeobj.date() and\
+				l[1].inizio.time() == inizioDatetimeobj.time() and\
+			    l[1].idaula == int(idaula):	
+
+				print("a")
 				msg_error = "Aula occupata: esiste già una lezione di "+l[0].titolo+\
 							" in "+l[2].nome+" (edificio "+l[3].nome+"). Selezionare un posto differente."
+					
+				return lezioni_get(True, False, msg_error, False)
+					
+					
+				#estrae il time dal time datetime e ne crea un timedelta
+				inizio_l =timedelta(hours= int(l[1].inizio.time().hour), minutes=int(l[1].inizio.time().minute))\
+				#calcolo orario fine lezione
+				fine_l = inizio_l + l[1].durata
 				
-				return lezioni_get(True, False, msg_error)
-		
+				#se le lezioni si sovrappongono e sono nella stessa aula
+				if ((inizio_l > inizioLezione and inizio_l < fineLezione) or\
+					(fine_l > inizioLezione and fine_l < fineLezione)) and\
+					l[1].idaula == int(idaula):
+						msg_error = "Aula occupata: esiste già una lezione di "+l[0].titolo+\
+									" in "+l[2].nome+" (edificio "+l[3].nome+"). Selezionare un posto differente."
+					
+						return lezioni_get(True, False, msg_error, False)
+			
 
-	#controllo sulle lezioni dei suoi corsi, evitare la sovrapposizione
+	#controllo sulle lezioni dei SUOI corsi, evitare la sovrapposizione
 	for l in lezioni:
 		#se le lezioni di quel corso sono lo stesso giorno
 		if l[1].inizio.date() == inizioDatetimeobj.date():
@@ -552,7 +621,7 @@ def check_lesson():
 			if l[1].inizio.time() == inizioDatetimeobj.time():
 				msg_error = "Esiste già una lezione di "+l[0].titolo+". Non possono esserci due lezioni dello stesso corso contemporaneamente!"
 				
-				return lezioni_get(True, False, msg_error)
+				return lezioni_get(True, False, msg_error, False)
 
 
 			#estrae il time dal time datetime e ne crea un timedelta
@@ -565,7 +634,7 @@ def check_lesson():
 				(fine_l > inizioLezione and fine_l < fineLezione):
 				msg_error = "Esiste già una lezione di "+l[0].titolo+"\n si prega di selezionare un orario e/o giorno differente."
 				
-				return lezioni_get(True, False, msg_error)
+				return lezioni_get(True, False, msg_error, False)
 
 
 	#inserisce la lezione
@@ -581,12 +650,12 @@ def check_lesson():
 			session.commit()
 		except IntegrityError:
 			msg_error = "errore inserimento dati nel database"
-			return lezioni_get(True, msg_error)
+			return lezioni_get(True, False, msg_error, False)
 
 
 	#se è andato tutto bene permette l'inserimento
 	msg_error = "La lezione è stata inserita correttamente!"
-	return lezioni_get(False, True, msg_error)
+	return lezioni_get(False, True, msg_error, False)
 
 
 
