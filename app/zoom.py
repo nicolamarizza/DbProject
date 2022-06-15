@@ -181,7 +181,7 @@ class ZoomAccount():
 			return
 		
 		if(self.isTokenExpired(session=session)):
-			self.refreshTokens()
+			self.refreshTokens(session=session)
 
 		if(not sessionProvided):
 			session.commit()
@@ -205,7 +205,7 @@ class ZoomAccount():
 			session = current_user.getSession()
 		
 		auth = b64encode(f'{ZoomAccount.CLIENT_ID}:{ZoomAccount.CLIENT_SECRET}'.encode('ascii')).decode("ascii")
-		tokens = session.query(db.ZoomTokens).get(self.email)
+		tokens = session.query(db.ZoomTokens).get(current_user.email)
 		headers = {
 			'Authorization': f'Basic {auth}',
 			'Content-Type': 'application/x-www-form-urlencoded'
@@ -224,12 +224,12 @@ class ZoomAccount():
 		tokens.access_token = token_response['access_token']
 		tokens.refresh_token = token_response['refresh_token']
 
+		self.access_token = tokens.access_token
+		self.refresh_token = tokens.refresh_token
+
 		if(not sessionProvided):
 			session.commit()
 			session.close()
-		
-		self.access_token = tokens.access_token
-		self.refresh_token = tokens.refresh_token
 
 	def isTokenExpired(self, session=None):
 		sessionProvided = session is not None
@@ -240,7 +240,7 @@ class ZoomAccount():
 		
 		user_tokens = session.query(db.ZoomTokens).get(user.email)
 
-		expired = date_time.now() - user_tokens.creation_timestamp >= timedelta(minutes=3300)
+		expired = date_time.now() - user_tokens.creation_timestamp >= timedelta(minutes=55)
 
 		if(not sessionProvided):
 			session.commit()
@@ -285,12 +285,13 @@ class ZoomAccount():
 			session.commit()
 			session.close()
 
-	def resumeOperation(self, state):
+	def resumeOperation(self, state, session=None):
 		return self.execute(
 			ZoomOperation.deserialize(
 				state, 
 				self.access_token
-			)
+			),
+			session=session
 		)
 
 	def execute(self, operation, session=None):
