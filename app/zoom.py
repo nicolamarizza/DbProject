@@ -1,91 +1,194 @@
 from base64 import b64encode
-from datetime import timedelta
+from datetime import timedelta, datetime as date_time
 from os import environ
 from requests import request, Request, Session as HttpSession
 from urllib.parse import urlencode
 import db
 from sqlalchemy.sql.functions import now
+from flask_login import current_user
+import sys
+import json
 
+class TokenNotProvidedException(Exception):
+	pass
 
-class ZoomOperationFactory():
-	def get(operation):
-		optype = operation.pop('type')
-		if(optype == 'delete'):
-			return DeleteOperation(operation)
-		elif(optype == 'insert'):
-			return InsertOperation(operation)
-		#else:
-		#	return UpdateOperation(**operation)
+class ExpiredTokenException(Exception):
+	pass
+
 
 class ZoomOperation():
-	def __init__(self, operation):
-		self.args = operation
-		self.outcome = operation['outcome']
+	def deserialize(state, access_token):
+		opClass = getattr(sys.modules[__name__], state['op'])
+		return opClass(
+			access_token=access_token, 
+			**state['opArgs'], 
+			**state['reqBody'], 
+			**state['redirects']
+		)
 
-	def execute(self):
+	def __init__(self,
+		*,
+		success_redirect,
+		fail_redirect,
+		access_token=None
+	):
+		self.access_token = access_token
+		self.success_redirect = success_redirect
+		self.fail_redirect = fail_redirect
+
+		self.httpReq.headers = {'content-type': 'application/json'}
+		if(access_token is not None):
+			self.httpReq.headers['Authorization'] = f'''Bearer {access_token}'''
+
+	def serialize(self):
+		return json.dumps({
+			'op': self.__class__.__name__,
+			'reqBody': self.reqBody,
+			'opArgs': self.opArgs,
+			'redirects': {
+				'success_redirect': self.success_redirect,
+				'fail_redirect': self.fail_redirect
+			}
+		})
+
+	def execute(self, session=None):
 		with HttpSession() as httpSession:
 			response = httpSession.send(self.httpReq.prepare())
 		
-		self.postOp(response)
+		return self.postOp(response, session=session)
 
 class DeleteOperation(ZoomOperation):
-	def __init__(self, operation):
-		ZoomOperation.init(self, operation)
+	def __init__(self, 
+		*,
+		success_redirect,
+		fail_redirect,
+		access_token=None,
+		meeting_id
+	):
+		self.reqBody = {
+			'meeting_id':meeting_id
+		}
 		self.httpReq = Request(
-			method='DELETE',
-			url=f'https://api.zoom.us/v2/meetings/{self.meeting_id}'
+			'DELETE',
+			f'https://api.zoom.us/v2/meetings/{meeting_id}'
 		)
+		ZoomOperation.__init__(self, 
+			access_token=access_token, 
+			success_redirect=success_redirect, 
+			fail_redirect=fail_redirect
+		)
+
+	def postOp(self, response, session=None):
+		if (response.status_code != 204):
+			# TO-DO: notify user
+			return {'url':self.fail_redirect, 'args':{'zoom_error_message':response.text}}
+
+		sessionProvided = session is not None
+		if (not sessionProvided):
+			session = current_user.getSession()
+
+		lezione = session.query(db.LezioniZoom).get(self.reqBody['meeting_id'])
+		session.delete(lezione)
+
+		if(not sessionProvided):
+			session.commit()
+			session.close()
+		
+		return {'url':self.success_redirect, 'args':{}} 
 
 class InsertOperation(ZoomOperation):
-	def __init__(self, operation):
-		ZoomOperation.init(self, operation)
-		email = self.args.pop('email')
-		self.httpReq = Request(
-			method='POST',
-			url=f'https://api.zoom.us/v2/users/{email}/meetings',
-			data={**self.args}
+	def __init__(self, 
+		*,
+		success_redirect,
+		fail_redirect,
+		access_token=None,
+		agenda,
+		start_time,
+		duration,
+		lezione_id
+	):
+		self.opArgs = {'lezione_id': lezione_id}
+		self.reqBody = {
+			#'password':'123123abc',
+			'agenda':agenda,
+			'start_time':start_time,
+			'duration':duration
+		}
+		self.httpReq = Request (
+			'POST',
+			f'https://api.zoom.us/v2/users/{current_user.email}/meetings',
+			data=json.dumps(self.reqBody)
+		)
+		ZoomOperation.__init__(self, 
+			access_token=access_token, 
+			success_redirect=success_redirect, 
+			fail_redirect=fail_redirect
 		)
 
-	def postOp(self, response):
-		self.outcome['success'] = response.status_code == self.successCode
-		self.outcome['json'] = response.json()
+	def postOp(self, response, session=None):
+		if(response.status_code != 201):
+			# TO-DO: notify user
+			return {'url':self.fail_redirect, 'args':{'zoom_error_message': response.text}}
+		
+		lezione_zoom = response.json()
+
+		sessionProvided = session is not None
+		if (not sessionProvided):
+			session = current_user.getSession()
+
+		lezione = session.query(db.Lezioni).get(self.opArgs['lezione_id'])
+		id_lezione_zoom = lezione_zoom['id']
+		lezione.id = id_lezione_zoom
+		session.add(
+			db.LezioniZoom(
+				id=id_lezione_zoom,
+				host_email = current_user.email
+			)
+		)
+		
+		if(not sessionProvided):
+			session.commit()
+			session.close()
+		
+		return {'url':self.success_redirect, 'args':{}}
 
 class ZoomAccount():
 	CLIENT_ID = environ['ZOOM_CLIENT_ID']
 	CLIENT_SECRET = environ['ZOOM_CLIENT_SECRET']
-	REDIRECT_URI = '' # set by app.py at server load tme
+	REDIRECT_URI = environ['ZOOM_REDIRECT_URI']
 
-	def __init__(self, email, session=None):
+	def __init__(self, session=None):
 		sessionProvided = not session is None
 		if(not sessionProvided):
-			session = db.Session()
+			session = current_user.getSession()
 
-		self.email = email
-		self.authorized = self.checkAuthorization(session=session)
+		self.getTokens(session=session)
 
 		if(not sessionProvided):
 			session.commit()
 			session.close()
 
-	def checkAuthorization(self, session=None):
+	def getTokens(self, session=None):
 		sessionProvided = not session is None
+		user = current_user
 		if(not sessionProvided):
-			session = db.Session()
+			session = user.getSession()
 			
-		user_tokens = session.query(db.ZoomTokens).get(self.email)
+		user_tokens = session.query(db.ZoomTokens).get(user.email)
 		if(user_tokens is None):
-			return False
+			self.access_token = None
+			self.refresh_token = None
+			return
 		
-		if(now() - user_tokens.creation_time >= timedelta(minutes=3300)):
-			self.refreshToken()
-		else:
-			self.tokens = user_tokens
+		if(self.isTokenExpired(session=session)):
+			self.refreshTokens()
 
 		if(not sessionProvided):
 			session.commit()
 			session.close()
-
-		return True
+		
+		self.access_token = user_tokens.access_token
+		self.refresh_token = user_tokens.refresh_token
 
 	def requestUserAuth(self, state):
 		query = {
@@ -96,10 +199,10 @@ class ZoomAccount():
 		}
 		return 'https://zoom.us/oauth/authorize?' + urlencode(query)
 
-	def refreshToken(self, session = None):
+	def refreshTokens(self, session = None):
 		sessionProvided = not session is None
 		if(not sessionProvided):
-			session = db.Session()
+			session = current_user.getSession()
 		
 		auth = b64encode(f'{ZoomAccount.CLIENT_ID}:{ZoomAccount.CLIENT_SECRET}'.encode('ascii')).decode("ascii")
 		tokens = session.query(db.ZoomTokens).get(self.email)
@@ -118,13 +221,32 @@ class ZoomAccount():
 			data=body
 		).json()
 
-		tokens.refresh_token = token_response['refresh_token']
 		tokens.access_token = token_response['access_token']
+		tokens.refresh_token = token_response['refresh_token']
+
 		if(not sessionProvided):
 			session.commit()
 			session.close()
 		
-		self.tokens = tokens
+		self.access_token = tokens.access_token
+		self.refresh_token = tokens.refresh_token
+
+	def isTokenExpired(self, session=None):
+		sessionProvided = session is not None
+
+		user = current_user
+		if(not sessionProvided):
+			session = user.getSession()
+		
+		user_tokens = session.query(db.ZoomTokens).get(user.email)
+
+		expired = date_time.now() - user_tokens.creation_timestamp >= timedelta(minutes=3300)
+
+		if(not sessionProvided):
+			session.commit()
+			session.close()
+
+		return expired
 
 	def requestAccessToken(self, auth_code, session=None):
 		auth = b64encode(f'{ZoomAccount.CLIENT_ID}:{ZoomAccount.CLIENT_SECRET}'.encode('ascii')).decode("ascii")
@@ -148,19 +270,65 @@ class ZoomAccount():
 
 		sessionProvided = not session is None
 		if(not sessionProvided):
-			session = db.Session()
+			session = current_user.getSession()
 
-		self.tokens = db.ZoomTokens(
+		tokens = db.ZoomTokens(
+			email=current_user.email, 
 			access_token=token_response['access_token'],
 			refresh_token=token_response['refresh_token']
 		)
-		session.add(self.tokens)
+		session.add(tokens)
+		self.access_token = tokens.access_token
+		self.refresh_token = tokens.refresh_token
 
-		if(sessionProvided):
+		if(not sessionProvided):
 			session.commit()
 			session.close()
 
-	def execute(operation):
-		ZoomOperationFactory.get(operation).execute()
-		outcome = operation['outcome']
-		return (outcome['success_redirect'] if outcome['success'] else outcome['fail_redirect'])
+	def resumeOperation(self, state):
+		return self.execute(
+			ZoomOperation.deserialize(
+				state, 
+				self.access_token
+			)
+		)
+
+	def execute(self, operation, session=None):
+		sessionProvided = session is not None
+		if(not sessionProvided):
+			session = current_user.getSession()
+
+		if(self.access_token is None):
+			if(not sessionProvided):
+				session.close()
+			raise TokenNotProvidedException()
+
+		if (self.isTokenExpired(session=session)):
+			self.refresh_token()
+
+		result = operation.execute(session=session)
+
+		if(not sessionProvided):
+			session.commit()
+			session.close()
+
+		return result
+
+	def buildInsertOperation(self, lezione, success_redirect, fail_redirect):
+		return InsertOperation(
+			lezione_id=lezione.id,
+			access_token=self.access_token,
+			success_redirect=success_redirect,
+			fail_redirect=fail_redirect,
+			agenda=f'Lezione di {lezione.corso.titolo}',
+			start_time=str(lezione.inizio).replace(' ','T',1) + 'Z',
+			duration=(int)(lezione.durata.total_seconds() / 60)
+		)
+
+	def buildDeleteOperation(self, lezione, success_redirect, fail_redirect):
+		return DeleteOperation(
+			access_token=self.access_token,
+			success_redirect=success_redirect,
+			fail_redirect=fail_redirect,
+			meeting_id=lezione.id
+		)

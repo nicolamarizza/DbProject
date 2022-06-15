@@ -18,6 +18,7 @@ from datetime import datetime, date, timedelta
 from string import Template
 from zoom import ZoomAccount
 from urllib.parse import urlencode
+from zoom import TokenNotProvidedException
 
 
 import warnings
@@ -30,7 +31,6 @@ with open(os.environ['FLASK_KEY_PATH'], 'r') as file:
 login_manager = LoginManager()
 login_manager.anonymous_user = views.AnonymousUser
 login_manager.init_app(app)
-ZoomAccount.REDIRECT_URI = url_for('/zoom_access_token')
 
 @login_manager.user_loader
 def load_user(email):

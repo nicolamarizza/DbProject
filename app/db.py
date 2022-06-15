@@ -135,11 +135,6 @@ class ZoomTokens(Base):
 class LezioniZoom(Base):
 	__tablename__='lezionizoom'
 
-	lezione = relationship(
-		'Lezioni',
-		backref='zoom',
-		uselist=False
-	)
 
 def generate_relationships(base, direction, return_fn, attrname, local_cls, referred_cls, **kw):
     return None
