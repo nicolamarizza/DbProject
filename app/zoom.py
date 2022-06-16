@@ -109,7 +109,6 @@ class InsertOperation(ZoomOperation):
 	):
 		self.opArgs = {'lezione_id': lezione_id}
 		self.reqBody = {
-			#'password':'123123abc',
 			'agenda':agenda,
 			'start_time':start_time,
 			'duration':duration
@@ -142,7 +141,9 @@ class InsertOperation(ZoomOperation):
 		session.add(
 			db.LezioniZoom(
 				id=id_lezione_zoom,
-				host_email = current_user.email
+				host_email = current_user.email,
+				start_url = lezione_zoom['start_url'],
+				join_url = lezione_zoom['join_url']
 			)
 		)
 		
