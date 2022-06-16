@@ -1,7 +1,7 @@
 from collections import UserList
 from flask_login import UserMixin
-from sqlalchemy import Column, ForeignKey, create_engine, MetaData, Table, Column, Integer
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy import Column, ForeignKey, create_engine, MetaData, Table, Column, Integer, String
+from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -67,6 +67,15 @@ class Corsi(Base):
 
 class Edifici(Base):
 	__tablename__ = 'edifici'
+	id = Column(Integer, primary_key=True)
+	iddipartimento = Column(String, ForeignKey('dipartimenti.sigla'))
+
+	dipartimento = relationship (
+		'Dipartimenti',
+		backref='edifici',
+		foreign_keys=[iddipartimento],
+		uselist=False
+	)
 
 class Aule(Base):
 	__tablename__ = 'aule'
@@ -95,10 +104,14 @@ class Lezioni(Base):
 
 class Dipartimenti(Base):
 	__tablename__='dipartimenti'
+	sigla = Column(String, primary_key=True)
+	idsede = Column(Integer, ForeignKey('edifici.id'))
 
-	relationship (
+	sede = relationship (
 		'Edifici',
-		backref='dipartimento'
+		backref=backref('sedeDi', uselist=False),
+		foreign_keys=[idsede],
+		uselist=False
 	)
 
 class Categorie(Base):
