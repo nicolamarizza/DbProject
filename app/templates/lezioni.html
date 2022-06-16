@@ -18,112 +18,125 @@
         <h4>Le tue lezioni</h4>
         {%- if is_docente -%}
         
+        {%- if success -%}
+
+        <div id="div_msg" class="row" 
+             style="padding: 5px; color: white;
+                border: 2px solid #0c7900; background-color: #35ab03d4; border-radius: 5px;">
+        
+        <div class="col s11" >
+            SUCCESSO INSERIMENTO LEZIONE: <br> {{ msg_error }}
+        </div>
+
+        <div class=""  style="padding-top: 10px;">
+            <span  id="closebutton_msg" class="material-icons btn-flat" style="color: white;">
+                close
+            </span>
+        </div>
+        </div>
+
+        {%- endif -%}
+
+
         {%- if error -%}
 
-        <!-- Modal Structure -->
-
-        <input type="text" id = "error" value = "error" style="display: none;"></a>
-        <div id="modal_err" class="modal">
-            <div class="modal-content">
-            <h4>Errore inserimento lezione</h4>
-            <p style="font-size: 20px;">{{ msg_error }}</p>
-            </div>
-            <div class="modal-footer">
-            <a href="/lezioni" class="modal-close waves-effect waves-orange btn-flat">OK</a>
-            </div>
-        </div>
-
-        {%- endif -%}
-
-        {%- if success -%}
-        <input type="text" id = "success" value = "success" style="display: none;"></a>
-        <div id="modal_suc" class="modal">
-            <div class="modal-content">
-            <h4>Successo inserimento lezione</h4>
-            <p style="font-size: 20px;">{{ msg_error }}</p>
-            </div>
-            <div class="modal-footer">
-            <a href="/lezioni" class="modal-close waves-effect waves-orange btn-flat">OK</a>
-            </div>
-        </div>
-
-        {%- endif -%}
+        <div id="div_msg" class="row" 
+             style="padding: 5px; color:white; border: 2px solid #ac0033; background-color: #ac0000d4; border-radius: 5px;">
         
+        <div class="col s11" >
+            ERRORE INSERIMENTO LEZIONE:<br> {{ msg_error }}
+        </div>
+
+        <div class=""  style="padding-top: 10px;">
+            <span  id="closebutton_msg" class="material-icons btn-flat" style="color: white;">
+                close
+            </span>
+        </div>
+        </div>
+
+        {%- endif -%}
         <div>
 
-            <ul class="collapsible expandable popout">
-                
-                <li>
-                    <div class="collapsible-header" style="display: block;">
-                        Inserisci nuova lezione
-                        <div class="right">
-                            <i class="material-icons">expand_more</i>
+            <ul class="collapsible expandable popout" >
+                    <li>
+                        <div class="collapsible-header" style="display: block;">
+                            Inserisci nuova lezione
+                            <div class="right">
+                                <i class="material-icons">expand_more</i>
+                            </div>
                         </div>
-                    </div>
-                    <div class="collapsible-body">
-                        <div class="row" style="margin-bottom: 0px;">
-                            <div class="col s11 offset-s1">                
-                                <div class="row">
-                                    {%- set class_name = 'Lezioni' -%}
-                                    <form id="nuova_lezione_insert"  class="col s12" action="/check_lesson" method="POST">
-                                        
-                                        {%- for element in attrLezioni.values() -%}
-                                        {%- if element.insertable -%}
-                                        <div class="row">
-                                            {%- if element.isMultiChoice -%}
-                                            <div class="col s0" style="padding-top: 25px; padding-right: 0px;">
-                                                 <!--icone-->
-                                                 <i class="small material-icons">arrow_drop_down</i>
+                        <div class="collapsible-body">
+                            <div class="row" style="margin-bottom: 0px;">
+                                <div class="col s11 offset-s1">                
+                                    <div class="row">
+                                        {%- set class_name = 'Lezioni' -%}
+                                        <form id="nuova_lezione_insert"  class="col s12" action="/check_lesson" method="POST">
+                                            
+                                            {%- for element in attrLezioni.values() -%}
+                                            {%- if element.insertable -%}
+                                            <div class="row">
+                                                {%- if element.isMultiChoice -%}
+                                                <div class="col s0" style="padding-top: 25px; padding-right: 0px;">
+                                                     <!--icone-->
+                                                     <i class="small material-icons">arrow_drop_down</i>
+                                                </div>
+                                                <div class="input-field col s9">
+                                                {%- else -%}
+    
+                                                <div class="input-field col s10">
+                                              
+                                                    <!--icone-->
+                                                       <i class="small material-icons prefix">
+                                                        {%- if element.isDatetime -%}      calendar_month
+                                                        {%- elif element.isTimedelta -%}   access_time
+                                                        {%- elif element.isMultiChoice -%} arrow_drop_down
+                                                        {%- else -%}                       text-fields
+                                                        {%- endif %} 
+                                                    </i>
+                                                    {%- endif -%}
+                                                    {%- include "form_element.html" -%}
+                                                </div>
                                             </div>
-                                            <div class="input-field col s9">
-                                            {%- else -%}
-
-                                            <div class="input-field col s10">
-                                          
-                                                <!--icone-->
-                                               	<i class="small material-icons prefix">
-                                                    {%- if element.isDatetime -%}      calendar_month
-                                                    {%- elif element.isTimedelta -%}   access_time
-                                                    {%- elif element.isMultiChoice -%} arrow_drop_down
-                                                    {%- else -%}                       text-fields
-		                                            {%- endif %} 
-                                                </i>
-                                                {%- endif -%}
-                                                {%- include "form_element.html" -%}
-                                            </div>
-                                        </div>
-                                        {%- endif -%}
-                                        {%- endfor -%}
-
-
-                                        <button type="submit" fomr="nuova_lezione_insert" class="waves-effect waves-light btn deep-orange darken-3" onclick="">
-                                            Conferma<i class="material-icons right">check</i>
-                                        </button>
-
-                                        <a class="waves-effect waves-light btn deep-orange darken-3" onclick="resetForm()">Reset Form</a>
-                                    </form>
+                                            {%- endif -%}
+                                            {%- endfor -%}
+    
+    
+                                            <button type="submit" fomr="nuova_lezione_insert" class="waves-effect waves-light btn deep-orange darken-3" onclick="">
+                                                Conferma<i class="material-icons right">check</i>
+                                            </button>
+    
+                                            <a class="waves-effect waves-light btn deep-orange darken-3" onclick="resetForm()">Reset Form</a>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-                
+                    </li>
+                    
+    
+                </ul>
+            </div>
+      
 
-            </ul>
-        </div>
+
+
 
         {%- endif -%}
             <!--studente-->
             {%- if error_p -%}
-            <input type="text" id = "error_p" value = "error" style="display: none;"></a>
-            <div id="modal_err_p" class="modal">
-                <div class="modal-content">
-                <h4>Impossibile effettuare la prenotazione</h4>
-                <p style="font-size: 20px;">{{ msg_error }}</p>
-                </div>
-                <div class="modal-footer">
-                <a href="/lezioni" class="modal-close waves-effect waves-orange btn-flat">OK</a>
-                </div>
+
+            <div id="div_msg" class="row" 
+                 style="padding: 5px; border: 2px solid #ac0033; background-color: #ac0000d4; border-radius: 5px;">
+            
+            <div class="col s11" >
+                IMPOSSIBILE EFFETTUARE LA PRENOTAZIONE:<br> {{ msg_error }}
+            </div>
+    
+            <div class=""  style="padding-top: 10px;">
+                <span  id="closebutton_msg" class="material-icons btn-flat" style="color: white;">
+                    close
+                </span>
+            </div>
             </div>
             {%- endif -%}
      

@@ -199,20 +199,12 @@ $(document).ready(function () {
 });
 
 
-$(document).ready(function(){
-  if($('#error').val() == "error"){
-    $('#modal_err').modal();
-    $('#modal_err').modal('open'); 
-  }else if($('#success').val() == "success"){
-    $('#modal_suc').modal();
-    $('#modal_suc').modal('open');
 
-  }else if($('#error_p').val() == "error"){
-    $('#modal_err_p').modal();
-    $('#modal_err_p').modal('open');
-  }
+//animazione chiusura messaggi di errore/successo
+$(function() {
+  $( "#closebutton_msg" ).click(function(event){
+      $("#div_msg").fadeOut('slow');
+      history.pushState({}, null, 'http://127.0.0.1:5000/lezioni');//cambia l'url senza aggiornare la pagina
+  });
+  
 });
-
-
-
-
