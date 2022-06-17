@@ -12,6 +12,7 @@ end;
 $$;
 
 
+
 -- non possono esserci più lezioni contemporaneamente nella stessa aula
 
 create or replace function fnc_trg_no_class_overlap()
@@ -68,3 +69,32 @@ create or replace trigger trg_no_class_overlap_same_course
 before update or insert on lezioni
 for each row
 execute function fnc_trg_no_class_overlap_same_course();
+
+
+
+-- non è possibile iscriversi ai corsi dopo la scadenza delle iscrizioni
+
+create or replace function fnc_trg_closed_subscriptions()
+    returns trigger
+    language plpgsql
+as $$
+begin
+
+    if CURRENT_TIMESTAMP > (
+        select      scadenzaiscrizioni
+        from        corsi
+        where       id = NEW.idcorso
+    )
+    then
+        raise 'Le iscrizioni per questo corso sono chiuse';
+    end if;
+    
+    return NEW;
+
+end;$$;
+
+
+create or replace trigger trg_closed_subscriptions
+before update or insert on iscrizioni_corsi
+for each row
+execute function fnc_trg_closed_subscriptions();
