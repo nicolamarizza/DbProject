@@ -185,6 +185,38 @@ def elimina_corso_post():
 	return redirect(url_for('corsi_get')) 
 
 
+
+#route per la visione degli iscritti al corso
+@app.route('/statistiche', methods=["POST"])
+@login_required
+def statistiche_iscritti_corso():
+
+	user = current_user
+	authenticated = user.is_authenticated
+
+	idcorso = request.form['idcorso']
+
+
+	with user.getSession() as session:
+		corso = session.query(views.Corsi.dbClass).get(idcorso)
+
+		iscritti = session.query(db.iscrizioni_corsi, views.User.dbClass).\
+				   filter(db.iscrizioni_corsi.c.idcorso == corso.id,\
+						 db.iscrizioni_corsi.c.idstudente == views.User.dbClass.email).all()
+
+		print(iscritti)
+		
+	return render_template(
+		'statistiche.html', 
+		authenticated = True, 
+		name=user.nome if authenticated else None,
+		is_docente = user.isdocente,
+		corso = corso,
+		iscritti = iscritti
+	)
+
+
+
 @app.route('/lezioni')
 @login_required #ti dice che non sei autorizzato se non hai effettuato il login
 def lezioni_get(error = False, success = False, msg_error = "", error_p = False):		
@@ -241,7 +273,6 @@ def lezioni_get(error = False, success = False, msg_error = "", error_p = False)
 			success = success,
 			error_p = error_p
 		)
-
 
 
 
@@ -321,7 +352,6 @@ def check_prenotazione_lezioni(id_lezione, user):
 
 
 
-
 @app.route('/cancella_prenotazione', methods=["POST"])
 @login_required
 def cancella_lezione_post():
@@ -351,7 +381,6 @@ def modifica_profilo():
 		old_obj_values = user,
 		attrUtente = views.User.attributes
 	)
-
 
 
 @app.route('/profilo')
@@ -523,10 +552,6 @@ def is_date_ok(data):
 @app.template_filter("is_datetime_ok")
 def is_datetime_ok(data):
 	return data >= datetime.now()
-
-
-
-
 
 
 

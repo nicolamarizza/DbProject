@@ -1,0 +1,42 @@
+{% set active_page = 'corsi.index' %}
+{%- extends 'base.html' -%}
+
+
+{%- block head_base -%}
+
+{%- endblock -%}
+
+
+{%- block body_base -%}
+
+<div class="row">
+    <div class="col s8 offset-s2">
+
+        <h2>Statistiche</h2>
+        <h4>Iscritti corso di {{ corso.titolo }}</h4>
+
+        <!--TODO: finire questa pagina, poi lo faccio-->
+        {%- for i in iscritti -%}
+            {%- for s in iscritti -%}
+
+               
+                {{ s[3].email }}
+                {{ s[3].nome }}
+                {{ s[3].cognome }}
+
+
+        {%- endfor -%}
+
+
+        {%- endfor -%}
+
+    </div>
+</div>
+
+
+{%- endblock -%}
+
+
+{%- block base_javascript -%}
+
+{%- endblock -%}

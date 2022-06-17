@@ -6,12 +6,17 @@ function hideOrShowFormModificaCorso(event, idcorso){
         divParentForm.children[1].style.display = "none"
         divButton.children[0].style.display = "block"
         divButton.children[1].style.display = "none"
+        divButton.children[2].style.display = "block"
+
         
     } else {
         divParentForm.children[0].style.display = "none"
         divParentForm.children[1].style.display = "block"
         divButton.children[0].style.display = "none"
         divButton.children[1].style.display = "block"
+        divButton.children[2].style.display = "none"
+
+        
     
         //datetime
         MaterialDateTimePicker.create($('.inizioiscrizioni'+idcorso), false, null, false)
