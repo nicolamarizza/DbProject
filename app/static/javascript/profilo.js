@@ -4,12 +4,15 @@ $(document).ready(function(){
 
 
 
-$(document).ready(function(){
-  if($('#updated').val() == "updated"){
-    $('#modal_update_profile').modal();
-    $('#modal_update_profile').modal('open'); 
-  }
+//animazione chiusura messaggi di errore/successo
+$(function() {
+  $( "#close_div_msg" ).click(function(event){
+      $("#close_div_msg").fadeOut('slow');
+      history.pushState({}, null, 'http://127.0.0.1:5000/profilo');//cambia l'url senza aggiornare la pagina
+  });
+  
 });
+
 
 
 

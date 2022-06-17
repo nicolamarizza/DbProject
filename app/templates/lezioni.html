@@ -20,19 +20,9 @@
         
         {%- if success -%}
 
-        <div id="div_msg" class="row" 
-             style="padding: 5px; color: white;
-                border: 2px solid #0c7900; background-color: #35ab03d4; border-radius: 5px;">
-        
-        <div class="col s11" >
-            SUCCESSO INSERIMENTO LEZIONE: <br> {{ msg_error }}
-        </div>
-
-        <div class=""  style="padding-top: 10px;">
-            <span  id="closebutton_msg" class="material-icons btn-flat" style="color: white;">
-                close
-            </span>
-        </div>
+        <div id="close_div_msg" class="bar success">
+            <div class="close" id="close_div_msg">X</div>
+            <span class="material-icons ico">check</span> SUCCESSO: {{ msg_error }}
         </div>
 
         {%- endif -%}
@@ -40,18 +30,11 @@
 
         {%- if error -%}
 
-        <div id="div_msg" class="row" 
-             style="padding: 5px; color:white; border: 2px solid #ac0033; background-color: #ac0000d4; border-radius: 5px;">
-        
-        <div class="col s11" >
-            ERRORE INSERIMENTO LEZIONE:<br> {{ msg_error }}
-        </div>
-
-        <div class=""  style="padding-top: 10px;">
-            <span  id="closebutton_msg" class="material-icons btn-flat" style="color: white;">
-                close
-            </span>
-        </div>
+        <div id="close_div_msg" class="bar error">
+            
+            <div class="close" id="close_div_msg">X</div>
+            <span class="material-icons ico">report</span> 
+            <span >ERRORE: {{ msg_error }}</span>
         </div>
 
         {%- endif -%}
@@ -125,19 +108,12 @@
             <!--studente-->
             {%- if error_p -%}
 
-            <div id="div_msg" class="row" 
-                 style="padding: 5px; border: 2px solid #ac0033; background-color: #ac0000d4; border-radius: 5px;">
-            
-            <div class="col s11" >
-                IMPOSSIBILE EFFETTUARE LA PRENOTAZIONE:<br> {{ msg_error }}
+            <div id="close_div_msg" class="bar error">
+                <div class="close" id="close_div_msg">X</div>
+                <span class="material-icons ico">report</span>
+                <span>ERRORE: {{ msg_error }}</span>
             </div>
-    
-            <div class=""  style="padding-top: 10px;">
-                <span  id="closebutton_msg" class="material-icons btn-flat" style="color: white;">
-                    close
-                </span>
-            </div>
-            </div>
+
             {%- endif -%}
      
             {%- if lezioni -%}

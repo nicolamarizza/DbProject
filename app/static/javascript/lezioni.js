@@ -202,8 +202,8 @@ $(document).ready(function () {
 
 //animazione chiusura messaggi di errore/successo
 $(function() {
-  $( "#closebutton_msg" ).click(function(event){
-      $("#div_msg").fadeOut('slow');
+  $( "#close_div_msg" ).click(function(event){
+      $("#close_div_msg").fadeOut('slow');
       history.pushState({}, null, 'http://127.0.0.1:5000/lezioni');//cambia l'url senza aggiornare la pagina
   });
   

@@ -11,7 +11,7 @@
 {%- block body_base -%}
 
 <div class="row">
-    <div class="col s8 offset-s2">
+    <div class="col s9 offset-s2">
 
         {%- if edit -%}
             <h2>Modifica profilo</h2>
@@ -19,27 +19,27 @@
             {%- include "modifica_profilo.html" -%}
         {%- else -%}
 
-        {%- if updated -%}
+      
+        <div class="row">
+        <h2>I tuoi dati</h2>
+          {%- if updated -%}
 
-        <!-- Modal Structure -->
+        <!-- avviso di corretto aggiornamento del profilo  -->
+        <div class="row">
+        <div class="col s10">
 
-        <input type="text" id = "updated" value = "updated" style="display: none;"></a>
-        <div id="modal_update_profile" class="modal">
-            <div class="modal-content">
-            <h4>Profilo aggiornato</h4>
-            <p style="font-size: 20px;">Il tuo profilo è stato modificato correttamente, ora sei una nuova persona.</p>
-            </div>
-            <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-orange btn-flat">OK</a>
+            
+            <div id="close_div_msg" class="bar success">
+                <div class="close" id="close_div_msg">X</div>
+                <span class="material-icons ico">check</span> SUCCESSO: Il tuo profilo è stato modificato correttamente, ora sei una nuova persona.
             </div>
         </div>
 
-        {%- endif -%}
-
-        <h2>I tuoi dati</h2>
         
-        <div class="row">
-        <div class="col">
+        </div>
+        {%- endif -%}
+     
+        <div class="col s0 offset-s1">
             <ul class="collection" >
                 <li class="collection-item">EMAIL</li>
                 <li class="collection-item">NOME</li>
@@ -50,7 +50,7 @@
             </ul>
         </div>
       
-        <div class="col s8">
+        <div class="col s5">
             <ul class="collection">
                 <li class="collection-item">{{ current_user.email }}</li>
                 <li class="collection-item">{{ current_user.nome }}</li>
