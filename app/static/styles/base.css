@@ -207,12 +207,14 @@ span.ico {
 .bar { position: relative; }
 div.close {
   position: absolute;
-  top: 30%;
+  top: 20%;
   right: 20px;
   color: #888;
   cursor: pointer;
 }
 
-
+tbody{
+    cursor: pointer;
+}
 
 

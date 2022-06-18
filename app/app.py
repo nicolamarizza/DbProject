@@ -202,9 +202,8 @@ def statistiche_iscritti_corso():
 
 		iscritti = session.query(db.iscrizioni_corsi, views.User.dbClass).\
 				   filter(db.iscrizioni_corsi.c.idcorso == corso.id,\
-						 db.iscrizioni_corsi.c.idstudente == views.User.dbClass.email).all()
-
-		print(iscritti)
+						 db.iscrizioni_corsi.c.idstudente == views.User.dbClass.email).\
+						 order_by(db.iscrizioni_corsi.c.dataiscrizione).all()
 		
 	return render_template(
 		'statistiche.html', 
@@ -509,7 +508,7 @@ def strfdelta(tdelta, fmt):
 
 #filtri per formattare la visualizzazione delle date
 @app.template_filter("datetime_format")
-def datetime_format(value, format="%d %b %y ; %H:%M"):
+def datetime_format(value, format="%d %b %Y, %H:%M"):
     return value.strftime(format)
 
 #estrae la data da un datetime

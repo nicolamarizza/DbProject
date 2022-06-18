@@ -17,65 +17,6 @@
     position: relative;
 }
 
-table.table-custom {
-    margin-top: 15px;
-    margin-bottom: 15px;
-}
-
-.table {
-    width: 100%;
-    
-}
-
-table {
-    max-width: 100%;
-    background-color: transparent;
-
-    border-collapse: collapse;  
-    border-spacing: 0;
-}
-
-
-table.table-custom tr.table-header {
-    background-color: #d84315;
-    color: #FFFFFF;
-    font-size: 14px;
-    line-height: 1.428571429;
-    border-spacing: 0;
-
-}
-
-
-table.table tr td, table.table tr th {
-    vertical-align: middle;
-}
-.table thead > tr > th, .table tbody > tr > th, .table tfoot > tr > th, .table thead > tr > td, .table tbody > tr > td, .table tfoot > tr > td {
-    padding: 8px;
-    line-height: 1.428571429;
-    vertical-align: top;
-    border-top: 1px solid #dddddd;
-}
-
-
-
-th.hidden-xs, td.hidden-xs {
-    display: table-cell !important;
-}
-.hidden-xs {
-        display: block !important;
-}
-th {
-    text-align: left;
-}
-
-th.visible-xs, td.visible-xs {
-    display: none !important;
-}
-
-table.table-custom tr.table-row:hover {
-    background-color: #eee;
-}
-
 
 .waves-effect.waves-orange .waves-ripple {
     /* The alpha value allows the text and background color

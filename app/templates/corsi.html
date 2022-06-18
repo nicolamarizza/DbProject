@@ -26,7 +26,10 @@
                 {% endfor %}
             </ul>
             {%- else -%}
-            Non ti sei ancora iscritto ad alcun corso.
+            <div  class="bar warn">
+                <span class="material-icons ico">warning</span> 
+                Non ti sei ancora iscritto a nessun corso
+            </div>
             {%- endif -%}
         {%- endif -%}
 
@@ -138,7 +141,12 @@
             {% endfor %}
         </ul>
         {%- else -%}
-        Nessun corso disponibile al momento. ☹
+        <div  class="bar warn">
+            <span class="material-icons ico">warning</span> 
+            Nessun corso disponibile al momento ☹
+        </div>
+        
+        
         {%- endif -%}
 
 

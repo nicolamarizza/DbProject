@@ -1,0 +1,15 @@
+.bar {
+    cursor: default;
+}
+
+/*link*/
+a.link_indietro{
+  color: #888;
+}
+
+a.link_indietro:hover{
+  color: #9c2400;
+}
+
+
+

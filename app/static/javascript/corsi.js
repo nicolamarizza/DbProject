@@ -69,19 +69,14 @@ function confirmDelete(titolo){
 }
 
 function button_crea_corso_click(){
-  button_crea_corso = document.getElementById("button_crea_corso");
-  button_annulla_crea_corso = document.getElementById("button_annulla_crea_corso");
-  nuovo_corso_collapsible = document.getElementById("nuovo_corso_collapsible");
-  button_crea_corso.style.display = "none";
-  button_annulla_crea_corso.style.display = "block";
-  nuovo_corso_collapsible.style.display = "block";
+  document.getElementById("button_crea_corso").style.display = "none";
+  document.getElementById("button_annulla_crea_corso").style.display = "block";
+  document.getElementById("nuovo_corso_collapsible").style.display = "block";
+
 }
 
 function button_annulla_crea_corso_click(){
-  button_crea_corso = document.getElementById("button_crea_corso");
-  button_annulla_crea_corso = document.getElementById("button_annulla_crea_corso");
-  nuovo_corso_collapsible = document.getElementById("nuovo_corso_collapsible");
-  button_crea_corso.style.display = "block";
-  button_annulla_crea_corso.style.display = "none";
-  nuovo_corso_collapsible.style.display = "none";
+  document.getElementById("button_crea_corso").style.display = "block";
+  document.getElementById("button_annulla_crea_corso").style.display = "none";
+  document.getElementById("nuovo_corso_collapsible").style.display = "none";
 }

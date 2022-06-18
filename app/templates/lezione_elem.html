@@ -1,25 +1,25 @@
-<tr class="table-row"> 
-    <th> {{ lezione[0].titolo }}</th>     
+<tr> 
+    <td> {{ lezione[0].titolo }}</td>     
     {%- if lezione[1].idaula -%}
         
-        <th>{{lezione[3].nome }} {{lezione[2].nome }} <br>
+        <td>{{lezione[3].nome }} {{lezione[2].nome }} <br>
             {%- if lezione[1].modalita == 'D' -%}
                 <a href="#!">link zoom</a>
             {%- endif -%}
-        </th>
+        </td>
     {%- else -%}    
-        <th> <a href="#!">link zoom</a></th>
+        <td> <a href="#!">link zoom</a></td>
     {%- endif -%}    
     
-    <th>{{ lezione[1].inizio|extract_date }}</th>
-    <th>{{ lezione[1].inizio|extract_time }}</th>
+    <td>{{ lezione[1].inizio|extract_date }}</td>
+    <td>{{ lezione[1].inizio|extract_time }}</td>
 
 
-    <th>{{ lezione[1].durata|timedelta_format }}</th>
+    <td>{{ lezione[1].durata|timedelta_format }}</td>
    
-    <th>{{ lezione[1].modalita|prova }}</th>
+    <td>{{ lezione[1].modalita|prova }}</td>
 
-    <th>
+    <td>
     {%- if is_docente -%}
         <form onsubmit="return confirmDelete('{{ lezione[0].titolo }}', '{{ lezione[1].inizio|datetime_format}}')" action="/elimina_lezione" method="POST">
             <input name="idlezione" type="number" style="display:none" value="{{ lezione[1].id }}">
@@ -47,6 +47,6 @@
         {%- endif -%}    
 
     {%- endif -%}
-    </th>
+    </td>
 </tr>
                       

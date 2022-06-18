@@ -208,3 +208,17 @@ $(function() {
   });
   
 });
+
+
+//visualizza o nasconde i pulsanti aggiungi lezione e annulla
+function crea_lezione(){
+  document.getElementById("btn_aggiungi_lezione").style.display = "none";
+  document.getElementById("btn_annulla_aggiungi_lezione").style.display = "block";
+  document.getElementById("nuova_lezione_collapsible").style.display = "block";
+}
+
+function annulla_crea_lezione(){
+  document.getElementById("btn_aggiungi_lezione").style.display = "block";
+  document.getElementById("btn_annulla_aggiungi_lezione").style.display = "none";
+  document.getElementById("nuova_lezione_collapsible").style.display = "none";
+}

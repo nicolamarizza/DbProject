@@ -3,6 +3,7 @@
 
 
 {%- block head_base -%}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/statistiche.css') }}">
 
 {%- endblock -%}
 
@@ -15,28 +16,55 @@
         <h2>Statistiche</h2>
         <h4>Iscritti corso di {{ corso.titolo }}</h4>
 
-        <!--TODO: finire questa pagina, poi lo faccio-->
+        {%- if iscritti -%}
+        <a href="/corsi" class="waves-effect waves-light btn deep-orange darken-3">
+            Torna ai corsi<i class="material-icons right">arrow_back_ios_new</i></a>
+                                        
+        <table class="highlight">
+            <thead>
+              <tr>
+                  <th>EMAIL</th>
+                  <th>NOME</th>
+                  <th>COGNOME</th>
+                  <th>DATA NASCITA</th>
+                  <th>DATA ISCRIZIONE</th>
+              </tr>
+            </thead>
+            <tbody>
+        
         {%- for i in iscritti -%}
             {%- for s in iscritti -%}
+            <tr>
+                <td>{{ s[3].email }}</td>
+                <td>{{ s[3].nome }}</td>
+                <td>{{ s[3].cognome }}</td>
+                <td>{{ s[3].datanascita }}</td>
+                <td>{{ s[2]|datetime_format }}</td>
 
-               
-                {{ s[3].email }}
-                {{ s[3].nome }}
-                {{ s[3].cognome }}
-
-
+            </tr>
+            {%- endfor -%}
         {%- endfor -%}
 
 
-        {%- endfor -%}
+
+    </tbody>
+    </table>
+
+
+    {%- else -%}
+        <div  class="bar warn">
+            <div  class="close" id="close_div_msg">
+            <a class="link_indietro" href="/corsi">TORNA AI CORSI</a>
+            </div>
+            <i class="ico">&#9888;</i> 
+            Nessuno studente si è ancora iscritto al corso
+        </div>
+    {%- endif -%}
 
     </div>
 </div>
 
 
 {%- endblock -%}
-
-
 {%- block base_javascript -%}
-
 {%- endblock -%}

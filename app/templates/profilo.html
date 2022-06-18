@@ -21,8 +21,18 @@
 
       
         <div class="row">
-        <h2>I tuoi dati</h2>
-          {%- if updated -%}
+        <h2>Il tuo profilo</h2>
+        {%- if current_user.isdocente -%}
+        <h5>Sei un docente</h5>
+        {%- else -%}
+        <h5>Sei uno studente</h5>
+        {%- endif -%}
+        </div>
+
+        <div class="row">
+            <a class="waves-effect waves-light btn deep-orange darken-3" onclick="location.href='/modifica_profilo'">Modifica profilo</a>
+        </div>
+        {%- if updated -%}
 
         <!-- avviso di corretto aggiornamento del profilo  -->
         <div class="row">
@@ -31,43 +41,34 @@
             
             <div id="close_div_msg" class="bar success">
                 <div class="close" id="close_div_msg">X</div>
-                <span class="material-icons ico">check</span> SUCCESSO: Il tuo profilo è stato modificato correttamente, ora sei una nuova persona.
+                <i class="ico">&#10004;</i> SUCCESSO: Il tuo profilo è stato modificato correttamente, ora sei una nuova persona.
             </div>
         </div>
 
         
         </div>
         {%- endif -%}
+
+        
+        <div class="row">
+        <div class="col s10">
+            <table class="highlight" >
+            <thead>
+            </thead>
+            <tbody style="cursor: default">
+            
+            <tr><td style="font-weight: bold;">EMAIL:</td><td>{{ current_user.email }}</td></tr>
+            <tr><td style="font-weight: bold;">NOME:</td><td>{{ current_user.nome }}</td><tr>
+            <tr><td style="font-weight: bold;">COGNOME:</td><td>{{ current_user.cognome }}</td></tr>
+            <tr><td style="font-weight: bold;">DATA NASCITA:</td><td>{{ current_user.datanascita }}</td></tr>
+            
+            </tbody>
+            </table>
+
+        </div>
+        </div>
      
-        <div class="col s0 offset-s1">
-            <ul class="collection" >
-                <li class="collection-item">EMAIL</li>
-                <li class="collection-item">NOME</li>
-                <li class="collection-item">COGNOME</li>
-                <li class="collection-item">DATA DI NASCITA</li>
-                <li class="collection-item" style="display: none;"></li>
-
-            </ul>
-        </div>
-      
-        <div class="col s5">
-            <ul class="collection">
-                <li class="collection-item">{{ current_user.email }}</li>
-                <li class="collection-item">{{ current_user.nome }}</li>
-                <li class="collection-item">{{ current_user.cognome }}</li>
-                <li class="collection-item">{{ current_user.datanascita }}</li>
-                <li class="collection-item" style="display: none;"></li>
-                
-            </ul>
-
-        </div>
-        </div>
-  
-      <div>
-
-        <a class="waves-effect waves-light btn deep-orange darken-3" onclick="location.href='/modifica_profilo'">Modifica profilo</a>
-
-      </div>
+    
 
       {%- endif -%}
 
