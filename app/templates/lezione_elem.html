@@ -19,7 +19,7 @@
    
     <td>{{ lezione[1].modalita|prova }}</td>
 
-    <td>
+    <td style="text-align: center;">
     {%- if is_docente -%}
         <form onsubmit="return confirmDelete('{{ lezione[0].titolo }}', '{{ lezione[1].inizio|datetime_format}}')" action="/elimina_lezione" method="POST">
             <input name="idlezione" type="number" style="display:none" value="{{ lezione[1].id }}">
@@ -29,22 +29,43 @@
         </form>        
                             
     {%- else -%} 
-        {%- if lezione[1].modalita != 'R' and lezione[1].inizio|is_datetime_ok -%}
-            {% if lezione[1]|is_in_lezioni_prenotate(lezioni_prenotate) %}
-            
-                <form action="/cancella_prenotazione" method="POST">
-                    <input name="idlezione" type="number" style="display:none" value="{{ lezione[1].id }}">
-                    <button type="submit"  class="waves-effect waves-light btn" style="background-color: #ff884d; font-size: 12px;">cancella prenotazione</button>
-                </form>
-            {%- else -%}
+        <!--lezione solo online, non serve prenotarsi-->
+        {%- if lezione[1].modalita == 'R' -%}
+        <div  class="bar info" style="cursor: help">
+            <i class="ico">&#9888;</i> 
+            lezione solo online
+        </div>
+        {%- else -%}
+            <!--se si è ancora in tempo per prenotarsi-->
+            {%- if lezione[1].inizio|is_datetime_ok -%}
                 
-                <form action="/iscrizione_lezione" method="POST">
-                    <input name="idlezione" type="number" style="display:none" value="{{ lezione[1].id }}">
-                    <button type="submit"  class="waves-effect waves-light btn deep-orange darken-3" style="font-size: 12px;">prenota</button>
-                </form>  
-
+                {% if lezione[1]|is_in_lezioni_prenotate(lezioni_prenotate) %}
+                    
+                    <form action="/cancella_prenotazione" method="POST">
+                        <input name="idlezione" type="number" style="display:none" value="{{ lezione[1].id }}">
+                        <button type="submit"  class="waves-effect waves-light btn" style="background-color: #ff884d; font-size: 12px;">cancella prenotazione</button>
+                    </form>
+                {%- else -%}
+                    <!--controllo che ci siano posti disponibili-->
+                    {%- if lezione[1].idaula|ha_posti_prenotabili(lezione[1].id) -%}
+                    
+                    <form action="/iscrizione_lezione" method="POST">
+                        <input name="idlezione" type="number" style="display:none" value="{{ lezione[1].id }}">
+                        <button type="submit"  class="waves-effect waves-light btn deep-orange darken-3" style="font-size: 12px;">prenota</button>
+                    </form>  
+                    {%- else -%}    
+                    <div  class="bar error" style="cursor: help">
+                        <i class="ico">&#9888;</i> 
+                        nessun posto disponibile
+                    </div>
+                    {%- endif -%}    
+                    
+                {%- endif -%}    
             {%- endif -%}    
+
         {%- endif -%}    
+
+
 
     {%- endif -%}
     </td>

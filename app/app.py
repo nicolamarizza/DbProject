@@ -258,7 +258,7 @@ def lezioni_get(error = False, success = False, msg_error = "", error_p = False)
 
 		#unisce le query 
 		lezioni = lezioni_aula + lezioni_online
-		
+
 		#ordina in base alla data e ora di inizio lezione
 		lezioni.sort(key=lambda x: x.Lezioni.inizio, reverse=False)
 
@@ -492,10 +492,33 @@ def delete_post():
 
 #controlla se la lezione è già stata prenotata o no da quell'utente
 @app.template_filter("is_in_lezioni_prenotate")
-def is_any(lezione="", lezioni_prenotate=None):
+def is_in_lezioni_prenotate(lezione="", lezioni_prenotate=None):
     if (lezione in lezioni_prenotate):
         return True
     return False
+
+#controlla se l'aula ha ancora posti disponibili per poter prenotare la lezione
+@app.template_filter("ha_posti_prenotabili")
+def ha_posti_prenotabili(idaula_lez, lez_id):
+	user = current_user
+	
+	with user.getSession() as session:
+		#quanti sono gli iscritti a quella lezione
+		num_iscritti_lez = session.query(db.prenotazioni_lezioni).\
+			filter(db.prenotazioni_lezioni.c.idlezione == lez_id).count()
+
+		#posti disponibili aula
+		posti_disp = session.query(views.Aule.dbClass).\
+			filter(views.Aule.dbClass.id == idaula_lez).one()
+
+		#posti ancora prenotabili
+		posti_rimasti = posti_disp.postidisponibili - num_iscritti_lez
+
+	if posti_rimasti > 0:
+		return True
+
+	return False
+	
 
 #filtro per formattare la visualizzazione dei timedelta
 @app.template_filter("timedelta_format")
