@@ -18,7 +18,7 @@
 
         {%- if iscritti -%}
         <a href="/corsi" class="waves-effect waves-light btn deep-orange darken-3">
-            Torna ai corsi<i class="material-icons right">arrow_back_ios_new</i></a>
+            Torna ai corsi<i class="material-icons left">arrow_back_ios_new</i></a>
                                         
         <table class="highlight">
             <thead>
@@ -32,7 +32,7 @@
             </thead>
             <tbody>
         
-        {%- for i in iscritti -%}
+       
             {%- for s in iscritti -%}
             <tr>
                 <td>{{ s[3].email }}</td>
@@ -43,7 +43,7 @@
 
             </tr>
             {%- endfor -%}
-        {%- endfor -%}
+     
 
 
 

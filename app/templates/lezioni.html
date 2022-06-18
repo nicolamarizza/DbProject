@@ -39,7 +39,7 @@
 
         {%- endif -%}
         <div>
-           
+        
             <button id="btn_aggiungi_lezione" class="waves-effect waves-light btn deep-orange darken-3" onclick="crea_lezione()" style="display: block;">
                 Aggiungi lezione
             </button>
@@ -125,11 +125,9 @@
      
             {%- if lezioni -%}
             <!--visualizza solo le lezioni future-->
-            
-               
                 <div class="form-group col-xs-12 form-group-border">
 
-                    <table class="highlight">
+                    <table class="highlight" >
                         <thead>
                             <tr>
                             <th> CORSO</th>
@@ -141,7 +139,7 @@
                             <th></th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody style="cursor: default">
                     
                         {% for lezione in lezioni %}
                             {%- if lezione[1].inizio|is_datetime_ok -%}
@@ -159,7 +157,7 @@
                 <h4>Lezioni passate</h4>
                 <div class="form-group col-xs-12 form-group-border">
                 
-                    <table class="highlight">
+                    <table class="highlight" >
                         <thead>
                             <tr>
                             <th> CORSO</th>
@@ -171,7 +169,7 @@
                             <th></th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody style="cursor: default">
 
                         {% for lezione in lezioni_passate %}
                             <!--visualizza solo le lezioni passate-->

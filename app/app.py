@@ -240,22 +240,32 @@ def lezioni_get(error = False, success = False, msg_error = "", error_p = False)
 		#lista degli id dei propri corsi
 		c = [x.id for x in i_tuoi_corsi]
 
+
 		#query per prendere corsi, lezioni e aula in cui si svolgono, compreso l'edificiio
-		#left join perché ci sono le lezioni online che non hanno un'aula
-		lezioni = session.query(views.Corsi.dbClass, views.Lezioni.dbClass, views.Aule.dbClass, views.Edifici.dbClass).\
-				  join(views.Aule.dbClass, views.Aule.dbClass.id == views.Lezioni.dbClass.idaula, isouter=True).\
+		lezioni_aula = session.query(views.Corsi.dbClass, views.Lezioni.dbClass, views.Aule.dbClass, views.Edifici.dbClass).\
+				  join(views.Aule.dbClass, views.Aule.dbClass.id == views.Lezioni.dbClass.idaula, isouter=False).\
 				  join(views.Corsi.dbClass, views.Corsi.dbClass.id == views.Lezioni.dbClass.idcorso, isouter=False).\
-				  filter(views.Lezioni.dbClass.idcorso.in_(c),\
-				  or_(views.Aule.dbClass.idedificio == views.Edifici.dbClass.id, views.Lezioni.dbClass.idaula == null()),\
-				  ).order_by(views.Lezioni.dbClass.inizio).all() 
+				  join(views.Edifici.dbClass, views.Aule.dbClass.idedificio == views.Edifici.dbClass.id, isouter=False).\
+				  filter(views.Lezioni.dbClass.idcorso.in_(c)).\
+				  order_by(views.Lezioni.dbClass.inizio).all()
+	
+		#query per prendere le lezioni online
+		lezioni_online = session.query(views.Corsi.dbClass, views.Lezioni.dbClass, None, None).\
+				  join(views.Corsi.dbClass, views.Corsi.dbClass.id == views.Lezioni.dbClass.idcorso, isouter=False).\
+				  filter(views.Lezioni.dbClass.idcorso.in_(c), views.Lezioni.dbClass.idaula == null()).\
+				  order_by(views.Lezioni.dbClass.inizio).all() 
 	
 
+		#unisce le query 
+		lezioni = lezioni_aula + lezioni_online
+		
+		#ordina in base alla data e ora di inizio lezione
+		lezioni.sort(key=lambda x: x.Lezioni.inizio, reverse=False)
 
 		#lezioni passate dei docenti
 		if user.isdocente:
 			lezioni_passate_prof = list(filter(lambda lez : lez.Lezioni.inizio.date() < date.today(), lezioni))
-			
-	
+
 		return render_template(
 			'lezioni.html', 
 			authenticated = True, 
