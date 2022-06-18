@@ -126,12 +126,32 @@
                             </button>
                         </form>
                         {%- else -%}
-                        <form action="/iscrizione_corso" method="POST">
-                            <input name="idcorso" type="number" style="display:none" value="{{ corso.id }}">
-                            <button class="waves-effect waves-light btn deep-orange darken-3 right" type="submit">
-                                Iscriviti
-                            </button>
-                        </form>
+                        <!--controllo che la data di scadenza non sia stata superata-->
+                        {%- if corso.scadenzaiscrizioni|is_datetime_ok -%}  
+                            <!--controllo che le iscrizioni siano aperte-->
+                            {%- if corso.inizioiscrizioni|is_not_datetatime_open -%}
+                            <!--se non lo sono, evito che ci si possa iscrivere-->
+                            <div  class="bar warn right" style="cursor: help">
+                                <i class="ico">&#9888;</i> 
+                                Iscrizioni chiuse, aprono il {{ corso.inizioiscrizioni|extract_date }}
+                            </div>
+                            {%- else -%}
+
+                            <form action="/iscrizione_corso" method="POST">
+                                <input name="idcorso" type="number" style="display:none" value="{{ corso.id }}">
+                                <button class="waves-effect waves-light btn deep-orange darken-3 right" type="submit">
+                                    Iscriviti
+                                </button>
+                            </form>
+                            {%- endif -%}
+                        {%- else -%}
+                        <!--iscrizioni chiuse-->
+                            <div  class="bar warn right" style="cursor: help">
+                                <i class="ico">&#9888;</i> 
+                                Iscrizioni chiuse 
+                            </div>
+                        {%- endif -%}
+
                         {%- endif -%}
                     {%- endif -%}
                 {%- endif -%}

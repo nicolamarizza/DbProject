@@ -513,7 +513,7 @@ def datetime_format(value, format="%d %b %Y, %H:%M"):
 
 #estrae la data da un datetime
 @app.template_filter("extract_date")
-def extract_date(value, format="%d %b %y"):
+def extract_date(value, format="%d %b %Y"):
     return value.strftime(format)
 
 #estre l'ora da un datetime
@@ -552,6 +552,10 @@ def is_date_ok(data):
 def is_datetime_ok(data):
 	return data >= datetime.now()
 
+
+@app.template_filter("is_not_datetatime_open")
+def is_not_datetatime_open(data):
+	return datetime.now() < data
 
 
 
