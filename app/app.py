@@ -676,3 +676,17 @@ def check_lesson():
 
 
 
+# questa richiesta arriva dall'API di zoom
+@app.route('/zoom_auth_code', methods=['GET'])
+def zoom_auth_code():
+	state = json.loads(request.args['state'].replace('\'', '"', -1))
+
+	with current_user.getSession() as session:
+		zoomAcc = ZoomAccount(session=session)
+		zoomAcc.requestAccessToken(request.args['code'], session=session)
+		session.commit()
+		result = zoomAcc.resumeOperation(state, session=session)
+
+		session.commit()
+
+	return redirect(url_for(result['url'], **result['args']))
