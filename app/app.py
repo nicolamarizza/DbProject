@@ -170,18 +170,16 @@ def disiscrizione_corso_post():
 	return redirect(url_for('corsi_get'))
 
 
-@app.route('/elimina_corso', methods=["POST"])
+@app.route('/corso_delete', methods=["POST"])
 @login_required 
-def elimina_corso_post():
-	id_corso = request.form['idcorsoDel']
-	user = current_user
+def corso_delete_post():
+	views.SimpleView.deleteAll(request.form)
+	return redirect(url_for('corsi_get')) 
 
-	with user.getSession() as session:
-		corso = session.query(views.Corsi.dbClass).get(id_corso)
-		session.delete(corso)
-		
-		session.commit()
-
+@app.route('/corso_insert', methods=["POST"])
+@login_required 
+def corso_insert_post():
+	views.SimpleView.insertAll(request.form)
 	return redirect(url_for('corsi_get')) 
 
 
@@ -283,19 +281,17 @@ def lezioni_get(error = False, success = False, msg_error = "", error_p = False)
 			error_p = error_p
 		)
 
+@app.route('/lezione_insert', methods=['POST'])
+@login_required
+def lezione_insert_post():
+	views.SimpleView.insertAll(request.form)
+	return redirect(url_for('lezioni_get'))
 
 
-@app.route('/elimina_lezione', methods=["POST"])
+@app.route('/lezione_delete', methods=["POST"])
 @login_required 
-def elimina_lezione_post():
-	id_lezione = request.form['idlezione']
-	user = current_user
-
-	with user.getSession() as session:
-		lezione = session.query(views.Lezioni.dbClass).get(id_lezione)
-		session.delete(lezione)
-		session.commit()
-
+def lezione_delete_post():
+	views.SimpleView.deleteAll(request.form)
 	return redirect(url_for('lezioni_get'))
 
 
@@ -406,89 +402,26 @@ def profilo(updated = False):
 		updated = updated
 	)
 
-
-@app.route('/test', methods=['GET'])
-def shit_get():
-	return render_template("test.html", attrList=views.Corsi.attributes)
-
-
 def test_response(objects):
 	for k,v in objects.items():
 		View = getattr(views, k)
 		objects[k] = {name:getattr(v, name) for name in View.attributes.keys()}
 	return objects
 
-def getTables(**kwargs):
-	return {tName:None for tName in map(lambda k : k.split('.')[0], kwargs.keys())}.keys()
-
-
-@app.route('/test')
-def shit():
-	return render_template("test.html", attrList=views.Corsi.attributes)
-
 @app.route('/update', methods=['POST'])
 def update_post():
-	kwargs = {**request.form}
-
-	results = {}
-	with views.Session() as session:
-		for tableName in getTables(**kwargs):
-			View = getattr(views, tableName)
-			obj = View(**kwargs)
-			dbObj = obj.update(session=session)
-			results[tableName] = dbObj
-
-		session.commit()
-
-		if type(dbObj) == db.Corsi:
-			return redirect(url_for('corsi_get'))
-
-		if type(dbObj) == db.Lezioni:
-			return redirect(url_for('lezioni_get'))
-			
-		if type(dbObj) == db.User:
-			return profilo(True)
-			
-		
-		return test_response(results)
+	results = views.SimpleView.updateAll(request.form)
+	return test_response(results)
 
 @app.route('/insert', methods=['POST'])
 def insert_post():
-	kwargs = {**request.form}
-
-	results = {}
-	with views.Session() as session:
-		for tableName in getTables(**kwargs):
-			View = getattr(views, tableName)
-			obj = View(**kwargs)
-			dbObj = obj.insert(session=session)
-			results[tableName] = dbObj
-
-		if type(dbObj) == db.Corsi:
-			dbObj.responsabili.append(current_user)
-
-		session.commit()
-
-		if type(dbObj) == db.Corsi:
-			return redirect(url_for('corsi_get'))
-
-		if type(dbObj) == db.Lezioni:
-			return redirect(url_for('lezioni_get'))
-		
-		return test_response(results)
+	results = views.SimpleView.insertAll(request.form)
+	return test_response(results)
 
 @app.route('/delete', methods=['POST'])
 def delete_post():
-	kwargs = {**request.form}
-
-	with views.Session() as session:
-		for tableName in getTables(**kwargs):
-			View = getattr(views, tableName)
-			obj = View(**kwargs)
-			obj.delete(session=session)
-		session.commit()
-		return {}
-
+	results = views.SimpleView.deleteAll(request.form)
+	return test_response(results)
 
 #controlla se la lezione è già stata prenotata o no da quell'utente
 @app.template_filter("is_in_lezioni_prenotate")

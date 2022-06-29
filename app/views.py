@@ -6,6 +6,7 @@ from datetime import date, datetime, timedelta
 from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
 import hashlib
+import sys
 
 import db
 from db import Session, StudentSession, TeacherSession
@@ -135,6 +136,73 @@ class AnonymousUser():
 # tutte le classi di questo modulo che corrispondono direttamente a una delle classi del modulo db estendono questa classe
 # non è instanziabile
 class SimpleView():
+	@staticmethod
+	def getTables(**kwargs):
+		return {tName:None for tName in map(lambda k : k.split('.')[0], kwargs.keys())}.keys()
+
+	@staticmethod
+	def insertAll(args, session=None):
+		sessionProvided = not session is None
+		if(not sessionProvided):
+			session = db.Session()
+		
+		results = {}
+		
+		for tableName in SimpleView.getTables(**args):
+			View = getattr(sys.modules[__name__], tableName)
+			obj = View(**args)
+			dbObj = obj.insert(session=session)
+			results[tableName] = dbObj
+
+		if type(dbObj) == db.Corsi:
+			dbObj.responsabili.append(current_user)
+
+		if(not sessionProvided):
+			session.commit()
+			session.close()
+		return results
+	
+	@staticmethod
+	def deleteAll(args, session=None):
+		sessionProvided = not session is None
+		if(not sessionProvided):
+			session = db.Session()
+
+		results = {}
+
+		for tableName in SimpleView.getTables(**args):
+			View = getattr(sys.modules[__name__], tableName)
+			obj = View(**args)
+			dbObj = obj.delete(session=session)
+			results[tableName] = dbObj
+
+		if(not sessionProvided):
+			session.commit()
+			session.close()
+		
+		return results
+
+	@staticmethod
+	def updateAll(args, session=None):
+		sessionProvided = not session is None
+		if(not sessionProvided):
+			session = db.Session()
+
+		results = {}
+		with Session() as session:
+			for tableName in SimpleView.getTables(**args):
+				View = getattr(sys.modules[__name__], tableName)
+				obj = View(**args)
+				dbObj = obj.update(session=session)
+				results[tableName] = dbObj
+
+		if(not sessionProvided):
+			session.commit()
+			session.close()
+		
+		return results
+	
+	
 	# riceve un dict di forma {'Class.attribute':value}
 	# potrebbero essere presenti classi diverse nel dict (utile per quando si vogliono inserire/aggiornare/eliminare più oggetti
 	# di tabelle diverse attraverso una singola interazione col form)

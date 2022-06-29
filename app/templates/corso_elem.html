@@ -77,8 +77,8 @@
                     {%- if is_docente -%}
                         {%- if corso in i_tuoi_corsi -%}
                             <div class="left" style="display: block;">
-                                <form onsubmit="return confirmDelete('{{ corso.titolo  }}')" action="/elimina_corso" method="POST">
-                                    <input name="idcorsoDel" type="number" style="display:none" value="{{ corso.id }}">
+                                <form onsubmit="return confirmDelete('{{ corso.titolo  }}')" action="/corso_delete" method="POST">
+                                    <input name="Corsi.pk" type="number" style="display:none" value="{{ corso.id }}">
                                     <button type="submit" class="btn-floating  waves-effect waves-light deep-orange darken-3" style="background: transparent; border: none; font-size:0; cursor: pointer">
                                         <i  class='fa fa-trash' style="color: white; ; font-size: 25px;"></i>  
                                     </button>

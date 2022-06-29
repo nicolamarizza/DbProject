@@ -21,8 +21,8 @@
 
     <td style="text-align: center;">
     {%- if is_docente -%}
-        <form onsubmit="return confirmDelete('{{ lezione[0].titolo }}', '{{ lezione[1].inizio|datetime_format}}')" action="/elimina_lezione" method="POST">
-            <input name="idlezione" type="number" style="display:none" value="{{ lezione[1].id }}">
+        <form onsubmit="return confirmDelete('{{ lezione[0].titolo }}', '{{ lezione[1].inizio|datetime_format}}')" action="/lezione_delete" method="POST">
+            <input name="Lezioni.pk" type="number" style="display:none" value="{{ lezione[1].id }}">
             <button type="submit" class="btn-floating  waves-effect waves-light deep-orange darken-3" style="background: transparent; border: none; font-size:0; cursor: pointer">
                 <i  class='fa fa-trash' style="color: white; ; font-size: 25px;"></i>  
             </button>
