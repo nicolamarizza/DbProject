@@ -25,16 +25,16 @@ create table edifici (
     nome text not null,
     indirizzo text not null,
     iddipartimento text not null references dipartimenti(sigla)
-		deferrable initially deferred
 		on update cascade
 		on delete no action
+		deferrable initially deferred
 );
 
 alter table dipartimenti add constraint fk_idsede
     foreign key(idsede) references edifici(id)
-		deferrable initially deferred
 		on update cascade
-		on delete no action;
+		on delete no action
+		deferrable initially deferred;
 
 create table aule (
     id serial primary key,

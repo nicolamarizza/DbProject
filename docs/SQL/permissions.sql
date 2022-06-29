@@ -1,5 +1,8 @@
-create role docente with login 'docente';
-create role studente with login 'studente';
+create role docente with login password 'docente';
+create role studente with login password 'studente';
+
+grant connect on database "PCTO" to docente;
+grant connect on database "PCTO" to studente;
 
 grant select on aule to docente;
 grant select on categorie to docente;
