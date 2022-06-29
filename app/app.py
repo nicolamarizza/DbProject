@@ -3,7 +3,7 @@ from doctest import UnexpectedException
 from flask import *
 from sqlalchemy import *
 from sqlalchemy.orm import *
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, InternalError
 from flask_login import LoginManager, current_user
 from flask_login import login_required
 from flask_login import login_user
@@ -12,7 +12,7 @@ import views
 import hashlib
 import os
 import db
-
+import re
 import time
 from datetime import datetime, date, timedelta
 from string import Template
@@ -288,8 +288,27 @@ def lezioni_get(error = False, success = False, msg_error = "", error_p = False)
 @app.route('/lezione_insert', methods=['POST'])
 @login_required
 def lezione_insert_post():
-	views.SimpleView.insertAll(request.form)
-	return redirect(url_for('lezioni_get'))
+	user = current_user
+	with user.getSession() as session:
+		lezione = views.SimpleView.insertAll(request.form, session=session).get('Lezioni')
+		try:
+			session.commit()
+		except InternalError as ex:
+			msg = ex.orig.args[0]
+			msg = re.search('(.*)\\nCONTEXT', msg).group(1)
+			session.rollback()
+			return lezioni_get(error=True, success=False, msg_error=msg, error_p=False)
+		
+		acc = ZoomAccount()
+		op = acc.buildInsertOperation(lezione, 'lezioni_get', 'lezioni_get')
+		result = acc.execute(op, session=session)
+
+		try:
+			session.commit()
+		except TokenNotProvidedException:
+			return redirect(acc.requestUserAuth(op.serialize()))
+
+	return redirect(url_for(result['url']), **result['args'])
 
 
 @app.route('/lezione_delete', methods=["POST"])
