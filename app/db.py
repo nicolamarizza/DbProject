@@ -132,8 +132,8 @@ class ZoomTokens(Base):
 		uselist=False
 	)
 
-class LezioniZoom(Base):
-	__tablename__='lezionizoom'
+class ZoomMeetings(Base):
+	__tablename__='zoommeetings'
 
 
 def generate_relationships(base, direction, return_fn, attrname, local_cls, referred_cls, **kw):

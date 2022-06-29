@@ -1,4 +1,4 @@
-create table lezionizoom (
+create table zoommeetings (
     id bigint primary key references lezioni(id),
     host_email varchar(254) not null references utenti(email)
 );

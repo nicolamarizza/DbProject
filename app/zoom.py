@@ -67,7 +67,7 @@ class DeleteOperation(ZoomOperation):
 		if (not sessionProvided):
 			session = current_user.getSession()
 
-		lezione = session.query(db.LezioniZoom).get(self.meeting_id)
+		lezione = session.query(db.ZoomMeetings).get(self.meeting_id)
 		session.delete(lezione)
 
 		if(not sessionProvided):
@@ -101,7 +101,7 @@ class InsertOperation(ZoomOperation):
 		id_lezione_zoom = lezione_zoom['id']
 		lezione.id = id_lezione_zoom
 		session.add(
-			db.LezioniZoom(
+			db.ZoomMeetings(
 				id=id_lezione_zoom,
 				host_email = current_user.email,
 				start_url = lezione_zoom['start_url'],

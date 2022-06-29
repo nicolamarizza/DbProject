@@ -1,4 +1,4 @@
-create table lezionizoom (
+create table zoommeetings (
 	-- si riferisce a lezioni.id, non uso il vincolo di chiave perchè se l'utente non da l'autorizzazione
 	-- e decide di cancellare una lezione, verrebbe rimossa la lezione sul db (in entrambe le tabelle)
 	-- ma non su zoom. Se invece mantengo questa tabella, la prossima volta che l'utente si logga 
