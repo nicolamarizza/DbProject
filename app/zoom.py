@@ -1,7 +1,9 @@
+from abc import abstractmethod
 from base64 import b64encode
 from datetime import timedelta, datetime as date_time
+import email
 from os import environ
-from requests import request, Request, Session as HttpSession
+from requests import get, post, request, Request, Session as HttpSession
 from urllib.parse import urlencode
 import db
 from sqlalchemy.sql.functions import now
@@ -17,114 +19,74 @@ class ExpiredTokenException(Exception):
 
 
 class ZoomOperation():
+	@staticmethod
 	def deserialize(state, access_token):
-		opClass = getattr(sys.modules[__name__], state['op'])
-		return opClass(
-			access_token=access_token, 
-			**state['opArgs'], 
-			**state['reqBody'], 
-			**state['redirects']
-		)
+		opClass = getattr(sys.modules[__name__], state.pop('op'))
+		return opClass(access_token=access_token, **state)
 
-	def __init__(self,
-		*,
-		success_redirect,
-		fail_redirect,
-		access_token=None
-	):
-		self.access_token = access_token
-		self.success_redirect = success_redirect
-		self.fail_redirect = fail_redirect
+	def __init__(self, **kwargs):
+		self._prepareSerialization(kwargs)
+		self.access_token = kwargs.get('access_token', None)
+		self.success_redirect = kwargs.get('success_redirect')
+		self.fail_redirect = kwargs.get('fail_redirect')
 
-		self.httpReq.headers = {'content-type': 'application/json'}
-		if(access_token is not None):
-			self.httpReq.headers['Authorization'] = f'''Bearer {access_token}'''
+		self.httpReq = Request(headers={'content-type': 'application/json'})
+		if(self.access_token):
+			self.httpReq.headers['Authorization'] = f'''Bearer {self.access_token}'''
 
 	def serialize(self):
-		return json.dumps({
-			'op': self.__class__.__name__,
-			'reqBody': self.reqBody,
-			'opArgs': self.opArgs,
-			'redirects': {
-				'success_redirect': self.success_redirect,
-				'fail_redirect': self.fail_redirect
-			}
-		})
+		return self.serialized
 
 	def execute(self, session=None):
 		with HttpSession() as httpSession:
 			response = httpSession.send(self.httpReq.prepare())
 		
-		return self.postOp(response, session=session)
+		return self._operation(response, session=session)
+
+	def _prepareSerialization(self, kwargs):
+		self.serialized = json.dumps(kwargs)
+
+	def _die(self, success, **args):
+		if(success):
+			return {'url':self.success_redirect, 'args': args}
+		return {'url':self.fail_redirect, 'args': args}
 
 class DeleteOperation(ZoomOperation):
-	def __init__(self, 
-		*,
-		success_redirect,
-		fail_redirect,
-		access_token=None,
-		meeting_id
-	):
-		self.reqBody = {
-			'meeting_id':meeting_id
-		}
-		self.httpReq = Request(
-			'DELETE',
-			f'https://api.zoom.us/v2/meetings/{meeting_id}'
-		)
-		ZoomOperation.__init__(self, 
-			access_token=access_token, 
-			success_redirect=success_redirect, 
-			fail_redirect=fail_redirect
-		)
-
-	def postOp(self, response, session=None):
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+		self.meeting_id = kwargs.get('meeting_id')
+		self.httpReq.method = 'DELETE'
+		self.httpReq.url = f'https://api.zoom.us/v2/meetings/{self.meeting_id}'
+	
+	def operation(self, response, session=None):
 		if (response.status_code != 204):
 			# TO-DO: notify user
-			return {'url':self.fail_redirect, 'args':{'zoom_error_message':response.text}}
+			self._die(False, zoom_error_message=response.txt)
 
 		sessionProvided = session is not None
 		if (not sessionProvided):
 			session = current_user.getSession()
 
-		lezione = session.query(db.LezioniZoom).get(self.reqBody['meeting_id'])
+		lezione = session.query(db.LezioniZoom).get(self.meeting_id)
 		session.delete(lezione)
 
 		if(not sessionProvided):
 			session.commit()
 			session.close()
 		
-		return {'url':self.success_redirect, 'args':{}} 
+		self._die(True)
 
 class InsertOperation(ZoomOperation):
-	def __init__(self, 
-		*,
-		success_redirect,
-		fail_redirect,
-		access_token=None,
-		agenda,
-		start_time,
-		duration,
-		lezione_id
-	):
-		self.opArgs = {'lezione_id': lezione_id}
-		self.reqBody = {
-			'agenda':agenda,
-			'start_time':start_time,
-			'duration':duration
-		}
-		self.httpReq = Request (
-			'POST',
-			f'https://api.zoom.us/v2/users/{current_user.email}/meetings',
-			data=json.dumps(self.reqBody)
-		)
-		ZoomOperation.__init__(self, 
-			access_token=access_token, 
-			success_redirect=success_redirect, 
-			fail_redirect=fail_redirect
-		)
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+		self.agenda = kwargs.get('agenda')
+		self.start_time = kwargs.get('start_time')
+		self.duration = kwargs.get('duration')
+		self.lezione_id = kwargs.get('lezione_id')
+		self.httpReq.method = 'POST'
+		self.httpReq.url = f'https://api.zoom.us/v2/users/{current_user.email}/meetings'
 
-	def postOp(self, response, session=None):
+	def _operation(self, response, session=None):
 		if(response.status_code != 201):
 			# TO-DO: notify user
 			return {'url':self.fail_redirect, 'args':{'zoom_error_message': response.text}}
@@ -135,7 +97,7 @@ class InsertOperation(ZoomOperation):
 		if (not sessionProvided):
 			session = current_user.getSession()
 
-		lezione = session.query(db.Lezioni).get(self.opArgs['lezione_id'])
+		lezione = session.query(db.Lezioni).get(self.lezione_id)
 		id_lezione_zoom = lezione_zoom['id']
 		lezione.id = id_lezione_zoom
 		session.add(
@@ -152,6 +114,45 @@ class InsertOperation(ZoomOperation):
 			session.close()
 		
 		return {'url':self.success_redirect, 'args':{}}
+
+class SubscribeOperation(ZoomOperation):
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+		self.lezione_id = kwargs.get('lezione_id')
+
+	def execute(self, session=None):
+		user = current_user
+		sessionProvided = session is not None
+		if(not sessionProvided):
+			session = user.getSession()
+		
+		response = request (
+			'GET',
+			f'https://api.zoom.us/v2/users/{current_user.email}',
+			headers=self.httpReq.headers
+		)
+
+		if(response.status_code != 200):
+			self._die(False, zoom_error_message=response.txt)
+
+		zoom_user = response.json()
+
+		response = request (
+			'POST',
+			f'https://api.zoom.us/v2/meetings/{self.lezione_id}/registrants',
+			data = {
+				'first_name': zoom_user['first_name'],
+				'last_name': zoom_user['last_name'],
+				'phone': zoom_user['phone'],
+				'email': current_user.email
+			},
+			headers=self.httpReq.headers
+		)
+
+		if(response.status_code != 201):
+			self._die(False, zoom_error_message=response.txt)
+
+		self._die(False)
 
 class ZoomAccount():
 	CLIENT_ID = environ['ZOOM_CLIENT_ID']
