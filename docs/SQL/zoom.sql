@@ -7,7 +7,9 @@ create table zoommeetings (
     id bigint primary key,
     host_email varchar(254) not null references utenti(email)
 		on update cascade
-		on delete no action
+		on delete no action, -- assegnare il meeting ad un altro host
+	start_url text not null,
+	join_url text not null
 );
 
 create table zoomtokens (
@@ -19,6 +21,8 @@ create table zoomtokens (
     creation_timestamp timestamp not null default CURRENT_TIMESTAMP
 );
 
+-- ogni volta che vengono aggiornati i token viene automaticamente
+-- aggiornata l'ora di inizio validità
 create or replace function fnc_trg_zoom_token_time()
     returns trigger
     language plpgsql
@@ -38,3 +42,9 @@ referencing NEW TABLE as new_table OLD TABLE as old_table
 for each statement
 WHEN (pg_trigger_depth() < 1) --evita che si triggeri ricorsivamente
 execute function fnc_trg_zoom_token_time();
+
+grant all on zoommeetings to docente;
+grant select,insert,update on zoomtokens to docente;
+
+grant select on zoommeetings to studente;
+grant select,insert,update on zoomtokens to studente;
