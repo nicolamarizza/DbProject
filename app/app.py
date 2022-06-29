@@ -296,6 +296,25 @@ def lezione_insert_post():
 @login_required 
 def lezione_delete_post():
 	views.SimpleView.deleteAll(request.form)
+	pk = request.form['Lezioni.pk']
+
+	with current_user.getSession() as session:
+		lezione = session.query(db.ZoomMeetings).get(pk)
+		zoommeeting = session.query(db.ZoomMeetings).get(pk)
+		if(zoommeeting):
+			acc = ZoomAccount(session=session)
+			op = acc.buildDeleteOperation(lezione, 'lezioni_get', 'lezioni_get')
+			try:
+				result = acc.execute(op, session=session)
+			except TokenNotProvidedException:
+				return redirect(acc.requestUserAuth(op.serialize()))
+
+			session.commit()
+			return redirect(url_for(result['url'], **result['args']))
+		
+		session.delete(lezione)
+		session.commit()
+
 	return redirect(url_for('lezioni_get'))
 
 
