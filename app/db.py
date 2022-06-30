@@ -1,4 +1,3 @@
-from collections import UserList
 from flask_login import UserMixin
 from sqlalchemy import Column, ForeignKey, create_engine, MetaData, Table, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, relationship, backref
@@ -134,6 +133,12 @@ class ZoomTokens(Base):
 
 class ZoomMeetings(Base):
 	__tablename__='zoommeetings'
+
+	lezione = relationship(
+		'Lezioni',
+		backref=backref('meeting', uselist=False),
+		uselist=False
+	)
 
 
 def generate_relationships(base, direction, return_fn, attrname, local_cls, referred_cls, **kw):

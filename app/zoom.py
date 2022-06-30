@@ -57,9 +57,11 @@ class ZoomOperation():
 		})
 
 	def _die(self, success, **args):
-		if(success):
-			return {'url':self.success_redirect, 'args': args}
-		return {'url':self.fail_redirect, 'args': args}
+		return {
+			'success':success, 
+			'url':self.success_redirect if success else self.fail_redirect, 
+			'args': args
+		}
 
 class DeleteOperation(ZoomOperation):
 	def __init__(self, **kwargs):
@@ -112,15 +114,11 @@ class InsertOperation(ZoomOperation):
 			session = current_user.getSession()
 
 		lezione = session.query(db.Lezioni).get(self.lezione_id)
-		id_lezione_zoom = lezione_zoom['id']
-		lezione.id = id_lezione_zoom
-		session.add(
-			db.ZoomMeetings(
-				id=id_lezione_zoom,
-				host_email = current_user.email,
-				start_url = lezione_zoom['start_url'],
-				join_url = lezione_zoom['join_url']
-			)
+		lezione.meeting = db.ZoomMeetings(
+			id=lezione_zoom['id'],
+			host_email = current_user.email,
+			start_url = lezione_zoom['start_url'],
+			join_url = lezione_zoom['join_url']
 		)
 		
 		if(not sessionProvided):
@@ -178,35 +176,31 @@ class ZoomAccount():
 		if(not sessionProvided):
 			session = current_user.getSession()
 
-		self.getTokens(session=session)
+		self._getTokens(session=session)
 
 		if(not sessionProvided):
 			session.commit()
 			session.close()
 
-	def getTokens(self, session=None):
+	def _getTokens(self, session=None):
 		sessionProvided = not session is None
 		user = current_user
 		if(not sessionProvided):
 			session = user.getSession()
 			
 		user_tokens = session.query(db.ZoomTokens).get(user.email)
-		if(user_tokens is None):
+		if(user_tokens):
+			self.access_token = user_tokens.access_token
+			self.refresh_token = user_tokens.refresh_token
+		else:
 			self.access_token = None
 			self.refresh_token = None
-			return
 		
-		if(self.isTokenExpired(session=session)):
-			self.refreshTokens(session=session)
-
 		if(not sessionProvided):
 			session.commit()
 			session.close()
-		
-		self.access_token = user_tokens.access_token
-		self.refresh_token = user_tokens.refresh_token
 
-	def requestUserAuth(self, state):
+	def redirectToUserAuth(self, state):
 		query = {
 			'response_type': 'code',
 			'client_id': ZoomAccount.CLIENT_ID,
@@ -215,7 +209,7 @@ class ZoomAccount():
 		}
 		return 'https://zoom.us/oauth/authorize?' + urlencode(query)
 
-	def refreshTokens(self, session = None):
+	def _refreshTokens(self, session = None):
 		sessionProvided = not session is None
 		if(not sessionProvided):
 			session = current_user.getSession()
@@ -226,17 +220,19 @@ class ZoomAccount():
 			'Authorization': f'Basic {auth}',
 			'Content-Type': 'application/x-www-form-urlencoded'
 		}
-		body = {
+		query = {
 			'grant_type': 'refresh_token',
 			'refresh_token': tokens.refresh_token
 		}
 		token_response = request(
-			"POST", 
+			'POST', 
 			'https://zoom.us/oauth/token', 
-			headers=headers, 
-			data=body
-		).json()
-
+			headers=headers,
+			params=query
+		)
+		
+		token_response = token_response.json()
+#################################
 		tokens.access_token = token_response['access_token']
 		tokens.refresh_token = token_response['refresh_token']
 
@@ -247,7 +243,7 @@ class ZoomAccount():
 			session.commit()
 			session.close()
 
-	def isTokenExpired(self, session=None):
+	def _isTokenExpired(self, session=None):
 		sessionProvided = session is not None
 
 		user = current_user
@@ -256,7 +252,7 @@ class ZoomAccount():
 		
 		user_tokens = session.query(db.ZoomTokens).get(user.email)
 
-		expired = date_time.now() - user_tokens.creation_timestamp >= timedelta(minutes=55)
+		expired = date_time.now() - user_tokens.creation_timestamp >= timedelta(minutes=55) #give it 5 minutes slack
 
 		if(not sessionProvided):
 			session.commit()
@@ -320,8 +316,8 @@ class ZoomAccount():
 				session.close()
 			raise TokenNotProvidedException()
 
-		if (self.isTokenExpired(session=session)):
-			self.refresh_token()
+		if (self._isTokenExpired(session=session)):
+			self._refreshTokens()
 
 		result = operation.execute(session=session)
 
@@ -342,10 +338,10 @@ class ZoomAccount():
 			duration=(int)(lezione.durata.total_seconds() / 60)
 		)
 
-	def buildDeleteOperation(self, lezione, success_redirect, fail_redirect):
+	def buildDeleteOperation(self, meeting, success_redirect, fail_redirect):
 		return DeleteOperation(
 			access_token=self.access_token,
 			success_redirect=success_redirect,
 			fail_redirect=fail_redirect,
-			meeting_id=lezione.id
+			meeting_id=meeting.id
 		)

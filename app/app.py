@@ -16,9 +16,7 @@ import re
 import time
 from datetime import datetime, date, timedelta
 from string import Template
-from zoom import ZoomAccount
-from urllib.parse import urlencode
-from zoom import TokenNotProvidedException
+from zoom import ZoomAccount, TokenNotProvidedException
 
 
 import warnings
@@ -290,7 +288,11 @@ def lezioni_get(error = False, success = False, msg_error = "", error_p = False)
 def lezione_insert_post():
 	user = current_user
 	with user.getSession() as session:
-		lezione = views.SimpleView.insertAll(request.form, session=session).get('Lezioni')
+		copy = {**request.form}
+		if(copy.get('Lezioni.idaula', None) == 'virtual'):
+			copy.pop('Lezioni.idaula')
+
+		lezione = views.SimpleView.insertAll(copy, session=session).get('Lezioni')
 		try:
 			session.commit()
 		except InternalError as ex:
@@ -299,37 +301,38 @@ def lezione_insert_post():
 			session.rollback()
 			return lezioni_get(error=True, success=False, msg_error=msg, error_p=False)
 		
-		acc = ZoomAccount()
-		op = acc.buildInsertOperation(lezione, 'lezioni_get', 'lezioni_get')
-		result = acc.execute(op, session=session)
+		if(lezione.modalita != 'P'):
+			acc = ZoomAccount(session=session)
+			op = acc.buildInsertOperation(lezione, 'lezioni_get', 'lezioni_get')
 
-		try:
-			session.commit()
-		except TokenNotProvidedException:
-			return redirect(acc.requestUserAuth(op.serialize()))
+			try:
+				result = acc.execute(op, session=session)
+			except TokenNotProvidedException:
+				return redirect(acc.redirectToUserAuth(op.serialize()))
 
-	return redirect(url_for(result['url']), **result['args'])
+			if(not result['success']):
+				return redirect(url_for(result['url']), error=True, **result['args'])
+
+	session.commit()
+	return redirect(url_for('lezioni_get'))
 
 
 @app.route('/lezione_delete', methods=["POST"])
 @login_required 
 def lezione_delete_post():
-	views.SimpleView.deleteAll(request.form)
-	pk = request.form['Lezioni.pk']
-
 	with current_user.getSession() as session:
-		lezione = session.query(db.ZoomMeetings).get(pk)
-		zoommeeting = session.query(db.ZoomMeetings).get(pk)
-		if(zoommeeting):
+		lezione = session.query(views.Lezioni.dbClass).get(request.form['Lezioni.pk'])
+		meeting = lezione.meeting
+		if(meeting):
 			acc = ZoomAccount(session=session)
-			op = acc.buildDeleteOperation(lezione, 'lezioni_get', 'lezioni_get')
+			op = acc.buildDeleteOperation(meeting, 'lezioni_get', 'lezioni_get')
 			try:
 				result = acc.execute(op, session=session)
 			except TokenNotProvidedException:
-				return redirect(acc.requestUserAuth(op.serialize()))
+				return redirect(acc.redirectToUserAuth(op.serialize()))
 
-			session.commit()
-			return redirect(url_for(result['url'], **result['args']))
+			if(not result['success']):
+				return redirect(url_for(result['url'], error=True, **result['args']))
 		
 		session.delete(lezione)
 		session.commit()
