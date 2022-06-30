@@ -31,7 +31,7 @@ begin
 				(select fnc_lezione_overlap(l, NEW))
 	limit 1;
 	
-    if conflict_ is not null
+    if FOUND
     then
 		select * into corso from corsi where id = conflict_.idcorso;
         raise 'L''aula è già occupata da una lezione di % dalle % alle %', 
@@ -45,7 +45,8 @@ begin
     return NEW;
 end;$$;
 
-create or replace trigger trg_no_class_overlap_insert
+drop trigger if exists trg_no_class_overlap_insert on lezioni;
+create trigger trg_no_class_overlap_insert
 before insert on lezioni
 for each row
 when (NEW.modalita <> 'R')
@@ -69,7 +70,7 @@ begin
 				(select fnc_lezione_overlap(l, NEW))
 	limit 1;
 
-    if conflict_ is not null
+    if FOUND
     then
 		select * into corso from corsi where id = conflict_.idcorso;
         raise 'L''aula è già occupata da una lezione di % dalle % alle %', 
@@ -84,7 +85,8 @@ begin
 end;$$;
 
 
-create or replace trigger trg_no_class_overlap_update
+drop trigger if exists trg_no_class_overlap_update on lezioni;
+create trigger trg_no_class_overlap_update
 after update on lezioni
 for each row
 when (NEW.modalita <> 'R')
@@ -109,7 +111,7 @@ begin
 				(select fnc_lezione_overlap(l, NEW))
 	limit 1;
 
-	if conflict_ is not null
+	if FOUND
 	then
 		raise 'È già stata programmata una lezione di questo corso dalle % alle %',
 		to_char(conflict_.inizio,'HH24:MI'),
@@ -121,7 +123,8 @@ begin
 end;$$;
 
 
-create or replace trigger trg_no_class_overlap_same_course_insert
+drop trigger if exists trg_no_class_overlap_same_course_insert on lezioni;
+create trigger trg_no_class_overlap_same_course_insert
 before insert on lezioni
 for each row
 execute function fnc_trg_no_class_overlap_same_course_insert();
@@ -143,7 +146,7 @@ begin
 				(select fnc_lezione_overlap(l, NEW))
 	limit 1;
 
-    if conflict_ is not null
+    if FOUND
     then
         raise 'È già stata programmata una lezione di questo corso dalle % alle %',
         to_char(conflict_.inizio,'HH24:MI'),
@@ -156,7 +159,8 @@ begin
 end;$$;
 
 
-create or replace trigger trg_no_class_overlap_same_course_update
+drop trigger if exists trg_no_class_overlap_same_course_update on lezioni;
+create trigger trg_no_class_overlap_same_course_update
 after update on lezioni
 for each row
 execute function fnc_trg_no_class_overlap_same_course_update();
@@ -186,7 +190,8 @@ begin
 end;$$;
 
 
-create or replace trigger trg_closed_subscriptions
+drop trigger if exists trg_closed_subscriptions on iscrizioni_corsi;
+create trigger trg_closed_subscriptions
 before update or insert on iscrizioni_corsi
 for each row
 execute function fnc_trg_closed_subscriptions();
@@ -228,13 +233,15 @@ begin
 	return NEW;
 end;$$;
 
-create or replace trigger trg_class_before_subscriptions_lezioni
+drop trigger if exists trg_class_before_subscriptions_lezioni on lezioni;
+create trigger trg_class_before_subscriptions_lezioni
 before update or insert on lezioni
 for each row
 execute function fnc_trg_class_before_subscriptions_lezioni();
 
 
-create or replace trigger trg_class_before_subscriptions_corsi
+drop trigger if exists trg_class_before_subscriptions_corsi on corsi;
+create trigger trg_class_before_subscriptions_corsi
 before update on corsi
 for each row
 execute function fnc_trg_class_before_subscriptions_corsi();
