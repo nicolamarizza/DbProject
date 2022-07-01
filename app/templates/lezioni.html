@@ -60,7 +60,7 @@
                                 <div class="col s11 offset-s1">                
                                     <div class="row">
                                         {%- set class_name = 'Lezioni' -%}
-                                        <form id="nuova_lezione_insert"  class="col s12" action="/check_lesson" method="POST">
+                                        <form id="nuova_lezione_insert"  class="col s12" action="/lezione_insert" method="POST">
                                             
                                             {%- for element in attrLezioni.values() -%}
                                             {%- if element.insertable -%}
