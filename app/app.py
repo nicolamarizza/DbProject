@@ -303,17 +303,16 @@ def lezione_insert_post():
 		
 		if(lezione.modalita != 'P'):
 			acc = ZoomAccount(session=session)
-			op = acc.buildInsertOperation(lezione, 'lezioni_get', 'lezioni_get')
+			
+			result = acc.addMeeting(lezione, session=session)
+			if(result['success']):
+				session.commit()
 
-			try:
-				result = acc.execute(op, session=session)
-			except TokenNotProvidedException:
-				return redirect(acc.redirectToUserAuth(op.serialize()))
+			if('redirect' in result):
+				return redirect(result['redirect'])
+			
+			return redirect(url_for(result['endpoint'], **result['args']))
 
-			if(not result['success']):
-				return redirect(url_for(result['url']), error=True, **result['args'])
-
-	session.commit()
 	return redirect(url_for('lezioni_get'))
 
 
@@ -325,19 +324,18 @@ def lezione_delete_post():
 		meeting = lezione.meeting
 		if(meeting):
 			acc = ZoomAccount(session=session)
-			op = acc.buildDeleteOperation(meeting, 'lezioni_get', 'lezioni_get')
-			try:
-				result = acc.execute(op, session=session)
-			except TokenNotProvidedException:
-				return redirect(acc.redirectToUserAuth(op.serialize()))
+			result = acc.deleteMeeting(meeting, session=session)
 
-			if(not result['success']):
-				return redirect(url_for(result['url'], error=True, **result['args']))
-		
+			if('redirect' in result):
+				return redirect(result['redirect'])
+
+			session.commit()
+			return redirect(url_for(result['endpoint'], **result['args']))
+
+
 		session.delete(lezione)
 		session.commit()
-
-	return redirect(url_for('lezioni_get'))
+		return redirect(url_for('lezioni_get'))
 
 
 
@@ -705,10 +703,8 @@ def zoom_auth_code():
 
 	with current_user.getSession() as session:
 		zoomAcc = ZoomAccount(session=session)
-		zoomAcc.requestAccessToken(request.args['code'], session=session)
-		session.commit()
-		result = zoomAcc.resumeOperation(state, session=session)
+		result = zoomAcc.resumeOperation(state, request.args['code'], session=session)
+		if(result['success']):
+			session.commit()
 
-		session.commit()
-
-	return redirect(url_for(result['url'], **result['args']))
+	return redirect(url_for(result['endpoint']), **result['args'])
