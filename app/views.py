@@ -3,6 +3,7 @@
 # fornisce una mappatura fra i campi dei form con cui l'utente interagisce e gli attributi delle tabelle del db
 
 from datetime import date, datetime, timedelta
+import re
 from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
 import hashlib
@@ -10,6 +11,7 @@ import sys
 
 import db
 from db import Session, StudentSession, TeacherSession
+import sys
 
 def encrypt(password):
 	return hashlib.sha512(password.encode('utf-8')).hexdigest()

@@ -3,7 +3,7 @@ from doctest import UnexpectedException
 from flask import *
 from sqlalchemy import *
 from sqlalchemy.orm import *
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, InternalError
 from flask_login import LoginManager, current_user
 from flask_login import login_required
 from flask_login import login_user
@@ -12,12 +12,15 @@ import views
 import hashlib
 import os
 import db
-
+import re
 import time
 from datetime import datetime, date, timedelta
 from string import Template
+from zoom import ZoomAccount, TokenNotProvidedException
+
 
 import warnings
+
 warnings.simplefilter("ignore")
 
 app = Flask(__name__)
@@ -26,7 +29,6 @@ with open(os.environ['FLASK_KEY_PATH'], 'r') as file:
 login_manager = LoginManager()
 login_manager.anonymous_user = views.AnonymousUser
 login_manager.init_app(app)
-
 
 @login_manager.user_loader
 def load_user(email):
@@ -284,15 +286,56 @@ def lezioni_get(error = False, success = False, msg_error = "", error_p = False)
 @app.route('/lezione_insert', methods=['POST'])
 @login_required
 def lezione_insert_post():
-	views.SimpleView.insertAll(request.form)
+	user = current_user
+	with user.getSession() as session:
+		copy = {**request.form}
+		if(copy.get('Lezioni.idaula', None) == 'virtual'):
+			copy.pop('Lezioni.idaula')
+
+		lezione = views.SimpleView.insertAll(copy, session=session).get('Lezioni')
+		try:
+			session.commit()
+		except InternalError as ex:
+			msg = ex.orig.args[0]
+			msg = re.search('(.*)\\nCONTEXT', msg).group(1)
+			session.rollback()
+			return lezioni_get(error=True, success=False, msg_error=msg, error_p=False)
+		
+		if(lezione.modalita != 'P'):
+			acc = ZoomAccount(session=session)
+			
+			result = acc.addMeeting(lezione, session=session)
+			if(result['success']):
+				session.commit()
+
+			if('redirect' in result):
+				return redirect(result['redirect'])
+			
+			return redirect(url_for(result['endpoint'], **result['args']))
+
 	return redirect(url_for('lezioni_get'))
 
 
 @app.route('/lezione_delete', methods=["POST"])
 @login_required 
 def lezione_delete_post():
-	views.SimpleView.deleteAll(request.form)
-	return redirect(url_for('lezioni_get'))
+	with current_user.getSession() as session:
+		lezione = session.query(views.Lezioni.dbClass).get(request.form['Lezioni.pk'])
+		meeting = lezione.meeting
+		if(meeting):
+			acc = ZoomAccount(session=session)
+			result = acc.deleteMeeting(meeting, session=session)
+
+			if('redirect' in result):
+				return redirect(result['redirect'])
+
+			session.commit()
+			return redirect(url_for(result['endpoint'], **result['args']))
+
+
+		session.delete(lezione)
+		session.commit()
+		return redirect(url_for('lezioni_get'))
 
 
 
@@ -653,3 +696,15 @@ def check_lesson():
 
 
 
+# questa richiesta arriva dall'API di zoom
+@app.route('/zoom_auth_code', methods=['GET'])
+def zoom_auth_code():
+	state = json.loads(request.args['state'].replace('\'', '"', -1))
+
+	with current_user.getSession() as session:
+		zoomAcc = ZoomAccount(session=session)
+		result = zoomAcc.resumeOperation(state, request.args['code'], session=session)
+		if(result['success']):
+			session.commit()
+
+	return redirect(url_for(result['endpoint']), **result['args'])
