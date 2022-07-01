@@ -13,19 +13,20 @@ import hashlib
 import os
 import db
 import re
-import time
+import sys
 from datetime import datetime, date, timedelta
 from string import Template
-from zoom import ZoomAccount, TokenNotProvidedException
-
-
+from zoom import ZoomAccount
 import warnings
+
+import argparse
 
 warnings.simplefilter("ignore")
 
 app = Flask(__name__)
 with open(os.environ['FLASK_KEY_PATH'], 'r') as file:
 	app.config['SECRET_KEY'] = file.read().replace('\n','')
+
 login_manager = LoginManager()
 login_manager.anonymous_user = views.AnonymousUser
 login_manager.init_app(app)
@@ -301,12 +302,10 @@ def lezione_insert_post():
 			session.rollback()
 			return lezioni_get(error=True, success=False, msg_error=msg, error_p=False)
 		
-		if(lezione.modalita != 'P'):
+		if(USING_ZOOM and lezione.modalita != 'P'):
 			acc = ZoomAccount(session=session)
 			
 			result = acc.addMeeting(lezione, session=session)
-			if(result['outcome']):
-				session.commit()
 
 			if('redirect' in result):
 				return redirect(result['redirect'])
@@ -325,7 +324,7 @@ def lezione_delete_post():
 	with current_user.getSession() as session:
 		lezione = session.query(views.Lezioni.dbClass).get(request.form['Lezioni.pk'])
 		meeting = lezione.meeting
-		if(meeting):
+		if(USING_ZOOM and meeting):
 			acc = ZoomAccount(session=session)
 			result = acc.deleteMeeting(meeting, session=session)
 
@@ -336,7 +335,6 @@ def lezione_delete_post():
 				session.commit()
 			
 			return lezioni_get(**result['args'])
-
 
 
 		session.delete(lezione)
@@ -585,3 +583,17 @@ def zoom_auth_code():
 			session.commit()
 
 	return lezioni_get(**result['args'])
+
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--zoom', required=False, action='store_true')
+parser.add_argument('--adhoc', required=False, action='store_true')
+USING_ZOOM = parser.parse_args().zoom
+AD_HOC = parser.parse_args().adhoc
+
+print(f'Zoom {"enabled" if USING_ZOOM else "disabled"}')
+if(AD_HOC):
+	print(f'Using adhoc certificate')
+	app.run(ssl_context='adhoc', host='0.0.0.0')
+app.run(host='0.0.0.0')
