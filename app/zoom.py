@@ -1,29 +1,20 @@
-from abc import abstractmethod
 from base64 import b64encode
 from datetime import timedelta, datetime as date_time
-import email
 from os import environ
-from requests import get, post, request, Request, Session as HttpSession
+from requests import request
 from urllib.parse import urlencode
 import db
-from sqlalchemy.sql.functions import now
 from flask_login import current_user
 import sys
 import json
-
-class TokenNotProvidedException(Exception):
-	pass
-
-class ExpiredTokenException(Exception):
-	pass
-
 
 # all zoom operations return a dict of type:
 #{
 #	'success': boolean,		the operation is successful
 #	'redirect': boolean,	if present, it contains a url intended for redirection
 #	'args': dict			when the user is not being redirected, 
-# 							it holds the arguments to pass to the lezioni_get jinja template
+# 							it holds the arguments to pass to the lezioni_get endpoint 
+# 							to build the jinja template
 #}
 
 class ZoomOperation():
@@ -33,34 +24,28 @@ class ZoomOperation():
 		return opClass(access_token=access_token, **state)
 
 	def __init__(self, **kwargs):
-		self.access_token = kwargs.get('access_token', None)
-		self._prepareSerialization(**kwargs) # endpoints intentionally ignored
-
+		self._prepare_serialization(**kwargs) # endpoints intentionally ignored
 		self.headers = {'content-type': 'application/json'}
-		if(self.access_token):
-			self.headers['Authorization'] = f'''Bearer {self.access_token}'''
 
 	def serialize(self):
 		return self.serialized
 
-	def execute(self, session=None):
+	def execute(self, access_token, session=None):
+		self.headers['Authorization'] = f'''Bearer {access_token}'''
 		response = request(
 			method=self.method,
 			url=self.url,
 			headers=self.headers,
-			data=json.dumps(getattr(self, 'data', [])),
-			params=json.dumps(getattr(self, 'params', []))
+			data=getattr(self, 'data', {}),
+			params=getattr(self, 'params', {})
 		)
 
 		return self._operation(response, session=session)
 
-	def _prepareSerialization(self, **kwargs):
-		copy = {**kwargs}
-		if('access_token' in copy):
-			copy.pop('access_token')
+	def _prepare_serialization(self, **kwargs):
 		self.serialized = json.dumps({
-			'op':self.__class__.__name__, #endpoints will be available after object construction
-			**copy
+			'op':self.__class__.__name__,
+			**kwargs
 		})
 
 	def _die(self, outcome, **args):
@@ -69,6 +54,9 @@ class ZoomOperation():
 			'args': args
 		}
 
+# Aside from deleting the meeting from zoom and from the db, this operation
+# also deletes the class from the db. This is necessary because of the zoom authorization process
+# which could make this operation span across 2 different endpoints (namely lezione_delete and zoom_auth_code)
 class DeleteOperation(ZoomOperation):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
@@ -77,7 +65,7 @@ class DeleteOperation(ZoomOperation):
 		self.url = f'https://api.zoom.us/v2/meetings/{self.meeting_id}'
 	
 	def _operation(self, response, session=None):
-		if (response.status_code != 204 and response.status_code != 404): #404 means that zoom meeting was already deleted in the zoom cloud
+		if (response.status_code != 204 and response.status_code != 404): #404 means that the meeting was already deleted on the zoom cloud, which is fine
 			reason = json.loads(response.content)['message']
 			return self._die(False, msg_error=reason, error=True)
 
@@ -95,6 +83,9 @@ class DeleteOperation(ZoomOperation):
 		
 		return self._die(True, msg_error='La lezione è stata eliminata correttamente!', success=True)
 
+# This operations only inserts the meeting on zoom and on the db
+# In this case there is no need to insert the corresponding class also, since
+# it is inserted right away (endpoint lezione_insert) to check its validity against the db triggers 
 class InsertOperation(ZoomOperation):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
@@ -152,21 +143,24 @@ class ZoomAccount():
 			session.commit()
 			session.close()
 
+	# the prerequisite is for the class to be already registered in the db 
+	# (or at least in the current session if specified)
 	def addMeeting(self, lezione, session=None):
 		return self._execute(InsertOperation(
 			lezione_id=lezione.id,
-			access_token=self.access_token,
 			agenda=f'Lezione di {lezione.corso.titolo}',
 			start_time=str(lezione.inizio).replace(' ','T',1) + 'Z',
 			duration=(int)(lezione.durata.total_seconds() / 60)
 		), session=session)
 
+	# deletes the class also
 	def deleteMeeting(self, meeting, session=None):
 		return self._execute(DeleteOperation(
-			access_token=self.access_token,
 			meeting_id=meeting.id
 		), session=session)
 
+	# used to resume the operation that was serialized before asking the user
+	# the authorization to access their zoom account
 	def resumeOperation(self, state, auth_code, session=None):
 		self._requestAccessToken(auth_code)
 		return self._execute(
@@ -177,6 +171,13 @@ class ZoomAccount():
 			session=session
 		)
 
+	# before executing a given operation, checks if the user has ever provided authorization to the app 
+	# (meaning the user has their own entry in the zoomtokens table). If they had not, the current operation 
+	# will be put on hold, serialized, and only after receiving authorization, deserialized and executed.
+	# See https://marketplace.zoom.us/docs/guides/auth/oauth/#getting-an-access-token
+	# If the user has already given authorization to the app but their access_token is expired (older than an hour),
+	# a request will be made to the zoom api and then the token will be refreshed
+	# See: https://marketplace.zoom.us/docs/guides/auth/oauth/#refreshing-an-access-token
 	def _execute(self, operation, session=None):
 		sessionProvided = session is not None
 		if(not sessionProvided):
@@ -198,7 +199,7 @@ class ZoomAccount():
 					}
 				}
 
-		result = operation.execute(session=session)
+		result = operation.execute(access_token=self.access_token, session=session)
 
 		if(not sessionProvided):
 			session.commit()
@@ -239,12 +240,12 @@ class ZoomAccount():
 			session.commit()
 			session.close()
 
+	# Access tokens older than one hour are expired
 	def _isTokenExpired(self):
 		return date_time.now() - self.creation_timestamp >= timedelta(minutes=55) #give it 5 minutes slack
 
-	# retreives from the db the user's refresh_key
 	# sends a request to the zoom api to refresh the access key
-	# returns True if this whole operation is successful
+	# returns True if this whole operation is successful in addition to an error message if it's not
 	def _refreshTokens(self, session = None):
 		sessionProvided = not session is None
 		if(not sessionProvided):
