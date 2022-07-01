@@ -14,6 +14,8 @@ grant all on lezioni to docente;
 grant select on prenotazioni_lezioni to docente;
 grant all on responsabili_corsi to docente;
 grant select, update on utenti to docente;
+grant all on zoommeetings to docente;
+grant select,insert,update on zoomtokens to docente;
 
 grant update on sequence lezioni_id_seq to docente;
 grant update on sequence corsi_id_seq to docente;

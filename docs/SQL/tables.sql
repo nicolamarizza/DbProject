@@ -112,3 +112,24 @@ create table responsabili_corsi (
 	
 	primary key (iddocente, idcorso)
 );
+
+create table zoommeetings (
+    id int primary key,
+	idlezione int not null references lezioni(id)
+		on update cascade
+		on delete cascade,
+    host_email varchar(254) not null references utenti(email)
+		on update cascade
+		on delete no action, -- eventualmente assegnare il meeting ad un altro responsabile del corso
+	start_url text not null,
+	join_url text not null
+);
+
+create table zoomtokens (
+    email varchar(254) primary key references utenti(email)
+		on update cascade
+		on delete cascade,
+    access_token text not null,
+    refresh_token text not null,
+    creation_timestamp timestamp not null default CURRENT_TIMESTAMP
+);

@@ -614,7 +614,6 @@ def is_datetime_ok(data):
 def is_not_datetatime_open(data):
 	return datetime.now() < data
 
-
 # questa richiesta arriva dall'API di zoom
 @app.route('/zoom_auth_code', methods=['GET'])
 def zoom_auth_code():
@@ -633,11 +632,18 @@ def zoom_auth_code():
 parser = argparse.ArgumentParser()
 parser.add_argument('--zoom', required=False, action='store_true')
 parser.add_argument('--adhoc', required=False, action='store_true')
-USING_ZOOM = parser.parse_args().zoom
-AD_HOC = parser.parse_args().adhoc
+parser.add_argument('--debug', required=False, action='store_true')
+parsed_args = parser.parse_args()
+USING_ZOOM = parsed_args.zoom
+AD_HOC = parsed_args.adhoc
 
 print(f'Zoom {"enabled" if USING_ZOOM else "disabled"}')
-if(AD_HOC):
-	print(f'Using adhoc certificate')
-	app.run(ssl_context='adhoc', host='0.0.0.0')
-app.run(host='0.0.0.0')
+
+flask_kwargs={
+	'debug': parsed_args.debug,
+	'host': '0.0.0.0'
+}
+if(parsed_args.adhoc):
+	flask_kwargs['ssl_context']='adhoc'
+
+app.run(**flask_kwargs)

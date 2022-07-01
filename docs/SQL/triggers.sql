@@ -245,3 +245,26 @@ create trigger trg_class_before_subscriptions_corsi
 before update on corsi
 for each row
 execute function fnc_trg_class_before_subscriptions_corsi();
+
+
+-- ogni volta che vengono aggiornati i token viene automaticamente
+-- aggiornata l'ora di inizio validità
+create or replace function fnc_trg_zoom_token_time()
+    returns trigger
+    language plpgsql
+as $$
+begin
+    update zoomtokens
+    set creation_timestamp = CURRENT_TIMESTAMP
+    where email = (select email from old_table);
+    
+    return NULL;
+end;
+$$;
+
+create or replace trigger trg_zoom_token_time
+after update on zoomtokens
+referencing NEW TABLE as new_table OLD TABLE as old_table
+for each statement
+WHEN (pg_trigger_depth() < 1) --evita che si triggeri ricorsivamente
+execute function fnc_trg_zoom_token_time();
