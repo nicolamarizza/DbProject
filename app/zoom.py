@@ -22,8 +22,8 @@ class ExpiredTokenException(Exception):
 #{
 #	'success': boolean,		the operation is successful
 #	'redirect': boolean,	if present, it contains a url intended for redirection
-#	'endpoint': string,		if present, it contains an endpoint
-#	'args': dict			when endpoint is present, it holds the arguments to pass to the jinja template
+#	'args': dict			when the user is not being redirected, 
+# 							it holds the arguments to pass to the lezioni_get jinja template
 #}
 
 class ZoomOperation():
@@ -32,9 +32,7 @@ class ZoomOperation():
 		opClass = getattr(sys.modules[__name__], state.pop('op'))
 		return opClass(access_token=access_token, **state)
 
-	def __init__(self, success_endpoint, fail_endpoint=None, **kwargs):
-		self.success_endpoint = success_endpoint
-		self.fail_endpoint = fail_endpoint if fail_endpoint else success_endpoint
+	def __init__(self, **kwargs):
 		self.access_token = kwargs.get('access_token', None)
 		self._prepareSerialization(**kwargs) # endpoints intentionally ignored
 
@@ -65,16 +63,15 @@ class ZoomOperation():
 			**copy
 		})
 
-	def _die(self, success, **args):
+	def _die(self, outcome, **args):
 		return {
-			'success': success,
-			'endpoint': self.success_endpoint if success else self.fail_endpoint,
+			'outcome': outcome,
 			'args': args
 		}
 
 class DeleteOperation(ZoomOperation):
 	def __init__(self, **kwargs):
-		super().__init__(success_endpoint='lezioni_get', **kwargs)
+		super().__init__(**kwargs)
 		self.meeting_id = kwargs.get('meeting_id')
 		self.method = 'DELETE'
 		self.url = f'https://api.zoom.us/v2/meetings/{self.meeting_id}'
@@ -82,7 +79,7 @@ class DeleteOperation(ZoomOperation):
 	def _operation(self, response, session=None):
 		if (response.status_code != 204 and response.status_code != 404): #404 means that zoom meeting was already deleted in the zoom cloud
 			reason = json.loads(response.content)['message']
-			return self._die(False, msg_error=reason, success=False, error=True)
+			return self._die(False, msg_error=reason, error=True)
 
 		sessionProvided = session is not None
 		if (not sessionProvided):
@@ -96,11 +93,11 @@ class DeleteOperation(ZoomOperation):
 			session.commit()
 			session.close()
 		
-		return self._die(True)
+		return self._die(True, msg_error='La lezione è stata eliminata correttamente!', success=True)
 
 class InsertOperation(ZoomOperation):
 	def __init__(self, **kwargs):
-		super().__init__(success_endpoint='lezioni_get', **kwargs)
+		super().__init__(**kwargs)
 		self.agenda = kwargs.get('agenda')
 		self.start_time = kwargs.get('start_time')
 		self.duration = kwargs.get('duration')
@@ -117,7 +114,7 @@ class InsertOperation(ZoomOperation):
 			# TO-DO: notify user
 			reason = json.loads(response.content)['message']
 
-			return self._die(False, msg_error=reason)
+			return self._die(False, msg_error=reason, error=True)
 		
 		lezione_zoom = response.json()
 
@@ -137,46 +134,7 @@ class InsertOperation(ZoomOperation):
 			session.commit()
 			session.close()
 		
-		return self._die(True)
-
-#class SubscribeOperation(ZoomOperation):
-#	def __init__(self, **kwargs):
-#		super().__init__(success_endpoint='lezioni_get', **kwargs)
-#		self.lezione_id = kwargs.get('lezione_id')
-#
-#	def execute(self, session=None):
-#		user = current_user
-#		sessionProvided = session is not None
-#		if(not sessionProvided):
-#			session = user.getSession()
-#		
-#		response = request (
-#			'GET',
-#			f'https://api.zoom.us/v2/users/{current_user.email}',
-#			headers=self.headers
-#		)
-#
-#		if(response.status_code != 200):
-#			return self._die(False, msg_error=response.reason)
-#
-#		zoom_user = response.json()
-#
-#		response = request (
-#			'POST',
-#			f'https://api.zoom.us/v2/meetings/{self.lezione_id}/registrants',
-#			data = {
-#				'first_name': zoom_user['first_name'],
-#				'last_name': zoom_user['last_name'],
-#				'phone': zoom_user['phone'],
-#				'email': current_user.email
-#			},
-#			headers=self.headers
-#		)
-#
-#		if(response.status_code != 201):
-#			self._die(False, msg_error=response.reason)
-#
-#		return self._die(False)
+		return self._die(True, msg_error='La lezione è stata inserita correttamente!', success=True)
 
 class ZoomAccount():
 	CLIENT_ID = environ['ZOOM_CLIENT_ID']
@@ -233,8 +191,7 @@ class ZoomAccount():
 			success, reason = self._refreshTokens()
 			if(not success):
 				return {
-					'success': False,
-					'endpoint': operation.fail_endpoint,
+					'outcome': False,
 					'args': {
 						'msg_error': reason,
 						'error': True
@@ -258,7 +215,7 @@ class ZoomAccount():
 			'state': state
 		}
 		return {
-			'success': False,
+			'outcome': False,
 			'redirect': 'https://zoom.us/oauth/authorize?' + urlencode(query),
 		}
 

@@ -305,15 +305,18 @@ def lezione_insert_post():
 			acc = ZoomAccount(session=session)
 			
 			result = acc.addMeeting(lezione, session=session)
-			if(result['success']):
+			if(result['outcome']):
 				session.commit()
 
 			if('redirect' in result):
 				return redirect(result['redirect'])
-			
-			return redirect(url_for(result['endpoint'], **result['args']))
 
-	return redirect(url_for('lezioni_get'))
+			if(result['outcome']):
+				session.commit()
+			
+			return lezioni_get(**result['args'])
+
+	return lezioni_get(success=True, msg_error='La lezione è stata inserita correttamente!')
 
 
 @app.route('/lezione_delete', methods=["POST"])
@@ -329,13 +332,16 @@ def lezione_delete_post():
 			if('redirect' in result):
 				return redirect(result['redirect'])
 
-			session.commit()
-			return redirect(url_for(result['endpoint'], **result['args']))
+			if(result['outcome']):
+				session.commit()
+			
+			return lezioni_get(**result['args'])
+
 
 
 		session.delete(lezione)
 		session.commit()
-		return redirect(url_for('lezioni_get'))
+		return lezioni_get(success=True, msg_error='La lezione è stata elminata correttamente!')
 
 
 
@@ -567,135 +573,6 @@ def is_not_datetatime_open(data):
 	return datetime.now() < data
 
 
-
-#controllo dati form lezioni
-@app.route('/check_lesson', methods=["POST"])
-def check_lesson():
-	idcorso = request.form['Lezioni.idcorso']
-
-	idaula = request.form['Lezioni.idaula']
-	inizio = request.form['Lezioni.inizio']
-	durata = request.form['Lezioni.durata']
-	modalita = request.form['Lezioni.modalita']
-
-	#conversione da stringa in datetime
-	inizioDatetimeobj = datetime.strptime(inizio, "%Y/%m/%d %H:%M")
-	#estrae il time
-	inizioTime = inizioDatetimeobj.time()
-	#conversione da time a time delta
-	inizioLezione = timedelta(hours= int(inizioTime.hour), minutes=int(inizioTime.minute))
-
-	#conversione da stringa a time
-	durataTimeobj = time.strptime(durata, '%H:%M')
-	#conversione da time a timedelta
-	durataLezione = timedelta(hours = int(durataTimeobj.tm_hour), minutes = int(durataTimeobj.tm_min))
-
-	#calcola l'orario di fine lezione
-	fineLezione = inizioLezione + durataLezione
-	
-	user = current_user
-
-	#seleziono le lezioni di quel corso
-	with user.getSession() as session:
-
-		corsi_totali = session.query(views.Corsi.dbClass).all()
-
-		i_tuoi_corsi = list(filter(lambda c : user in c.responsabili, corsi_totali))
-		#lista degli id dei propri corsi
-		c = [x.id for x in i_tuoi_corsi]
-
-		#lezioni dei suoi corsi
-		lezioni = session.query(views.Corsi.dbClass, views.Lezioni.dbClass).\
-			join(views.Corsi.dbClass, views.Corsi.dbClass.id == views.Lezioni.dbClass.idcorso, isouter=False).\
-			filter(views.Lezioni.dbClass.idcorso.in_(c)).all()
-
-
-	#controllare che l'aula sia libera, se la lezione non è virtuale
-	if idaula != "virtual":
-
-		with user.getSession() as session:
-			#prende le lezioni di altri, escludendo quelle online
-			lezioni_altri = session.query(views.Corsi.dbClass, views.Lezioni.dbClass, views.Aule.dbClass, views.Edifici.dbClass).\
-				join(views.Aule.dbClass, views.Aule.dbClass.id == views.Lezioni.dbClass.idaula, isouter=False).\
-				join(views.Corsi.dbClass, views.Corsi.dbClass.id == views.Lezioni.dbClass.idcorso, isouter=False).\
-				filter(views.Lezioni.dbClass.idcorso.not_in(c), 
-					   views.Aule.dbClass.idedificio == views.Edifici.dbClass.id).all()
-
-		for l in lezioni_altri:
-			#stesso giorno, stesso orario e stessa aula
-			if l[1].inizio.date() == inizioDatetimeobj.date() and\
-				l[1].inizio.time() == inizioDatetimeobj.time() and\
-			    l[1].idaula == int(idaula):	
-
-				print("a")
-				msg_error = "Aula occupata: esiste già una lezione di "+l[0].titolo+\
-							" in "+l[2].nome+" (edificio "+l[3].nome+"). Selezionare un posto differente."
-					
-				return lezioni_get(True, False, msg_error, False)
-					
-					
-				#estrae il time dal time datetime e ne crea un timedelta
-				inizio_l =timedelta(hours= int(l[1].inizio.time().hour), minutes=int(l[1].inizio.time().minute))\
-				#calcolo orario fine lezione
-				fine_l = inizio_l + l[1].durata
-				
-				#se le lezioni si sovrappongono e sono nella stessa aula
-				if ((inizio_l > inizioLezione and inizio_l < fineLezione) or\
-					(fine_l > inizioLezione and fine_l < fineLezione)) and\
-					l[1].idaula == int(idaula):
-						msg_error = "Aula occupata: esiste già una lezione di "+l[0].titolo+\
-									" in "+l[2].nome+" (edificio "+l[3].nome+"). Selezionare un posto differente."
-					
-						return lezioni_get(True, False, msg_error, False)
-			
-
-	#controllo sulle lezioni dei SUOI corsi, evitare la sovrapposizione
-	for l in lezioni:
-		#se le lezioni di quel corso sono lo stesso giorno
-		if l[1].inizio.date() == inizioDatetimeobj.date():
-			
-			#controlla se sono esattamente alla stessa ora, impedendone l'inserimento con avviso all'utente
-			if l[1].inizio.time() == inizioDatetimeobj.time():
-				msg_error = "Esiste già una lezione di "+l[0].titolo+". Non possono esserci due lezioni dello stesso corso contemporaneamente!"
-				
-				return lezioni_get(True, False, msg_error, False)
-
-
-			#estrae il time dal time datetime e ne crea un timedelta
-			inizio_l =timedelta(hours= int(l[1].inizio.time().hour), minutes=int(l[1].inizio.time().minute))\
-			#calcolo orario fine lezione
-			fine_l = inizio_l + l[1].durata
-			
-			#se le lezioni si sovrappongono, impedisce l'inserimento e avvisa l'utente
-			if (inizio_l > inizioLezione and inizio_l < fineLezione) or\
-				(fine_l > inizioLezione and fine_l < fineLezione):
-				msg_error = "Esiste già una lezione di "+l[0].titolo+"\n si prega di selezionare un orario e/o giorno differente."
-				
-				return lezioni_get(True, False, msg_error, False)
-
-
-	#inserisce la lezione
-	with user.getSession() as session:
-		if idaula != "virtual":
-			new_lez = views.Lezioni.dbClass(idaula = idaula, idcorso = idcorso, inizio = inizio, durata = durata, modalita = modalita)
-		else:
-			#aula virtuale, lascio che di default venga messo a null l'attributo idaula
-			new_lez = views.Lezioni.dbClass(idcorso = idcorso, inizio = inizio, durata = durata, modalita = modalita)
-
-		session.add(new_lez)
-		try:
-			session.commit()
-		except IntegrityError:
-			msg_error = "errore inserimento dati nel database"
-			return lezioni_get(True, False, msg_error, False)
-
-
-	#se è andato tutto bene permette l'inserimento
-	msg_error = "La lezione è stata inserita correttamente!"
-	return lezioni_get(False, True, msg_error, False)
-
-
-
 # questa richiesta arriva dall'API di zoom
 @app.route('/zoom_auth_code', methods=['GET'])
 def zoom_auth_code():
@@ -704,7 +581,7 @@ def zoom_auth_code():
 	with current_user.getSession() as session:
 		zoomAcc = ZoomAccount(session=session)
 		result = zoomAcc.resumeOperation(state, request.args['code'], session=session)
-		if(result['success']):
+		if(result['outcome']):
 			session.commit()
 
-	return redirect(url_for(result['endpoint']), **result['args'])
+	return lezioni_get(**result['args'])
