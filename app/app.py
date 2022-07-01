@@ -117,7 +117,7 @@ def registrazione():
 
 
 @app.route('/corsi')
-def corsi_get():
+def corsi_get(success=False, error=False, msg_error=''):
 	user = current_user
 	authenticated = user.is_authenticated
 
@@ -138,7 +138,10 @@ def corsi_get():
 			is_docente=user.isdocente if authenticated else False,
 			i_tuoi_corsi=i_tuoi_corsi, 
 			corsi_disponibili=corsi_disponibili,
-			attrList=views.Corsi.attributes
+			attrList=views.Corsi.attributes,
+			success=success,
+			error=error,
+			msg_error=msg_error
 		)
 
 
@@ -193,9 +196,9 @@ def corso_update_post():
 	except InternalError as ex:
 		msg = ex.orig.args[0]
 		msg = re.search('(.*)\\nCONTEXT', msg).group(1)
-		return lezioni_get(error=True, success=False, msg_error=msg, error_p=False)
+		return corsi_get(error=True, success=False, msg_error=msg)
 	
-	return lezioni_get(error=False, success=True, msg_error='Corso modificato correttamente!', error_p=False)
+	return corsi_get(error=False, success=True, msg_error='Corso modificato correttamente!')
 
 #route per la visione degli iscritti al corso
 @app.route('/statistiche', methods=["POST"])

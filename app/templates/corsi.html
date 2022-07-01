@@ -18,11 +18,34 @@
 
         {%- if authenticated -%}
         <h3>I tuoi corsi</h3>
+
+
+			{%- if success -%}
+
+			<div id="close_div_msg" class="bar success">
+				<div class="close" id="close_div_msg">X</div>
+				<i class="ico">&#10004;</i> SUCCESSO: {{ msg_error }}
+			</div>
+
+			{%- endif -%}
+
+
+			{%- if error -%}
+
+			<div id="close_div_msg" class="bar error">
+				
+				<div class="close" id="close_div_msg">X</div>
+				<i class="ico">&#9747;</i> 
+				<span >ERRORE: {{ msg_error }}</span>
+			</div>
+
+			{%- endif -%}
+
+
             {%- if i_tuoi_corsi -%}
             <ul class="collapsible expandable popout">
                 {% for corso in i_tuoi_corsi %}
                     {% include 'corso_elem.html' %}
-                 
                 {% endfor %}
             </ul>
             {%- else -%}
