@@ -25,7 +25,7 @@
 
                 <div class="row" id="boh" style="display: none;">
 					{%- set class_name = 'Corsi' -%}
-                    <form id="{{ corso.id }}" class="col s12" action="/update" method="POST">
+                    <form id="{{ corso.id }}" class="col s12" action="/corso_update" method="POST">
 						<div class="row", style="display: none;">
                             <div class="input-field col s8">
                                 <input name='{{ class_name }}.pk' value='{{ corso.id }}'>

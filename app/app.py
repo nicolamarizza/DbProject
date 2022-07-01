@@ -185,7 +185,17 @@ def corso_insert_post():
 	views.SimpleView.insertAll(request.form)
 	return redirect(url_for('corsi_get')) 
 
-
+@app.route('/corso_update', methods=['POST'])
+@login_required
+def corso_update_post():
+	try:
+		views.SimpleView.updateAll(request.form)['Corsi']
+	except InternalError as ex:
+		msg = ex.orig.args[0]
+		msg = re.search('(.*)\\nCONTEXT', msg).group(1)
+		return lezioni_get(error=True, success=False, msg_error=msg, error_p=False)
+	
+	return lezioni_get(error=False, success=True, msg_error='Corso modificato correttamente!', error_p=False)
 
 #route per la visione degli iscritti al corso
 @app.route('/statistiche', methods=["POST"])
@@ -341,6 +351,34 @@ def lezione_delete_post():
 		session.commit()
 		return lezioni_get(success=True, msg_error='La lezione è stata elminata correttamente!')
 
+
+@app.route('/lezione_update')
+@login_required
+def lezione_update_post():
+	with current_user.getSession() as session:
+		lezione = views.SimpleView.updateAll(request.form, session=session)
+
+		try:
+			session.commit()
+		except InternalError as ex:
+			msg = ex.orig.args[0]
+			msg = re.search('(.*)\\nCONTEXT', msg).group(1)
+			session.rollback()
+			return lezioni_get(error=True, success=False, msg_error=msg, error_p=False)
+		
+		if(USING_ZOOM and lezione.meeting):
+			acc = ZoomAccount(session=session)
+			result = acc.updateMeeting(lezione, session=session)
+
+			if('redirect' in result):
+				return redirect(result['redirect'])
+
+			if(result['outcome']):
+				session.commit()
+			
+			return lezioni_get(**result['args'])
+
+	return lezioni_get(success=True, msg_error='La lezione è stata modificata correttamente!')
 
 
 @app.route('/iscrizione_lezione', methods=['POST'])

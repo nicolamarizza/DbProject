@@ -146,7 +146,7 @@ class SimpleView():
 	def insertAll(args, session=None):
 		sessionProvided = not session is None
 		if(not sessionProvided):
-			session = db.Session()
+			session = current_user.getSession()
 		
 		results = {}
 		
@@ -162,13 +162,14 @@ class SimpleView():
 		if(not sessionProvided):
 			session.commit()
 			session.close()
+		
 		return results
 	
 	@staticmethod
 	def deleteAll(args, session=None):
 		sessionProvided = not session is None
 		if(not sessionProvided):
-			session = db.Session()
+			session = current_user.getSession()
 
 		results = {}
 
@@ -188,15 +189,14 @@ class SimpleView():
 	def updateAll(args, session=None):
 		sessionProvided = not session is None
 		if(not sessionProvided):
-			session = db.Session()
+			session = current_user.getSession()
 
 		results = {}
-		with Session() as session:
-			for tableName in SimpleView.getTables(**args):
-				View = getattr(sys.modules[__name__], tableName)
-				obj = View(**args)
-				dbObj = obj.update(session=session)
-				results[tableName] = dbObj
+		for tableName in SimpleView.getTables(**args):
+			View = getattr(sys.modules[__name__], tableName)
+			obj = View(**args)
+			dbObj = obj.update(session=session)
+			results[tableName] = dbObj
 
 		if(not sessionProvided):
 			session.commit()
