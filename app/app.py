@@ -461,8 +461,6 @@ def cancella_lezione_post():
 @login_required
 def modifica_profilo():
 	user = current_user
-
-
 	return render_template(
 		'profilo.html', 
 		authenticated = True, 
@@ -472,6 +470,11 @@ def modifica_profilo():
 		attrUtente = views.User.attributes
 	)
 
+@app.route('/profilo_update', methods=['POST'])
+@login_required
+def profilo_update():
+	views.SimpleView.updateAll(request.form)
+	return redirect(url_for('home_get'))
 
 @app.route('/profilo')
 @login_required

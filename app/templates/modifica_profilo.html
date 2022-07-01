@@ -1,6 +1,6 @@
 
 {%- set class_name = 'User' -%}
-<form id="form_edit_profile" onsubmit="return validateForm('{{ current_user.password }}')" class="col s12" action="/update" method="POST">
+<form id="form_edit_profile" onsubmit="return validateForm('{{ current_user.password }}')" class="col s12" action="/profilo_update" method="POST">
     <div class="row", style="display: none;">
         <div class="input-field col s8">
         <input name='{{ class_name }}.pk' value='{{ old_obj_values.email }}'>
