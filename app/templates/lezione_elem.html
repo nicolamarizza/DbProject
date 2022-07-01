@@ -1,16 +1,31 @@
 <tr> 
     <td> {{ lezione[0].titolo }}</td>     
-    {%- if lezione[1].idaula -%}
-        
-        <td>{{lezione[3].nome }} {{lezione[2].nome }} <br>
-            {%- if lezione[1].modalita == 'D' -%}
-                <a href="#!">link zoom</a>
-            {%- endif -%}
-        </td>
-    {%- else -%}    
-        <td> <a href="#!">link zoom</a></td>
-    {%- endif -%}    
     
+	<td>
+    {%- if lezione[1].idaula -%}
+	{{lezione[3].nome }} {{lezione[2].nome }} <br>
+	{%- endif -%}
+
+
+	{%- if lezione[1].modalita != 'P' -%}
+
+		{%- if lezione[1].meeting -%}
+
+			{%- if is_docente -%}
+			<a href="{{ lezione[1].meeting.start_url }}">link zoom</a>
+			{%- else -%}
+			<a href="{{ lezione[1].meeting.join_url }}">link zoom</a>
+			{%- endif -%}
+			
+		{%- else -%}
+
+			<a href="#" style="color:crimson">link zoom mancante</a>
+		
+		{%- endif -%}
+
+	{%- endif -%}
+	</td>
+
     <td>{{ lezione[1].inizio|extract_date }}</td>
     <td>{{ lezione[1].inizio|extract_time }}</td>
 
