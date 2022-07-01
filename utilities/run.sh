@@ -1,7 +1,6 @@
 #!/bin/bash
 
-cd app
-export FLASK_APP='app.py'
-export FLASK_ENV='development'
+source utilities/env.txt
 
-flask run
+cd app
+flask run --host=0.0.0.0

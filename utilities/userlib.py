@@ -10,8 +10,8 @@ import string
 def genRandomPassword(len):
 	return ''.join(random.choices(string.ascii_uppercase + string.digits, k=len))
 
-host = os.environ['SERVER_HOST']
-port = os.environ['SERVER_PORT']
+host = os.environ['DB_HOST']
+port = os.environ['DB_PORT']
 
 engine = create_engine(f'postgresql://groupmember:groupmember@{host}:{port}/PCTO')
 metadata = MetaData(bind=engine)
@@ -36,7 +36,7 @@ def registerUser(firstName, lastName, password, session=None, docente=False):
 		email = email + '@unive.it'
 	else:
 		year = random.randint(2000, 2004)
-		email = email + '@shit.com'
+		email = email + '@gmail.com'
 	
 	month = random.randint(1, 12)
 	day = random.randint(1, 28)

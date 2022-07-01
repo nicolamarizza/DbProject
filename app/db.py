@@ -6,8 +6,8 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.ext.declarative import declarative_base
 
 import os
-host = os.environ['SERVER_HOST']
-port = os.environ['SERVER_PORT']
+host = os.environ['DB_HOST']
+port = os.environ['DB_PORT']
 engine = create_engine(f'postgresql://groupmember:groupmember@{host}:{port}/PCTO')
 teacherEngine = create_engine(f'postgresql://docente:docente@{host}:{port}/PCTO')
 studentEngine = create_engine(f'postgresql://studente:studente@{host}:{port}/PCTO')

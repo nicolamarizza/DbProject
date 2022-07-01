@@ -13,7 +13,9 @@
     
     <img class="sfondo_bg" src="{{ url_for('static',filename='styles/images/Home_bg.jpg') }}">
     <div class="testo_foto">
-        <h2>Hi {{ name }}, your mum and your sister work in the traffic</h2>
+		{%- if name -%}
+        <h2>Welcome back {{ name }}</h2>
+		{%- endif -%}
     </div>
 </div>
 
