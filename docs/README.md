@@ -91,17 +91,23 @@ All'interno della nostra applicazione troviamo i seguenti file:
 \
 
 Per quanto riguarda l'applicazione web, tutti i file utilizzati sono presenti all'interno della cartella 'Templates'.\
-Grazie a Flask, costruire pagine web dinamiche non è copmlicato, dal momento che permette di creare dei "Template" di porzioni di pagine web che si possono integrare all'interno di altri "Template". Per questo motivo non vi sarà un solo file per pagina web (quelle indicate in [Funzionalita](##Funzionalità)) ma molte di più.
+Grazie a Flask, costruire pagine web dinamiche non è complesso, dal momento che permette di creare dei "Template" di porzioni di pagine web che si possono integrare all'interno di altri "Template". Per questo motivo non vi sarà un solo file per pagina web (quelle indicate in [Funzionalita](##Funzionalità)) ma molti di più.
+Vi sono inoltre altre due folder:
+* static/javascript/ : La quale contiene i file .js relativi ai file html.
+* static/styles/ : La quale contiene i file .css relativi ai file html.
 
-
-## Environment Variables
+## Variabili d'ambiente
 
 To run this project, you will need to add the following environment variables to your .env file
+Per poter eseguire il progetto, bisogna valorizzare le seguenti variabili all'interno del file "utilities/env.txt":
+\
 
-`API_KEY`
-
-`ANOTHER_API_KEY`
-
+`FLASK_KEY_PATH` : Path della chiave
+`DB_HOST` : Indirizzo Ip del database
+`DB_PORT` : Porta del database
+`ZOOM_CLIENT_ID` : Id fornito da Zoom
+`ZOOM_CLIENT_SECRET` : Codice segreto fornito da Zoom
+`ZOOM_REDIRECT_URI` : Url fornito da Zoom
 
 ## Autori
 
