@@ -25,8 +25,6 @@ def roomDisplayName(room):
 
 
 
-pending_foreign_keys = []
-
 class Attribute():
 	def __init__(
 		self, 
@@ -76,6 +74,9 @@ class MultiChoiceAttribute(Attribute):
 		)
 		self.options = options
 		self.isMultiChoice = True
+	
+	def getOptions(self):
+		return self.options
 
 # sono attributi foreign key. Le opzioni fra cui l'utente può scegliere sono tutte le 
 # primary keys attualmente esistenti nella tabella puntata dalla fk
@@ -103,24 +104,25 @@ class FkAttribute(MultiChoiceAttribute):
 		)
 		self.getChoiceDisplayName = getChoiceDisplayName
 		self.mappedClassName, self.referencedKey = strRef.split('.')
-		pending_foreign_keys.append(self)
 
 # viene chiamata internamente a questo modulo una volta che tutte le classi sono state caricate
 # se la sessione non viene fornita, l'operazione è atomica
-	def buildOptions(self, session=None):
+	def getOptions(self, session=None):
 		sessionProvided = not session is None
 		if(not sessionProvided):
 			session = db.Session()
 		
+		result = {}
 		mappedClass = getattr(db, self.mappedClassName)
 		try:
 			for obj in session.query(mappedClass).all():
 				key = getattr(obj, self.referencedKey)
-				self.options[key] = key if self.getChoiceDisplayName is None else self.getChoiceDisplayName(obj)
+				result[key] = key if self.getChoiceDisplayName is None else self.getChoiceDisplayName(obj)
 		finally:
 			if(not sessionProvided):
 				session.commit()
 				session.close()
+			return result
 
 # override dell'AnonymousUserMixin di flask_login
 # usato unicamente per fornire una sessione di default agli utenti non autenticati
@@ -382,8 +384,3 @@ class Lezioni(SimpleView):
 		SimpleView.__init__(self, **kwargs)
 		if(self.kwargs.get('idaula', None) == 'virtual'):
 			self.kwargs['idaula'] = None
-
-
-with Session() as session:
-	for fk in pending_foreign_keys:
-		fk.buildOptions(session=session)

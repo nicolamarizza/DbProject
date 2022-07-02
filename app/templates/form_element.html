@@ -17,7 +17,7 @@
 			<option id="aulavirtuale"  value="virtual">aula virtuale</option>
 		{%- endif -%}
 	
-		{%- for pk, displayName in element.options.items() -%}
+		{%- for pk, displayName in element.getOptions().items() -%}
 			<!--nel menu a tendina quando viene inserita una nuova lezione vengono mostrate solo le opzioni relative ai corsi 
 				del prof che sta aggiungendo le lezioni-->
 			{%- if element.displayName == "corso" -%}
