@@ -224,7 +224,7 @@ def corso_insert_post():
 @login_required
 def corso_update_post():
 	try:
-		views.SimpleView.updateAll(request.form)['Corsi'] 
+		views.SimpleView.updateAll(request.form)
 	except InternalError as ex:
 		msg = ex.orig.args[0]
 		msg = re.search('(.*)\\nCONTEXT', msg).group(1)
@@ -343,7 +343,7 @@ def lezione_insert_post():
 		if(copy.get('Lezioni.idaula', None) == 'virtual'):
 			copy.pop('Lezioni.idaula')
 
-		lezione = views.SimpleView.insertAll(copy, session=session).get('Lezioni')
+		lezione = views.SimpleView.insertAll(copy, session=session)['Lezioni']
 		try:
 			session.commit()
 		except IntegrityError as ex:
@@ -373,15 +373,12 @@ def lezione_insert_post():
 @app.route('/lezione_delete', methods=["POST"])
 @login_required 
 def lezione_delete_post():
-	with current_user.getSession() as session:
-		lezione = views.SimpleView.deleteAll(request.form, session=session)
-		meeting = lezione.meeting
-		
-		if(USING_ZOOM and meeting):
-			meeting_id = meeting.id
-			session.commit() # delete lezione cascade (along with meeting)
+	with current_user.getSession().no_autoflush as session:
+		lezione = views.SimpleView.deleteAll(request.form, session=session)['Lezioni']
+		if(USING_ZOOM and lezione.meeting):
+			meeting_id = lezione.meeting.id
 			acc = ZoomAccount(session=session)
-			result = acc.deleteMeeting(meeting_id, session=session)
+			result = acc.deleteMeeting(meeting_id, delete_lezione=True, session=session)
 
 			if('redirect' in result):
 				return redirect(result['redirect'])
