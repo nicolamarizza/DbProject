@@ -48,7 +48,8 @@ Di seguito la rappresentazione ad oggetti della nostra base di dati:
 ![Rappresentazione grafica ad oggetti](https://github.com/nicolamarizza/DbProject/blob/main/docs/SchemaOggetti.png)
 \
 Legenda colori sfondi:
-* **Giallo**: Key;
+* **Giallo**: Key.
+
 \
 \
 Realizzando la base di dati, abbiamo presupposto che ci siano due tipi di utenti, studenti e docenti, che condividono lo stesso tipo di informazioni ma che avranno poi funzionalità diverse, infatti le sottoclassi della gerarchia sono disgiunte.
