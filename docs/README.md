@@ -78,7 +78,7 @@ Dato che le sottoclassi delle gerarchie non avevano attributi che le differenzia
 * **R**: lezione da remoto;
 * **D**: lezione duale.
 
-## Server Python e Flusk
+## Server Python e Flask
 
 Per iterfacciare il database con l'applicazione web abbiamo deciso di utilizzare Python, dal momento che abbiamo già utilizato durante il corso Basi di Dati la libreria SQL Alchemy.
 All'interno della nostra applicazione troviamo i seguenti file:
