@@ -91,10 +91,8 @@ All'interno della nostra applicazione troviamo i seguenti file:
 * **views.py**: al suo interno vi sono delle classi ulteriori create per permettere ai form presenti nell'applicazione web di interagire col database e viceversa.
 * **app.py**: as suo interno vi sono gli end-point, riceve le richieste dal parte dall'utente, le quali vengono elaborate e viene restituita una risposta all'utente. Vi sono inoltre dei filtri per l'interfacciamento con Jinja.
 * **zoom.py**: si interfaccia con le API dell'applicativo Zoom, permettendo quindi di creare lezioni anche all'interno di esso. Si occupa inoltre di gestire i Token, i quali sono salvati all'interno di una tabella nel database.
-\
 
 *Ogni file è oppurtunamente commentato, pertanto per un maggiore approfondimento si può consultare direttamente il file interessato.*
-\
 
 Per quanto riguarda l'applicazione web, tutti i file utilizzati sono presenti all'interno della cartella 'Templates'.\
 Grazie a Flask, costruire pagine web dinamiche non è complesso, dal momento che permette di creare dei "Template" di porzioni di pagine web che si possono integrare all'interno di altri "Template". Per questo motivo non vi sarà un solo file per pagina web (quelle indicate in [Funzionalita](##Funzionalità)) ma molti di più.
@@ -106,7 +104,6 @@ Vi sono inoltre altre due folder:
 
 To run this project, you will need to add the following environment variables to your .env file
 Per poter eseguire il progetto, bisogna valorizzare le seguenti variabili all'interno del file "utilities/env.txt":
-\
 
 `FLASK_KEY_PATH` : Path della chiave
 \
