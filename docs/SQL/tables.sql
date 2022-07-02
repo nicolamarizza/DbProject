@@ -77,7 +77,8 @@ create table lezioni (
 		on delete no action, -- manually reschedule class on different classroom or online
     idcorso integer not null references corsi(id)
 		on update cascade
-		on delete cascade
+		on delete cascade,
+	check (modalita <> 'R' or idaula is null) -- lezioni da remoto non possono avere un'aula assegnata
 );
 
 create table iscrizioni_corsi (

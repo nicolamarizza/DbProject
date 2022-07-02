@@ -27,6 +27,6 @@ grant select on dipartimenti to studente;
 grant select on edifici to studente;
 grant select, insert, delete on iscrizioni_corsi to studente;
 grant select on lezioni to studente;
-grant select, insert on prenotazioni_lezioni to studente;
+grant select, insert, delete on prenotazioni_lezioni to studente;
 grant select on responsabili_corsi to studente;
 grant select, update, insert on utenti to studente;
