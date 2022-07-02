@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var instances = M.FormSelect.init(elems, {});
 });
 
+//resetta i dati del form
 function resetForm() {
   document.getElementById("nuovo_corso_insert").reset();
 }
@@ -69,13 +70,13 @@ function confirmDelete(titolo){
   return confirm("Vuoi davvero cancellare il corso di "+titolo+" ?");
 }
 
+//mostra o nasconde i pulsanti
 function button_crea_corso_click(){
   document.getElementById("button_crea_corso").style.display = "none";
   document.getElementById("button_annulla_crea_corso").style.display = "block";
   document.getElementById("nuovo_corso_collapsible").style.display = "block";
 
 }
-
 function button_annulla_crea_corso_click(){
   document.getElementById("button_crea_corso").style.display = "block";
   document.getElementById("button_annulla_crea_corso").style.display = "none";

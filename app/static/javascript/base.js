@@ -1,3 +1,4 @@
+//inizializza la grafica
 $(document).ready(function(){
     M.AutoInit();
 });

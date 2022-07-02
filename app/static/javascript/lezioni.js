@@ -1,8 +1,10 @@
+//resetta i dati del form
 function resetForm() {
   document.getElementById("nuova_lezione_insert").reset();
   resetModalita(); //reimposta i valori della select modalita
 }
 
+//valori di default della modalità
 function resetModalita() {
   var tutto = [
     { display: "presenza", value: "P" },
@@ -20,6 +22,7 @@ function resetModalita() {
   });
 }
 
+//chiede conferma cancellazione lezione
 function confirmDelete(corso, inizio) {
   return confirm(
     "Vuoi davvero cancellare la lezione\ndi " + corso + " del " + inizio + " ?"
@@ -39,7 +42,7 @@ $(document).ready(function () {
   });
 });
 
-//jquery
+//jquery, controllo aulavirtuale invio dati form
 $(function () {
   //evento attivato quando il form viene inviato
   $("#nuova_lezione_insert").submit(function () {

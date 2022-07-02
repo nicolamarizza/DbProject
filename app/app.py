@@ -57,6 +57,7 @@ def load_user(email):
 	with views.Session() as session:
 		return session.query(views.User.dbClass).get(email)
 
+#prova ad autenticare l'utente
 def tryAuthenticate(email, password):
 	user = load_user(email)
 
@@ -71,11 +72,12 @@ def tryAuthenticate(email, password):
 
 #######
 
+#pagina principale
 @app.route('/')
 def redirect_to_home():
 	return redirect(url_for('home_get'))
 
-
+#route per reindirizzare alla homepage 
 @app.route('/home')
 def home_get():
 	user = current_user
@@ -86,12 +88,12 @@ def home_get():
 		name=user.nome if authenticated else None
 	)
 
-
+#route per effettuare il login
 @app.route('/login', methods=["GET"])
 def login_get():
 	return render_template('login.html')
 
-
+#route per effettuare il login
 @app.route('/login', methods=["POST"])
 def login_post():
 	email = request.form['email']
@@ -102,7 +104,7 @@ def login_post():
 
 	return render_template('login.html', login_error=True)
 
-
+#route per effettuare il logout
 @app.route('/logout')
 @login_required
 def logout():
@@ -136,8 +138,15 @@ def registrazione():
 
 	return redirect(url_for('home_get'))
 
-
+#route per visualizzare i corsi
 @app.route('/corsi')
+# parametri
+# error: a True quando si è verificato un errore nell'inserimento della lezione, altrimenti False
+# success: a True quando la lezione è stata inserita correttamente, altrimenti False 
+#		  (necessario in quanto serviva un modo per distinguere il terzo caso, ovvero quando si entra nella pagina delle lezioni
+#          senza effettuare alcun inserimento) 
+# msg_error: contiene la stringa col messaggio da visualizzare in caso di inserimento lezione, messaggio generato dal trigger nel controllo
+#
 def corsi_get(success=False, error=False, msg_error=''):
 	user = current_user
 	authenticated = user.is_authenticated

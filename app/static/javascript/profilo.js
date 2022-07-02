@@ -3,7 +3,6 @@ $(document).ready(function(){
   });
 
 
-
 //animazione chiusura messaggi di errore/successo
 $(function() {
   $( "#close_div_msg" ).click(function(event){
@@ -12,10 +11,6 @@ $(function() {
   });
   
 });
-
-
-
-
 
 //check password
 function validateForm(real_psw) {
