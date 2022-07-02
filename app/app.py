@@ -16,10 +16,31 @@ import re
 import sys
 from datetime import datetime, date, timedelta
 from string import Template
-from zoom import ZoomAccount
 import warnings
 
 import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--zoom', required=False, action='store_true')
+parser.add_argument('--adhoc', required=False, action='store_true')
+parser.add_argument('--debug', required=False, action='store_true')
+parsed_args = parser.parse_args()
+USING_ZOOM = parsed_args.zoom
+AD_HOC = parsed_args.adhoc
+
+print(f'Zoom {"enabled" if USING_ZOOM else "disabled"}')
+
+flask_kwargs={
+	'debug': parsed_args.debug,
+	'host': '0.0.0.0'
+}
+if(parsed_args.adhoc):
+	flask_kwargs['ssl_context']='adhoc'
+
+
+if(USING_ZOOM):
+	from zoom import ZoomAccount
+
 
 warnings.simplefilter("ignore")
 
@@ -354,29 +375,7 @@ def lezione_delete_post():
 		session.commit()
 		return lezioni_get(success=True, msg_error='La lezione è stata eliminata correttamente!')
 
-@app.route('/form_lezione_update', methods=["POST"])
-@login_required
-def form_lezione_update_post():
-	user = current_user
-	authenticated = user.is_authenticated
-
-
-	with user.getSession() as session:
-		lezione = session.query(views.Lezioni.dbClass).get(request.form['Lezioni.pk'])
-		corso = session.query(views.Corsi.dbClass).get(lezione.idcorso)
-
-	return render_template(
-			'modifica_lezione.html', 
-			authenticated = True, 
-			name=user.nome if authenticated else None,
-			is_docente = user.isdocente,
-			old_obj_values = lezione,
-			attrLez = views.Lezioni.attributes,
-			corso = corso
-	)
-
-
-@app.route('/lezione_update', methods=["POST"])
+@app.route('/lezione_update', methods=['POST'])
 @login_required
 def lezione_update_post():
 	with current_user.getSession() as session:
@@ -404,6 +403,28 @@ def lezione_update_post():
 
 	return lezioni_get(success=True, msg_error='La lezione è stata modificata correttamente!')
 
+@app.route('/form_lezione_update', methods=["POST"])
+@login_required
+def form_lezione_update_post():
+	user = current_user
+	authenticated = user.is_authenticated
+	
+	with user.getSession() as session:
+		lezione = session.query(views.Lezioni.dbClass).get(request.form['Lezioni.pk'])
+		corso = session.query(views.Corsi.dbClass).get(lezione.idcorso)
+
+	return render_template(
+			'modifica_lezione.html', 
+			authenticated = True, 
+			name=user.nome if authenticated else None,
+			is_docente = user.isdocente,
+			old_obj_values = lezione,
+			attrLez = views.Lezioni.attributes,
+			corso = corso
+	)
+
+
+@app.route('/lezione_update', methods=["POST"])
 
 @app.route('/iscrizione_lezione', methods=['POST'])
 @login_required
@@ -648,23 +669,5 @@ def zoom_auth_code():
 
 	return lezioni_get(**result['args'])
 
-
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--zoom', required=False, action='store_true')
-parser.add_argument('--adhoc', required=False, action='store_true')
-parser.add_argument('--debug', required=False, action='store_true')
-parsed_args = parser.parse_args()
-USING_ZOOM = parsed_args.zoom
-AD_HOC = parsed_args.adhoc
-
-print(f'Zoom {"enabled" if USING_ZOOM else "disabled"}')
-
-flask_kwargs={
-	'debug': parsed_args.debug,
-	'host': '0.0.0.0'
-}
-if(parsed_args.adhoc):
-	flask_kwargs['ssl_context']='adhoc'
 
 app.run(**flask_kwargs)

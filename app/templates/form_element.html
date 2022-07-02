@@ -83,6 +83,7 @@
 			{%- elif element.isDate -%}			"text"
 			{%- elif element.isDatetime -%}		"text"
 			{%- elif element.isTimedelta -%}	"text"
+			{%- elif element.isNumeric -%}		"number"
 			{%- else -%}						"text"
 			{%- endif %} 
 
