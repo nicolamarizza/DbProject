@@ -119,7 +119,7 @@ Per poter eseguire il progetto, bisogna valorizzare le seguenti variabili all'in
 
 ## Autori
 
-- [Giulia Cogotti](https://github.com/cogotti-giulia)
-- [Luca Daminato](https://github.com/daminella)
-- [Nicola Marizza](https://github.com/nicolamarizza)
+- [Giulia Cogotti](https://github.com/cogotti-giulia), matricola 884383
+- [Luca Daminato](https://github.com/daminella), matricola 887364
+- [Nicola Marizza](https://github.com/nicolamarizza), matricola 887004
 
