@@ -112,10 +112,11 @@
                                                 anche su questi timedelta!-->
                                                 {%- if element.name == 'inizioiscrizioni' or  element.name == 'scadenzaiscrizioni' -%}  
                                                     <input 
+                                                    id="{{ element.name }}ins_id"
                                                     name="{{ class_name }}.{{ element.name }}"
                                                     type="text" 
                                                     class = "{{ element.name }}ins validate"
-			                                        {% if not element.optional and not corso %} required=True {% endif %}
+			                                        {% if not element.optional and not old_obj_values %} required=True {% endif %}
                                                     
                                                     autocomplete="off">
                                                     
