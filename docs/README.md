@@ -49,7 +49,7 @@ Di seguito la rappresentazione ad oggetti della nostra base di dati:
 \
 Legenda colori sfondi:
 * Giallo: Key;
-
+\
 \
 Realizzando la base di dati, abbiamo presupposto che ci siano due tipi di utenti, studenti e docenti, che condividono lo stesso tipo di informazioni ma che avranno poi funzionalità diverse, infatti le sottoclassi della gerarchia sono disgiunte.
 Avremmo poi i corsi, i quali avranno un una serie di informazioni, collegati diversamente a docente e studente. I docenti potranno esserne responsabili, mentre gli studenti potranno iscriversi. Ogni corso appartiene a una categoria (esempio Informatica e statistica) e a un dipartimento (esempio DAIS).
@@ -71,12 +71,21 @@ Legenda colori sfondi:
 * Giallo: Primary Key;
 * Azzurro: Foreign Key;
 * Rosso: Primary Key e Foreign Key.
-
+\
 \
 Dato che le sottoclassi delle gerarchie non avevano attributi che le differenziavano particolarmente abbiamo deciso di effettuare una riduzione della gerarchia a una tabella unica. Per quanto riguarda gli utenti essi si differenziano tramite l'attributo _isDocente_ ti tipo boolean, mentre le lezioni si distinguono tramite l'attributo _modalità_ di tipo enum, di seguito sono spiegati i valori:
 * P: lezione in presenza;
 * R: lezione da remoto;
-* D: lezione duale;
+* D: lezione duale.
+
+## Server Python e Flusk
+
+Per iterfacciare il database con l'applicazione web abbiamo deciso di utilizzare Python, dal momento che abbiamo già utilizato durante il corso Basi di Dati la libreria SQL Alchemy.
+All'interno della nostra applicazione troviamo i seguenti file:
+* db.py: al suo interno c'è la rappresentazione del database in linguaggio python. Serve per interfacciare il server e il database. Ha un livello di astrazione maggiore rispetto al database perche ti consente di effettuare le query con ORM come se fosse un linguaggio a oggetti. Sostanzialmente, ad ogni tabella principale dello schema relazionale corrisponde una classe, mentre per le tabelle intermedie (ad esempio le tabelle necessarie per rappresentare le relazioni molti a molti) vengono utilizzate solo per costruire delle relazioni.
+* views.py: al suo interno vi sono delle classi ulteriori create per permettere ai form presenti nell'applicazione web di interagire col database e viceversa.
+* app.py: as suo interno vi sono gli end-point, riceve le richieste dal parte dall'utente, le quali vengono elaborate e viene restituita una risposta all'utente. Vi sono inoltre dei filtri per l'interfacciamento con Jinja.
+* zoom.py: si interfaccia con le API dell'applicativo Zoom, permettendo quindi di creare lezioni anche all'interno di esso. Si occupa inoltre di gestire i Token, i quali sono salvati all'interno di una tabella nel database.
 
 
 
