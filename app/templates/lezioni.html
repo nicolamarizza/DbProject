@@ -3,11 +3,8 @@
 
 {%- block head_base -%}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/corsi.css') }}">  
-
 <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/lezioni.css') }}">
-
 {%- endblock -%}
-
 
 {%- block body_base -%}
 
@@ -18,35 +15,34 @@
         <h4>Le tue lezioni</h4>
         {%- if is_docente -%}
         
+        <!--messaggi di successo o errore-->
         {%- if success -%}
-
         <div id="close_div_msg" class="bar success">
             <div class="close" id="close_div_msg">X</div>
             <i class="ico">&#10004;</i> SUCCESSO: {{ msg_error }}
         </div>
-
         {%- endif -%}
 
-
         {%- if error -%}
-
         <div id="close_div_msg" class="bar error">
             
             <div class="close" id="close_div_msg">X</div>
             <i class="ico">&#9747;</i> 
             <span >ERRORE: {{ msg_error }}</span>
         </div>
-
         {%- endif -%}
+        <!--fine messaggi-->
+
         <div>
-        
+            <!--pulsante aggiungi lezione, permette la visualizzazione del form-->
             <button id="btn_aggiungi_lezione" class="waves-effect waves-light btn deep-orange darken-3" onclick="crea_lezione()" style="display: block;">
                 Aggiungi lezione
             </button>
                 
             <button id="btn_annulla_aggiungi_lezione" class="waves-effect waves-light btn deep-orange darken-3" onclick="annulla_crea_lezione()" style="display: none;">                    Annulla
             </button>
-
+            
+            <!--form per l'aggiunta della lezione-->
             <ul id="nuova_lezione_collapsible" class="collapsible expandable popout" style="display: none;">
                     <li>
                         <div class="collapsible-header" style="display: block;">
@@ -61,7 +57,6 @@
                                     <div class="row">
                                         {%- set class_name = 'Lezioni' -%}
                                         <form id="nuova_lezione_insert"  class="col s12" action="/lezione_insert" method="POST">
-                                            
                                             {%- for element in attrLezioni.values() -%}
                                             {%- if element.insertable -%}
                                             <div class="row">
@@ -83,8 +78,9 @@
                                                         {%- else -%}                       text-fields
                                                         {%- endif %} 
                                                     </i>
-                                                    {%- endif -%}
-                                                    {%- include "form_element.html" -%}
+                                                {%- endif -%}
+                                                <!--genera dinamicamente gli elementi del form-->
+                                                {%- include "form_element.html" -%}
                                                 </div>
                                             </div>
                                             {%- endif -%}
@@ -108,19 +104,14 @@
             </div>
       
 
-
-
-
         {%- endif -%}
             <!--studente-->
             {%- if error_p -%}
-
             <div id="close_div_msg" class="bar error">
                 <div class="close" id="close_div_msg">X</div>
                 <i class="ico">&#9747;</i> 
                 <span>ERRORE: {{ msg_error }}</span>
             </div>
-
             {%- endif -%}
      
             {%- if lezioni -%}
@@ -152,6 +143,7 @@
                     </table>
                 </div>
                 {%- if lezioni_passate -%}
+                <!--visualizza solo le lezioni passate-->
             
                 <div style="padding-top: 30px;"></div>
                 <h4>Lezioni passate</h4>
@@ -185,7 +177,7 @@
            
             
             {%- else -%}       
-                    
+            <!--non ci sono lezioni disponibili-->
             <div class="col s11 offset-s1" >
                 <div class="row" >
                     <div  class="bar warn">
@@ -195,24 +187,15 @@
                 </div>
             </div>
             {%- endif -%}
-
-          
-
     </div>
 </div>
 
 {%- endblock -%}
 
 
-
-
 {%- block base_javascript -%}
-<!--<script src="{{ url_for('static',filename='javascript/corsi.js') }}"></script>-->
 <script src="{{ url_for('static',filename='javascript/lezioni.js') }}"></script>
-
 <script src="{{ url_for('static',filename='javascript/materializedatetimepicker.js') }}"></script>
-
-
 {%- endblock -%}
 
 

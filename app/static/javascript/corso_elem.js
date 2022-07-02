@@ -1,4 +1,5 @@
 function hideOrShowFormModificaCorso(event, idcorso){
+    //visualizzazione dinamica degli oggetti, mostra o nasconde i pulsanti per la modifica del corso
     divButton = event.target.parentNode.parentNode
     divParentForm = divButton.parentNode
     if(divParentForm.children[0].style.display === "none") {
@@ -16,7 +17,6 @@ function hideOrShowFormModificaCorso(event, idcorso){
         divButton.children[1].style.display = "block"
         divButton.children[2].style.display = "none"
 
-        
     
         //datetime
         MaterialDateTimePicker.create($('.inizioiscrizioni'+idcorso), false, null, false)

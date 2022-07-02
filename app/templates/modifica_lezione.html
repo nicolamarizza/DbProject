@@ -3,11 +3,8 @@
 
 {%- block head_base -%}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/corsi.css') }}">  
-
 <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/lezioni.css') }}">
-
 {%- endblock -%}
-
 
 {%- block body_base -%}
 <div class="row">
@@ -16,6 +13,7 @@
         <h2>Modifica lezione</h2>
         <h4>Corso di {{ corso.titolo }}</h4>
 
+        <!--form modificare la lezione, inserisce i vecchi dati-->
         {%- set class_name = 'Lezioni' -%}
         <form id="form_edit_lezioni" class="col s12" action="/lezione_update" method="POST">
             <div class="row", style="display: none;">
@@ -23,49 +21,43 @@
                 <input name='{{ class_name }}.pk' value='{{ old_obj_values.id }}'>
                 </div>
             </div>
-        {%- for element in attrLez.values() -%}
-            {%- if element.insertable -%}
-            {%- if element.name != 'idcorso' -%}
-            <div class="row">
-                    <!--icone
-                    <i class="small material-icons prefix">
-                    {%- if element.isDatetime or element.isDate -%}  calendar_month
-                    {%- elif element.isTimedelta -%}   access_time
-                    {%- elif element.isMultiChoice -%} arrow_drop_down
-                    {%- elif element.secret -%}        password
-                    {%- else -%}                       text_fields
-                    {%- endif %} 
-                    </i-->
-              
-                    {%- include "form_element.html" -%}
+            {%- for element in attrLez.values() -%} 
+                {%- if element.insertable -%}
+                {%- if element.name != 'idcorso' -%}
+                <div class="row">
+                        <!--icone-->
+                        <i class="small material-icons prefix">
+                        {%- if element.isDatetime or element.isDate -%}  calendar_month
+                        {%- elif element.isTimedelta -%}   access_time
+                        {%- elif element.isMultiChoice -%} arrow_drop_down
+                        {%- elif element.secret -%}        password
+                        {%- else -%}                       text_fields
+                        {%- endif %} 
+                        </i>
                 
-            
-            </div>
-        {%- else -%}
-
-            <div class="row", style="display: none;">
-                <div class="input-field col s8">
-                <input 	id=	{{ element.name }} 
-			
-                name="{{ class_name }}.{{ element.name }}" value="{{ old_obj_values.idcorso }}">
+                        {%- include "form_element.html" -%}
                 </div>
-            </div>
-        {%- endif -%}
-        {%- endif -%}
+            {%- else -%}
+                <div class="row", style="display: none;">
+                    <div class="input-field col s8">
+                    <input 	id=	{{ element.name }} 
+                
+                    name="{{ class_name }}.{{ element.name }}" value="{{ old_obj_values.idcorso }}">
+                    </div>
+                </div>
+            {%- endif -%}
+            {%- endif -%}
 
-    {%- endfor -%}
+        {%- endfor -%}
 
-    <div class="left" >                        
-     
-        <a class="waves-effect waves-light btn deep-orange darken-3" onclick="location.href='/lezioni'">ANNULLA</a>
-        <button type="submit"  class="waves-effect waves-light btn deep-orange darken-3" >
-            Salva modifiche <i class="material-icons right">create</i>
-        </button>
-    
-    </div>
-</form>
-
-
+        <!--pulsanti salva modifica e annulla-->
+        <div class="left" >                        
+            <a class="waves-effect waves-light btn deep-orange darken-3" onclick="location.href='/lezioni'">ANNULLA</a>
+            <button type="submit"  class="waves-effect waves-light btn deep-orange darken-3" >
+                Salva modifiche <i class="material-icons right">create</i>
+            </button>
+        </div>
+    </form>
 
 
     </div>
@@ -74,14 +66,9 @@
 {%- endblock -%}
 
 
-
-
 {%- block base_javascript -%}
 <script src="{{ url_for('static',filename='javascript/lezioni.js') }}"></script>
-
 <script src="{{ url_for('static',filename='javascript/materializedatetimepicker.js') }}"></script>
-
-
 {%- endblock -%}
 
 

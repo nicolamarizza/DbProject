@@ -1,12 +1,9 @@
 {% set active_page = 'corsi.index' %}
 {%- extends 'base.html' -%}
 
-
 {%- block head_base -%}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/statistiche.css') }}">
-
 {%- endblock -%}
-
 
 {%- block body_base -%}
 
@@ -18,8 +15,7 @@
 
         {%- if iscritti -%}
         <a href="/corsi" class="waves-effect waves-light btn deep-orange darken-3">
-            Torna ai corsi<i class="material-icons left">arrow_back_ios_new</i></a>
-                                        
+            Torna ai corsi<i class="material-icons left">arrow_back_ios_new</i></a>                       
         <table class="highlight">
             <thead>
               <tr>
@@ -32,7 +28,7 @@
             </thead>
             <tbody>
         
-       
+            <!--tabella con i dati di ogni iscritto-->
             {%- for s in iscritti -%}
             <tr>
                 <td>{{ s[3].email }}</td>
@@ -43,15 +39,11 @@
 
             </tr>
             {%- endfor -%}
-     
-
-
-
-    </tbody>
-    </table>
-
+        </tbody>
+        </table>
 
     {%- else -%}
+    <!--non ci sono iscritti-->
         <div  class="bar warn">
             <div  class="close" id="close_div_msg">
             <a class="link_indietro" href="/corsi">TORNA AI CORSI</a>

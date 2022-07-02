@@ -1,18 +1,16 @@
+<!--genera il form dinamicamente in base agli attributi della tabella a cui ci si sta riferendo-->
 {%- if element.isMultiChoice -%}
 	<div>
 	<label>{{ element.displayName }}</label>
 	</div>
 
-	<!--NON TOGLIERE class="browser-default" altrimenti succedono cose brutte
-	e le select smettono di fare il loro dovere! ho bestemmiato parecchio-->
+	<!--NON TOGLIERE class="browser-default" altrimenti succedono cose brutte e le select smettono di fare il loro dovere!-->
 	<select id="{{ element.name }}" class="browser-default" name={{ class_name }}.{{ element.name }} autocomplete="off">
 	
-		
 		<option value="" disabled selected>{{ element.displayName }}</option>
 
 		<!--per le lezioni online che non si svolgono in un'aula
-			se si seleziona questa opzione la chiave esterna dell'idaula
-			sarà null di default, vedi views.py: defaultValue = None-->
+			se si seleziona questa opzione la chiave esterna dell'idaula sarà null di default, vedi views.py: defaultValue = None-->
 		{%- if element.displayName == "aula" -%}
 		<!--non togliere l'id, serve per disabilitare l'invio dei
 			dati quando viene selezionata questa opzione-->
@@ -20,10 +18,8 @@
 		{%- endif -%}
 	
 		{%- for pk, displayName in element.options.items() -%}
-		
-			<!--nel menu a tendina quando viene inserita una nuova lezione
-			vengono mostrate solo le opzioni relative ai corsi del prof
-			che sta aggiungendo le lezioni-->
+			<!--nel menu a tendina quando viene inserita una nuova lezione vengono mostrate solo le opzioni relative ai corsi 
+				del prof che sta aggiungendo le lezioni-->
 			{%- if element.displayName == "corso" -%}
 				{%- for lez_corsi in i_tuoi_corsi_lez -%}
 					{%- if lez_corsi.titolo == displayName -%}
@@ -42,8 +38,6 @@
 
 {%- else -%}
 	
-
-
 	{%- if class_name == "Corsi" and element.name == "durata" -%}
 		<p class="range-field">
 			<input 

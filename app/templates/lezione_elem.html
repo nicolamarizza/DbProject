@@ -1,3 +1,4 @@
+<!--una singola lezione, riga della tabella-->
 <tr> 
     <td> {{ lezione[0].titolo }}</td>     
     
@@ -6,32 +7,24 @@
 	{{lezione[3].nome }} {{lezione[2].nome }} <br>
 	{%- endif -%}
 
-
+    <!--visualizza il link a zoom per le lezioni online o duali-->
 	{%- if lezione[1].modalita != 'P' -%}
-
 		{%- if lezione[1].meeting -%}
-
 			{%- if is_docente -%}
 			<a href="{{ lezione[1].meeting.start_url }}">link zoom</a>
 			{%- else -%}
 			<a href="{{ lezione[1].meeting.join_url }}">link zoom</a>
 			{%- endif -%}
-			
 		{%- else -%}
-
 			<a href="#" style="color:crimson">link zoom mancante</a>
-		
 		{%- endif -%}
-
 	{%- endif -%}
 	</td>
 
+    <!--dati della lezione-->
     <td>{{ lezione[1].inizio|extract_date }}</td>
     <td>{{ lezione[1].inizio|extract_time }}</td>
-
-
     <td>{{ lezione[1].durata|timedelta_format }}</td>
-   
     <td>{{ lezione[1].modalita|prova }}</td>
 
     <td style="text-align: center;">
@@ -47,7 +40,7 @@
         </form>       
     </td>   
     <td>
-        
+        <!--eliminazione lezione-->
         <form onsubmit="return confirmDelete('{{ lezione[0].titolo }}', '{{ lezione[1].inizio|datetime_format}}')" action="/lezione_delete" method="POST">
             <input name="Lezioni.pk" type="number" style="display:none" value="{{ lezione[1].id }}">
             <button type="submit" class="btn-floating  waves-effect waves-light deep-orange darken-3" style="background: transparent; border: none; font-size:0; cursor: pointer">
@@ -66,9 +59,8 @@
         {%- else -%}
             <!--se si è ancora in tempo per prenotarsi-->
             {%- if lezione[1].inizio|is_datetime_ok -%}
-                
+                <!--pulsante cancella lezione in caso ci si sia già prenotati-->
                 {% if lezione[1]|is_in_lezioni_prenotate(lezioni_prenotate) %}
-                    
                     <form action="/cancella_prenotazione" method="POST">
                         <input name="idlezione" type="number" style="display:none" value="{{ lezione[1].id }}">
                         <button type="submit"  class="waves-effect waves-light btn" style="background-color: #ff884d; font-size: 12px;">cancella prenotazione</button>
@@ -76,11 +68,11 @@
                 {%- else -%}
                     <!--controllo che ci siano posti disponibili-->
                     {%- if lezione[1].idaula|ha_posti_prenotabili(lezione[1].id) -%}
-                    
-                    <form action="/iscrizione_lezione" method="POST">
-                        <input name="idlezione" type="number" style="display:none" value="{{ lezione[1].id }}">
-                        <button type="submit"  class="waves-effect waves-light btn deep-orange darken-3" style="font-size: 12px;">prenota</button>
-                    </form>  
+                        <!--pulsante prenota lezione-->
+                        <form action="/iscrizione_lezione" method="POST">
+                            <input name="idlezione" type="number" style="display:none" value="{{ lezione[1].id }}">
+                            <button type="submit"  class="waves-effect waves-light btn deep-orange darken-3" style="font-size: 12px;">prenota</button>
+                        </form>  
                     {%- else -%}    
                     <div  class="bar error" style="cursor: help">
                         <i class="ico">&#9888;</i> 
@@ -92,8 +84,6 @@
             {%- endif -%}    
 
         {%- endif -%}    
-
-
 
     {%- endif -%}
     </td>

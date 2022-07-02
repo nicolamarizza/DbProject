@@ -15,11 +15,10 @@
 
         {%- if edit -%}
             <h2>Modifica profilo</h2>
-            <!--include la pagina dove verrà generato il form -->
+            <!--include la pagina dove verrà generato il form per la modifica -->
             {%- include "modifica_profilo.html" -%}
         {%- else -%}
-
-      
+        <!--pagina del profilo-->
         <div class="row">
         <h2>Il tuo profilo</h2>
         {%- if current_user.isdocente -%}
@@ -32,24 +31,21 @@
         <div class="row">
             <a class="waves-effect waves-light btn deep-orange darken-3" onclick="location.href='/modifica_profilo'">Modifica profilo</a>
         </div>
+        
         {%- if updated -%}
-
         <!-- avviso di corretto aggiornamento del profilo  -->
         <div class="row">
         <div class="col s10">
-
-            
             <div id="close_div_msg" class="bar success">
                 <div class="close" id="close_div_msg">X</div>
                 <i class="ico">&#10004;</i> SUCCESSO: Il tuo profilo è stato modificato correttamente, ora sei una nuova persona.
             </div>
         </div>
 
-        
         </div>
         {%- endif -%}
 
-        
+        <!--visualizza le informazioni dell'utente corrente-->
         <div class="row">
         <div class="col s10">
             <table class="highlight" >
@@ -67,9 +63,6 @@
 
         </div>
         </div>
-     
-    
-
       {%- endif -%}
 
     </div>
@@ -79,9 +72,6 @@
 
 {%- endblock -%}
 
-
 {%- block base_javascript -%}
-
 <script src="{{ url_for('static',filename='javascript/profilo.js') }}"></script>
-
 {%- endblock -%}

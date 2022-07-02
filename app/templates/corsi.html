@@ -5,54 +5,53 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/corsi.css') }}">
 {%- endblock -%}
 
-
-
-
-
 {%- block body_base -%}
 
 <div class="row">
     <div class="col s8 offset-s2">
 
         <h2>Corsi</h2>
-
         {%- if authenticated -%}
         <h3>I tuoi corsi</h3>
-
-
+            <!--messaggi di errore o successo-->
 			{%- if success -%}
-
 			<div id="close_div_msg" class="bar success">
 				<div class="close" id="close_div_msg">X</div>
 				<i class="ico">&#10004;</i> SUCCESSO: {{ msg_error }}
 			</div>
-
 			{%- endif -%}
 
-
 			{%- if error -%}
-
 			<div id="close_div_msg" class="bar error">
 				
 				<div class="close" id="close_div_msg">X</div>
 				<i class="ico">&#9747;</i> 
 				<span >ERRORE: {{ msg_error }}</span>
 			</div>
-
 			{%- endif -%}
-
+            <!--fine messaggi errore/successo-->
 
             {%- if i_tuoi_corsi -%}
             <ul class="collapsible expandable popout">
+                <!--visualizza la lista dei corsi-->
                 {% for corso in i_tuoi_corsi %}
                     {% include 'corso_elem.html' %}
                 {% endfor %}
             </ul>
             {%- else -%}
-            <div  class="bar warn">
-                <span class="material-icons ico">warning</span> 
-                Non ti sei ancora iscritto a nessun corso
-            </div>
+                <!--nessun corso disponibile-->
+                {%- if is_docente -%}
+                <div  class="bar warn">
+                    <span class="material-icons ico">warning</span> 
+                    Non hai ancora creato un coro
+                </div>
+                {%- else -%}
+                <div  class="bar warn">
+                    <span class="material-icons ico">warning</span> 
+                    Non ti sei ancora iscritto a nessun corso
+                </div>
+                {%- endif -%}
+
             {%- endif -%}
         {%- endif -%}
 
@@ -108,8 +107,7 @@
 		                                            {%- endif %} 
                                                 </i>
                                             {%- endif -%}
-                                                <!--ho dovuto fare così per poter mettere il design carino
-                                                anche su questi timedelta!-->
+                                                <!--ho dovuto fare così per poter mettere il design carino anche su questi timedelta!-->
                                                 {%- if element.name == 'inizioiscrizioni' or  element.name == 'scadenzaiscrizioni' -%}  
                                                     <input 
                                                     id="{{ element.name }}ins_id"
@@ -159,18 +157,19 @@
         {%- endif -%}
         
         {%- if corsi_disponibili -%}
+        <!--visualizza altri corsi disponibili, se è un docente allora mostra i corsi degli altri professori, altrimenti se si tratta
+        di uno studente mostra i corsi al quale non si è ancora iscritto-->
         <ul class="collapsible expandable popout">
             {% for corso in corsi_disponibili %}
                 {% include 'corso_elem.html' %}
             {% endfor %}
         </ul>
         {%- else -%}
+        <!--warning in caso non ce ne siano-->
         <div  class="bar warn">
             <span class="material-icons ico">warning</span> 
             Nessun corso disponibile al momento ☹
         </div>
-        
-        
         {%- endif -%}
 
 
@@ -178,8 +177,6 @@
 </div>
 
 {%- endblock -%}
-
-
 
 
 {%- block base_javascript -%}

@@ -64,6 +64,7 @@ function resetForm() {
   document.getElementById("nuovo_corso_insert").reset();
 }
 
+//alert
 function confirmDelete(titolo){
   return confirm("Vuoi davvero cancellare il corso di "+titolo+" ?");
 }

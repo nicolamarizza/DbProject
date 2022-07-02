@@ -196,24 +196,26 @@ def disiscrizione_corso_post():
 
 	return redirect(url_for('corsi_get'))
 
-
+#eliminazione del corso
 @app.route('/corso_delete', methods=["POST"])
 @login_required 
 def corso_delete_post():
 	views.SimpleView.deleteAll(request.form)
 	return redirect(url_for('corsi_get')) 
 
+#inserimento corso
 @app.route('/corso_insert', methods=["POST"])
 @login_required 
 def corso_insert_post():
 	views.SimpleView.insertAll(request.form)
 	return redirect(url_for('corsi_get')) 
 
+#aggiornamento corso
 @app.route('/corso_update', methods=['POST'])
 @login_required
 def corso_update_post():
 	try:
-		views.SimpleView.updateAll(request.form)['Corsi']
+		views.SimpleView.updateAll(request.form)['Corsi'] 
 	except InternalError as ex:
 		msg = ex.orig.args[0]
 		msg = re.search('(.*)\\nCONTEXT', msg).group(1)
@@ -231,10 +233,11 @@ def statistiche_iscritti_corso():
 
 	idcorso = request.form['idcorso']
 
-
 	with user.getSession() as session:
+		#dati del corso selezionato
 		corso = session.query(views.Corsi.dbClass).get(idcorso)
-
+		
+		#query per prendere gli iscritti al corso selezionato in ordine di data di iscrizione
 		iscritti = session.query(db.iscrizioni_corsi, views.User.dbClass).\
 				   filter(db.iscrizioni_corsi.c.idcorso == corso.id,\
 						 db.iscrizioni_corsi.c.idstudente == views.User.dbClass.email).\
@@ -245,14 +248,21 @@ def statistiche_iscritti_corso():
 		authenticated = True, 
 		name=user.nome if authenticated else None,
 		is_docente = user.isdocente,
-		corso = corso,
-		iscritti = iscritti
+		corso = corso, #dati del corso
+		iscritti = iscritti #iscritti a quel corso
 	)
 
 
-
+#route pagina lezioni
 @app.route('/lezioni')
 @login_required #ti dice che non sei autorizzato se non hai effettuato il login
+# parametri
+# error: a True quando si è verificato un errore nell'inserimento della lezione, altrimenti False
+# success: a True quando la lezione è stata inserita correttamente, altrimenti False 
+#		  (necessario in quanto serviva un modo per distinguere il terzo caso, ovvero quando si entra nella pagina delle lezioni
+#          senza effettuare alcun inserimento) 
+# msg_error: contiene la stringa col messaggio da visualizzare in caso di inserimento lezione, messaggio generato dal trigger nel controllo
+# error_p: a True quando si verifica un errore nella prenotazione della lezione da parte dello studente, altrimenti False
 def lezioni_get(error = False, success = False, msg_error = "", error_p = False):		
 	user = current_user
 	authenticated = user.is_authenticated
@@ -270,11 +280,8 @@ def lezioni_get(error = False, success = False, msg_error = "", error_p = False)
 			#lezioni prenotate già svolte
 			lezioni_passate_stud = list(filter(lambda l : user in l.prenotati and l.inizio.date() < date.today(), lezioni_totali))
 		
-		
-
 		#lista degli id dei propri corsi
 		c = [x.id for x in i_tuoi_corsi]
-
 
 		#query per prendere corsi, lezioni e aula in cui si svolgono, compreso l'edificiio
 		lezioni_aula = session.query(views.Corsi.dbClass, views.Lezioni.dbClass, views.Aule.dbClass, views.Edifici.dbClass).\
@@ -290,7 +297,6 @@ def lezioni_get(error = False, success = False, msg_error = "", error_p = False)
 				  filter(views.Lezioni.dbClass.idcorso.in_(c), views.Lezioni.dbClass.idaula == null()).\
 				  order_by(views.Lezioni.dbClass.inizio).all() 
 	
-
 		#unisce le query 
 		lezioni = lezioni_aula + lezioni_online
 
@@ -318,6 +324,7 @@ def lezioni_get(error = False, success = False, msg_error = "", error_p = False)
 			error_p = error_p
 		)
 
+#route per inserire la lezione
 @app.route('/lezione_insert', methods=['POST'])
 @login_required
 def lezione_insert_post():
@@ -351,7 +358,7 @@ def lezione_insert_post():
 
 	return lezioni_get(success=True, msg_error='La lezione è stata inserita correttamente!')
 
-
+#route per cancellare la lezione
 @app.route('/lezione_delete', methods=["POST"])
 @login_required 
 def lezione_delete_post():
@@ -375,6 +382,7 @@ def lezione_delete_post():
 		session.commit()
 		return lezioni_get(success=True, msg_error='La lezione è stata eliminata correttamente!')
 
+#route per l'aggiornamento della lezione
 @app.route('/lezione_update', methods=['POST'])
 @login_required
 def lezione_update_post():
@@ -403,6 +411,7 @@ def lezione_update_post():
 
 	return lezioni_get(success=True, msg_error='La lezione è stata modificata correttamente!')
 
+#reindirizza al form per l'aggiornamento della lezione
 @app.route('/form_lezione_update', methods=["POST"])
 @login_required
 def form_lezione_update_post():
@@ -418,14 +427,12 @@ def form_lezione_update_post():
 			authenticated = True, 
 			name=user.nome if authenticated else None,
 			is_docente = user.isdocente,
-			old_obj_values = lezione,
+			old_obj_values = lezione, #vecchi valori per riempire il form
 			attrLez = views.Lezioni.attributes,
 			corso = corso
 	)
 
-
-@app.route('/lezione_update', methods=["POST"])
-
+#permette l'inserimento dell'iscrizione della lezione
 @app.route('/iscrizione_lezione', methods=['POST'])
 @login_required
 def iscrizione_lezione_post():
@@ -486,7 +493,7 @@ def check_prenotazione_lezioni(id_lezione, user):
 	return True
 
 
-
+#route per la cancellazione della prenotazione
 @app.route('/cancella_prenotazione', methods=["POST"])
 @login_required
 def cancella_lezione_post():
@@ -502,6 +509,7 @@ def cancella_lezione_post():
 
 	return redirect(url_for('lezioni_get'))
 
+#route per modificare il profilo, reindirizza alla pagina di profilo.html
 @app.route('/modifica_profilo')
 @login_required
 def modifica_profilo():
@@ -521,6 +529,7 @@ def profilo_update():
 	views.SimpleView.updateAll(request.form)
 	return redirect(url_for('home_get'))
 
+#reindirizza alla pagina del profilo personale
 @app.route('/profilo')
 @login_required
 def profilo(updated = False):
@@ -646,12 +655,12 @@ def prova(value):
 def is_date_ok(data):
 	return data.date() >= date.today()
 
-
+#filtro per verificare se la data è maggiore della data corrente
 @app.template_filter("is_datetime_ok")
 def is_datetime_ok(data):
 	return data >= datetime.now()
 
-
+#filtro per verificare se le iscrizioni sono ancora chiuse
 @app.template_filter("is_not_datetatime_open")
 def is_not_datetatime_open(data):
 	return datetime.now() < data

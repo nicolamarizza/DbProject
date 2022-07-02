@@ -10,10 +10,8 @@
         {%- if element.insertable -%}
         <div class="row">
             
-                <!--se si tratta della password allora ci dovranno essere 
-                due caselle di testo, una per la vecchia password e una 
-                per la nuova
-                check password vecchia all'invio dei dati-->
+                <!--se si tratta della password allora ci dovranno essere due caselle di testo, una per la vecchia password e una 
+                per la nuova. controllo corrispondenza con password vecchia all'invio dei dati-->
                 {%- if element.secret -%}
                     <div class="input-field col s6">
                
@@ -27,7 +25,6 @@
                         required="True"
                         autocomplete="off"/>
                         <label for="old">vecchia {{ element.displayName }}</label>
-
                     </div>
         
                     <div class="input-field col s6">
@@ -45,10 +42,9 @@
                 {%- else -%}                       text_fields
                 {%- endif %} 
                 </i>
-            
-                {%- include "form_element.html" -%}
-               
-                    
+
+                <!--crea il form riempendolo con i vecchi valori-->
+                {%- include "form_element.html" -%}  
             </div>
          
         </div>
