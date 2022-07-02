@@ -53,6 +53,7 @@ class Attribute():
 		self.isDate = pythonType is date
 		self.isDatetime = pythonType is datetime
 		self.isTimedelta = pythonType is timedelta
+		self.isNumeric = pythonType is int
 
 
 		self.isEnum = False
