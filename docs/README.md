@@ -10,7 +10,7 @@ Progetto realizzato per il corso Basi di Dati dell'Università di Venezia Ca' Fo
 ## Indice
 
 * [Introduzione](##Introduzione)
-* [Funzionalita dell'applicazione](##Funzionalità  )
+* [Funzionalita dell'applicazione](##Funzionalità)
 * [Autori](##Autori)
 ## Introduzione
 
@@ -37,6 +37,14 @@ Le pagine sono le seguenti:
 * Profilo, pagina relativa all'account con cui si ha fatto l'acceso, si possono modificare le proprie informazioni o effetture il logout.
 
 
+## Database
+
+Per salvarci tutti i dati necessari per lo sviluppo della nostra applicazione abbiamo scelto di utilizzare il database PostgreSQL in quanto visto e utilizzato anche nel corso Basi di Dati.
+Per prima cosa abbiamo progettato il database, decidendo quali e quante informazioni ci sarebbero servite durante lo sviluppo dell'applicazione.
+Di seguito la rappresentazione ad oggetti della nostra base di dati:
+![Rappresentazione grafica ad oggetti](https://github.com/nicolamarizza/DbProject/blob/main/docs/SchemaOggetti.png)
+
+Di seguito la rappresentazione relazionale di della nostra base di dati:
 ## Environment Variables
 
 To run this project, you will need to add the following environment variables to your .env file
