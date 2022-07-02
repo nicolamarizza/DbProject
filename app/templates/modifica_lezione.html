@@ -25,17 +25,34 @@
                 {%- if element.insertable -%}
                 {%- if element.name != 'idcorso' -%}
                 <div class="row">
+                    {%- if element.isMultiChoice or element.isTimedelta -%}
+                    <div class="col s0" style="padding-top: 25px; padding-right: 0px;">
+                        <!--icone-->
+                        <i class="small material-icons">
+                            {%- if element.isTimedelta -%}   access_time
+                            {%- elif element.isMultiChoice -%} arrow_drop_down
+                            {%- endif %} 
+
+                        </i>
+                    </div>
+                    <div class="input-field col s9">
+                    {%- else -%}
+                    <div class="input-field col s10">
+                    
                         <!--icone-->
                         <i class="small material-icons prefix">
                         {%- if element.isDatetime or element.isDate -%}  calendar_month
                         {%- elif element.isTimedelta -%}   access_time
                         {%- elif element.isMultiChoice -%} arrow_drop_down
+                        {%- elif element.isNumeric -%}	   123 
                         {%- elif element.secret -%}        password
                         {%- else -%}                       text_fields
                         {%- endif %} 
                         </i>
-                
+                    {%- endif -%}
+              
                         {%- include "form_element.html" -%}
+                    </div>
                 </div>
             {%- else -%}
                 <div class="row", style="display: none;">

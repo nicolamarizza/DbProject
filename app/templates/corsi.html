@@ -102,6 +102,8 @@
                                                	<i class="small material-icons prefix">
                                                     {%- if element.isDatetime -%}      calendar_month
                                                     {%- elif element.isTimedelta -%}   access_time
+                                                    {%- elif element.isNumeric -%}	   123 
+                                                    
                                                     {%- elif element.isMultiChoice -%} arrow_drop_down
                                                     {%- else -%}                       text_fields
 		                                            {%- endif %} 
