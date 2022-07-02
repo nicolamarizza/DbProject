@@ -48,7 +48,15 @@ Di seguito la rappresentazione ad oggetti della nostra base di dati:
 ![Rappresentazione grafica ad oggetti](https://github.com/nicolamarizza/DbProject/blob/main/docs/SchemaOggetti.png)
 \
 Legenda colori sfondi:
-* Giallo: Primary Key;
+* Giallo: Key;
+
+\
+Realizzando la base di dati, abbiamo presupposto che ci siano due tipi di utenti, studenti e docenti, che condividono lo stesso tipo di informazioni ma che avranno poi funzionalità diverse.
+Avremmo poi i corsi, i quali avranno un una serie di informazioni, come la descrizione, la durata, il docente, periodo in cui ci si può iscrivere, numero minimo e massimo di iscritti, studenti iscritti ad esso ecc.
+
+
+
+
 \
 \
 Di seguito la rappresentazione relazionale di della nostra base di dati:
@@ -62,9 +70,6 @@ Legenda colori sfondi:
 * Rosso: Primary Key e Foreign Key.
 \
 \
-Realizzando la base di dati, abbiamo presupposto che ci siano due tipi di utenti, studenti e docenti, che condividono lo stesso tipo di informazioni ma che avranno poi funzionalità diverse.
-Avremmo poi i corsi, i quali avranno un una serie di informazioni, come la descrizione, la durata, il docente, periodo in cui ci si puo iscrivere, numero minimo e massimo di iscritti, studenti iscritti ad esso ecc.
-
 
 
 ## Environment Variables
