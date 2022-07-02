@@ -380,6 +380,8 @@ class Lezioni(SimpleView):
 
 	def __init__(self, **kwargs):
 		SimpleView.__init__(self, **kwargs)
+		if(self.kwargs.get('idaula', None) == 'virtual'):
+			self.kwargs['idaula'] = None
 
 
 with Session() as session:
