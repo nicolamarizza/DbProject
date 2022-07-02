@@ -247,6 +247,36 @@ for each row
 execute function fnc_trg_class_before_subscriptions_corsi();
 
 
+-- non è possibile prenotarsi ad una lezione dopo il suo inizio
+
+create or replace function fnc_trg_closed_class_subscriptions()
+    returns trigger
+    language plpgsql
+as $$
+begin
+
+    if CURRENT_TIMESTAMP > (
+        select      inizio
+        from        lezioni
+        where       id = NEW.idlezione
+    )
+    then
+        raise 'Non è possibile iscriversi a questa lezione in quanto già iniziata';
+		return NULL;
+    end if;
+    
+    return NEW;
+
+end;$$;
+
+
+drop trigger if exists trg_closed_class_subscriptions on prenotazioni_lezioni;
+create trigger trg_closed_class_subscriptions
+before insert on prenotazioni_lezioni
+for each row
+execute function fnc_trg_closed_class_subscriptions();
+
+
 -- ogni volta che vengono aggiornati i token viene automaticamente
 -- aggiornata l'ora di inizio validità
 create or replace function fnc_trg_zoom_token_time()
