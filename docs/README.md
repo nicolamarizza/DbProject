@@ -145,7 +145,32 @@ _permesso necessario per la disiscrizione al corso e l'annullamento della prenot
 \
 Le istruzioni sql per la creazione dei ruoli e assegnamento dei permessi si trovano in */docs/SQL/permissions.sql*
 
+\
+Sono stati opportunamente definiti alcuni trigger per garantire l'integrità dei dati. Essi riguardano principalmente corsi e lezioni.
 
+\
+Per i corsi è stato inserito un trigger *trg_closed_subscriptions* per evitare che lo studente si iscriva dopo la scadenza delle iscrizioni, a livello più alto viene comunque effettuato un controllo sulle date per impedire la visualizzazione dell'opzione per iscriversi, evitando di scomodare il controllo da parte del database.
+
+\
+Per quanto riguarda le lezioni il discorso è un po' più complicato, infatti sono stati definiti vari trigger per evitare la sovrapposizione di più lezioni nei vari casi:
+- *trg_no_class_overlap_same_course_insert*: prima dell'inserimento controlla che la lezione non sia sovrapposta per data e orario ad un'altra dello stesso corso, nemmeno se vengono effettuate in aule diverse;
+- *trg_no_class_overlap_insert*: prima dell'inserimento controlla che la lezione non sia sovrapposta ad un'altra nella stessa aula, anche se di corsi diversi;
+- *trg_no_class_overlap_update*: si occupa di controllare che dopo l'aggiornamento della lezione essa non sia stata inserita in un'aula già occupata.\
+
+Si è presa la decisione di mantenere un controllo rilassato, permettendo la sovrapposizione di lezioni di corsi diversi dello stesso docente, in quanto è possibile avere più responsabili dello stesso corso.
+
+- *trg_closed_subscriptions*: prima di ogni inserimento o aggiornamento sulla tabella iscrizioni_corsi, controlla che le iscrizioni al corso siano aperte;
+
+- *trg_class_before_subscriptions_lezioni*: prima dell'inserimento o dell'aggiornamento della lezione controlla che essa venga programmata dopo la scadenza delle iscrizioni a quel particolare corso;
+
+- *trg_closed_class_subscriptions*: prima dell'inserimento della prenotazione controlla che la lezione non sia ancora iniziata, se è già iniziata non permette di effettuare la prenotazione;\
+
+Per le tabelle riguardanti zoom è stato inserito un trigger *trg_zoom_token_time* che si occupa di aggiornare l'ora di inizio validità ogni volta che vengono aggiornati i token.
+
+\
+La definizione dei trigger si trova in */docs/SQL/triggers.sql*
+
+ 
 ## Autori
 
 - [Giulia Cogotti](https://github.com/cogotti-giulia), matricola 884383
