@@ -352,10 +352,31 @@ def lezione_delete_post():
 
 		session.delete(lezione)
 		session.commit()
-		return lezioni_get(success=True, msg_error='La lezione è stata elminata correttamente!')
+		return lezioni_get(success=True, msg_error='La lezione è stata eliminata correttamente!')
+
+@app.route('/form_lezione_update', methods=["POST"])
+@login_required
+def form_lezione_update_post():
+	user = current_user
+	authenticated = user.is_authenticated
 
 
-@app.route('/lezione_update')
+	with user.getSession() as session:
+		lezione = session.query(views.Lezioni.dbClass).get(request.form['Lezioni.pk'])
+		corso = session.query(views.Corsi.dbClass).get(lezione.idcorso)
+
+	return render_template(
+			'modifica_lezione.html', 
+			authenticated = True, 
+			name=user.nome if authenticated else None,
+			is_docente = user.isdocente,
+			old_obj_values = lezione,
+			attrLez = views.Lezioni.attributes,
+			corso = corso
+	)
+
+
+@app.route('/lezione_update', methods=["POST"])
 @login_required
 def lezione_update_post():
 	with current_user.getSession() as session:

@@ -36,13 +36,26 @@
 
     <td style="text-align: center;">
     {%- if is_docente -%}
+    <td>
+        <!--reindirizza alla route per modificare la lezione-->
+        <form action="/form_lezione_update" method="POST">
+            <input name="Lezioni.pk" type="number" style="display:none" value="{{ lezione[1].id }}">
+
+            <button type="submit" class="btn-floating  waves-effect waves-light deep-orange darken-3" style="background: transparent; border: none; font-size:0; cursor: pointer">
+                <i class="material-icons" style="color: white;">edit</i>
+            </button>
+        </form>       
+    </td>   
+    <td>
+        
         <form onsubmit="return confirmDelete('{{ lezione[0].titolo }}', '{{ lezione[1].inizio|datetime_format}}')" action="/lezione_delete" method="POST">
             <input name="Lezioni.pk" type="number" style="display:none" value="{{ lezione[1].id }}">
             <button type="submit" class="btn-floating  waves-effect waves-light deep-orange darken-3" style="background: transparent; border: none; font-size:0; cursor: pointer">
                 <i  class='fa fa-trash' style="color: white; ; font-size: 25px;"></i>  
             </button>
         </form>        
-                            
+    </td>
+                             
     {%- else -%} 
         <!--lezione solo online, non serve prenotarsi-->
         {%- if lezione[1].modalita == 'R' -%}
