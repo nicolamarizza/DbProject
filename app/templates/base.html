@@ -35,7 +35,13 @@
 	{%- endif -%}
 	<div class="navbar-fixed">
 		<nav class="deep-orange darken-3">
+		
 			<div class="nav-wrapper container">
+				<div>
+					<a href="//www.unive.it/">
+						<img class="img-responsive" src="{{ url_for('static',filename='styles/images/logo.png') }}">
+					</a>
+				</div>
 				<a href="" class="brand-logo">DREAM TEAM - PROGETTO</a>
 				<ul class="right hide-on-med-and-down">
 					<li {% if active_page == 'home.index' %} class='active' {% endif %}><a href="/home">Home</a></li>
