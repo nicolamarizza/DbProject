@@ -117,6 +117,35 @@ Per poter eseguire il progetto, bisogna valorizzare le seguenti variabili all'in
 \
 `ZOOM_REDIRECT_URI` : Url fornito da Zoom
 
+
+## Scelte progettali
+All'interno del database sono stati definiti due ruoli principali: studente e docente. Si differenziano in base ai permessi per effettuare operazioni sulle varie tabelle in modo da evitare che qualcuno comprometta l'integrità del database.
+
+\
+Permessi ruolo docente:
+- **tutti i permessi _(select, update, insert , delete, trigger ...)_:** corsi, lezioni, responsabili_corsi, zoommeetings;
+- **select** aule, categorie, dipartimenti, edifici, iscrizione_corsi, prenotazione_lezioni, utenti, zoomtokens.\
+_permesso necessario leggere e quindi visualizzare i dati presenti nelle tabelle indicate_;
+- **insert:** zoomtokens;
+- **update:** utenti, zoomtokens.\
+_permesso necessario aggiornare i dati del proprio profilo e aggiornare i token di zoom_.
+
+
+\
+Permessi ruolo studente:
+- **select:** aule, categorie, corsi, dipartimenti, edifici, iscrizione_corsi, lezioni, prenotazione_lezioni, responsabili_corsi, utenti.\
+_permesso necessario leggere e quindi visualizzare i dati presenti nelle tabelle indicate_;
+- **insert:** iscrizione_corsi, prenotazioni_lezioni, utenti.\
+_permesso necessario per iscriversi al corso, prenotarsi alla lezione e registrarsi al sito_;
+- **update:** utenti.\
+_permesso necessario aggiornare i dati del proprio profilo_.;
+- **delete:** iscrizioni_corsi, prenotazioni_lezioni\
+_permesso necessario per la disiscrizione al corso e l'annullamento della prenotazione della lezione_.
+
+\
+Le istruzioni sql per la creazione dei ruoli e assegnamento dei permessi si trovano in */docs/SQL/permissions.sql*
+
+
 ## Autori
 
 - [Giulia Cogotti](https://github.com/cogotti-giulia), matricola 884383
