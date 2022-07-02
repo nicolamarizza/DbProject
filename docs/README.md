@@ -42,7 +42,7 @@ Le pagine sono le seguenti:
     * *Visitatore*, utente non loggato, vede i corsi disponibili, ma ovviamente non può iscriversi o effettuare altre operazioni.
 - **Lezioni**, pagina relativa alle lezioni dei corsi della pagina sopracitata. La pagina è accessibile solo ad un utente loggato, in quanto cambiano le funzionalità a seconda della tipologia di utente:
     * *Studente*: vede tutte le informazioni delle lezioni relative ai corsi a cui è iscritto, e può prenotarsi o annullare la prenotazione ad/di esse.
-    * *Docente*: vede le lezioni relative ai suoi corsi, presenti e passate. Inoltre può aggiungere nuove lezioni e modificare o eliminare quelle già presenti.
+    * *Docente*: vede le lezioni relative ai suoi corsi, presenti e passate. Inoltre può aggiungere nuove lezioni e modificare o eliminare quelle già presenti. Inoltre quando inserisce una lezione, essa viene automaticamente schedulata su zoom in caso fosse da remoto o duale.
 - **Profilo**, pagina relativa all'account con cui si ha fatto l'acceso, si possono visualizzare e modificare le proprie informazioni o effettuare il logout.
 - **Login:** l'utente può effettuare il login, altrimenti ha la possibilità di registrasi come studente.
 
@@ -87,7 +87,12 @@ Dato che le sottoclassi delle gerarchie non avevano attributi che le differenzia
 - **R**: lezione da remoto;
 - **D**: lezione duale.
 
-
+\
+\
+Per completezza di seguito viene visualizzato il diagramma dell'interazione tra il sito web e l'API di zoom:
+\
+\
+![Diagramma funzionamento zoom](https://github.com/nicolamarizza/DbProject/blob/main/docs/zoomFlow.png)
 
 ## Server Python e Flask
 
