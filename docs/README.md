@@ -56,6 +56,8 @@ Avremmo poi i corsi, i quali avranno un una serie di informazioni, collegati div
 Ogni corso è composto da una o più lezioni che potranno essere frequentate dagli studenti. Le lezioni sono svolte in tre diverse modalità: presenza, remoto e duale. Questo è visualizzato tramite una doppia gerarchia, nel quale si distinguono lezioni remote da lezioni in aula. Una particolare categoria delle lezioni in aula sono quelle svolte in duale. Per queste ultime e per le lezioni da remoto verranno schedulate i meeting di zoom a cui potranno partecipare gli studenti.
 Le lezioni in aula verranno svolte in un'aula (esempio Aula 1), di un particolare edificio (esempio edificio Zeta) di un certo dipartimento.
 
+La tabella ZoomTokens ... TODO
+
 
 
 \
@@ -69,8 +71,13 @@ Legenda colori sfondi:
 * Giallo: Primary Key;
 * Azzurro: Foreign Key;
 * Rosso: Primary Key e Foreign Key.
+
 \
-\
+Dato che le sottoclassi delle gerarchie non avevano attributi che le differenziavano particolarmente abbiamo deciso di effettuare una riduzione della gerarchia a una tabella unica. Per quanto riguarda gli utenti essi si differenziano tramite l'attributo _isDocente_ ti tipo boolean, mentre le lezioni si distinguono tramite l'attributo _modalità_ di tipo enum, di seguito sono spiegati i valori:
+* P: lezione in presenza;
+* R: lezione da remoto;
+* D: lezione duale;
+
 
 
 ## Environment Variables
