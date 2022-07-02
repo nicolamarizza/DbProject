@@ -71,6 +71,7 @@ Legenda colori sfondi:
 * **Giallo**: Primary Key;
 * **Azzurro**: Foreign Key;
 * **Rosso**: Primary Key e Foreign Key.
+
 \
 \
 Dato che le sottoclassi delle gerarchie non avevano attributi che le differenziavano particolarmente abbiamo deciso di effettuare una riduzione della gerarchia a una tabella unica. Per quanto riguarda gli utenti essi si differenziano tramite l'attributo _isDocente_ ti tipo boolean, mentre le lezioni si distinguono tramite l'attributo _modalità_ di tipo enum, di seguito sono spiegati i valori:
@@ -88,12 +89,16 @@ All'interno della nostra applicazione troviamo i seguenti file:
 * **zoom.py**: si interfaccia con le API dell'applicativo Zoom, permettendo quindi di creare lezioni anche all'interno di esso. Si occupa inoltre di gestire i Token, i quali sono salvati all'interno di una tabella nel database.
 \
 \
-*Ogni file è oppurtunamente commentanto, pertanto per un maggiore approfondimento si può consultare direttamente il file interessato.*
+
+*Ogni file è oppurtunamente commentato, pertanto per un maggiore approfondimento si può consultare direttamente il file interessato.*
 \
 \
 \
+
 Per quanto riguarda l'applicazione web, tutti i file utilizzati sono presenti all'interno della cartella 'Templates'.\
-Grazie a Flask, costruire pagine web dinamiche non è copmlicato, dal momento che permette di creare dei "Template" di porzioni di pagine web che si possono integrare all'interno di altri "Template". Per questo motivo non vi sarà un solo file per pagina web (quelle indicate in [Funzionalita](##Funzionalità)) ma molte di più.\
+Grazie a Flask, costruire pagine web dinamiche non è copmlicato, dal momento che permette di creare dei "Template" di porzioni di pagine web che si possono integrare all'interno di altri "Template". Per questo motivo non vi sarà un solo file per pagina web (quelle indicate in [Funzionalita](##Funzionalità)) ma molte di più.
+\
+
 
 
 
