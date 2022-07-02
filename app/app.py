@@ -346,6 +346,8 @@ def lezione_insert_post():
 		lezione = views.SimpleView.insertAll(copy, session=session).get('Lezioni')
 		try:
 			session.commit()
+		except IntegrityError as ex:
+			return lezioni_get(error=True, success=False, msg_error='Integrity error', error_p=False)
 		except InternalError as ex:
 			msg = ex.orig.args[0]
 			msg = re.search('(.*)\\nCONTEXT', msg).group(1)
@@ -402,23 +404,36 @@ def lezione_update_post():
 
 		try:
 			session.commit()
+		except IntegrityError as ex:
+			return lezioni_get(error=True, success=False, msg_error='Integrity error', error_p=False)
 		except InternalError as ex:
 			msg = ex.orig.args[0]
 			msg = re.search('(.*)\\nCONTEXT', msg).group(1)
 			session.rollback()
 			return lezioni_get(error=True, success=False, msg_error=msg, error_p=False)
 		
-		if(USING_ZOOM and lezione.meeting):
+		if(USING_ZOOM):
 			acc = ZoomAccount(session=session)
-			result = acc.updateMeeting(lezione, session=session)
+			delete = lezione.meeting and lezione.modalita == 'P'
+			insert = not lezione.meeting and lezione.modalita != 'P'
+			update = lezione.meeting and lezione.modalita != 'P'
 
-			if('redirect' in result):
-				return redirect(result['redirect'])
+			if(delete or insert or update):
+				if(delete):
+					result = acc.deleteMeeting(lezione.meeting.id, session=session)
+				elif(insert):
+					result = acc.addMeeting(lezione, session=session)
+				elif(update):
+					result = acc.updateMeeting(lezione, session=session)
 
-			if(result['outcome']):
-				session.commit()
-			
-			return lezioni_get(**result['args'])
+				if('redirect' in result):
+					return redirect(result['redirect'])
+
+				if(result['outcome']):
+					session.commit()
+				
+				return lezioni_get(**result['args'])
+
 
 	return lezioni_get(success=True, msg_error='La lezione è stata modificata correttamente!')
 
