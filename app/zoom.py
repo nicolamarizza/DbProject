@@ -76,7 +76,6 @@ class DeleteOperation(ZoomOperation):
 
 		meeting = session.query(db.ZoomMeetings).get(self.meeting_id)
 		session.delete(meeting)
-		session.delete(meeting.lezione)
 
 		if(not sessionProvided):
 			session.commit()
@@ -133,11 +132,11 @@ class UpdateOperation(ZoomOperation):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 		self.method = 'patch'
-		self.url = f'https://api.zoom.us/v2/meetings/{kwargs.get("meeting_id")}'
+		self.url = f'https://api.zoom.us/v2/meetings/{kwargs.pop("meeting_id")}'
 		self.data = {**kwargs}
 
 	def _operation(self, response, session=None):
-		if(response.status_code != 201):
+		if(response.status_code < 200 or response.status_code > 299):
 			reason = json.loads(response.content)['message']
 			return self._die(False, msg_error=reason, error=True)
 		
@@ -170,13 +169,14 @@ class ZoomAccount():
 		), session=session)
 
 	# deletes the class also
-	def deleteMeeting(self, meeting, session=None):
+	def deleteMeeting(self, meeting_id, session=None):
 		return self._execute(DeleteOperation(
-			meeting_id=meeting.id
+			meeting_id=meeting_id
 		), session=session)
 
 	def updateMeeting(self, lezione, session=None):
 		return self._execute(UpdateOperation(
+			meeting_id=lezione.meeting.id,
 			agenda=f'Lezione di {lezione.corso.titolo}',
 			start_time=str(lezione.inizio).replace(' ','T',1) + 'Z',
 			duration=(int)(lezione.durata.total_seconds() / 60)

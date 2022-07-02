@@ -372,11 +372,14 @@ def lezione_insert_post():
 @login_required 
 def lezione_delete_post():
 	with current_user.getSession() as session:
-		lezione = session.query(views.Lezioni.dbClass).get(request.form['Lezioni.pk'])
+		lezione = views.SimpleView.deleteAll(request.form, session=session)
 		meeting = lezione.meeting
+		
 		if(USING_ZOOM and meeting):
+			meeting_id = meeting.id
+			session.commit() # delete lezione cascade (along with meeting)
 			acc = ZoomAccount(session=session)
-			result = acc.deleteMeeting(meeting, session=session)
+			result = acc.deleteMeeting(meeting_id, session=session)
 
 			if('redirect' in result):
 				return redirect(result['redirect'])
@@ -387,7 +390,6 @@ def lezione_delete_post():
 			return lezioni_get(**result['args'])
 
 
-		session.delete(lezione)
 		session.commit()
 		return lezioni_get(success=True, msg_error='La lezione è stata eliminata correttamente!')
 
@@ -396,7 +398,7 @@ def lezione_delete_post():
 @login_required
 def lezione_update_post():
 	with current_user.getSession() as session:
-		lezione = views.SimpleView.updateAll(request.form, session=session)
+		lezione = views.SimpleView.updateAll(request.form, session=session)['Lezioni']
 
 		try:
 			session.commit()
