@@ -18,7 +18,11 @@
 
         {%- set class_name = 'Lezioni' -%}
         <form id="form_edit_lezioni" class="col s12" action="/lezione_update" method="POST">
-         
+            <div class="row", style="display: none;">
+                <div class="input-field col s8">
+                <input name='{{ class_name }}.pk' value='{{ old_obj_values.id }}'>
+                </div>
+            </div>
         {%- for element in attrLez.values() -%}
             {%- if element.insertable -%}
             {%- if element.name != 'idcorso' -%}
