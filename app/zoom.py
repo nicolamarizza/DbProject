@@ -8,6 +8,7 @@ from flask_login import current_user
 import sys
 import json
 
+
 # all zoom operations return a dict of type:
 #{
 #	'success': boolean,		the operation is successful
@@ -36,8 +37,8 @@ class ZoomOperation():
 			method=self.method,
 			url=self.url,
 			headers=self.headers,
-			data=getattr(self, 'data', {}),
-			params=getattr(self, 'params', {})
+			data=json.dumps(getattr(self, 'data', {})),
+			params=json.dumps(getattr(self, 'params', {}))
 		)
 
 		return self._operation(response, session=session)
@@ -100,6 +101,7 @@ class InsertOperation(ZoomOperation):
 			'start_time': self.start_time,
 			'duration': self.duration,
 		}
+
 	def _operation(self, response, session=None):
 		if(response.status_code != 201):
 			# TO-DO: notify user
@@ -126,6 +128,20 @@ class InsertOperation(ZoomOperation):
 			session.close()
 		
 		return self._die(True, msg_error='La lezione è stata inserita correttamente!', success=True)
+
+class UpdateOperation(ZoomOperation):
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+		self.method = 'patch'
+		self.url = f'https://api.zoom.us/v2/meetings/{kwargs.get("meeting_id")}'
+		self.data = {**kwargs}
+
+	def _operation(self, response, session=None):
+		if(response.status_code != 201):
+			reason = json.loads(response.content)['message']
+			return self._die(False, msg_error=reason, error=True)
+		
+		return self._die(True, msg_error='La lezione è stata modificata correttamente!', success=True)
 
 class ZoomAccount():
 	CLIENT_ID = environ['ZOOM_CLIENT_ID']
@@ -157,6 +173,13 @@ class ZoomAccount():
 	def deleteMeeting(self, meeting, session=None):
 		return self._execute(DeleteOperation(
 			meeting_id=meeting.id
+		), session=session)
+
+	def updateMeeting(self, lezione, session=None):
+		return self._execute(UpdateOperation(
+			agenda=f'Lezione di {lezione.corso.titolo}',
+			start_time=str(lezione.inizio).replace(' ','T',1) + 'Z',
+			duration=(int)(lezione.durata.total_seconds() / 60)
 		), session=session)
 
 	# used to resume the operation that was serialized before asking the user
