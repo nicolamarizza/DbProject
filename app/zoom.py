@@ -99,6 +99,7 @@ class InsertOperation(ZoomOperation):
 			'agenda': self.agenda,
 			'start_time': self.start_time,
 			'duration': self.duration,
+			'timezone': 'Europe/Rome'
 		}
 
 	def _operation(self, response, session=None):
@@ -133,7 +134,7 @@ class UpdateOperation(ZoomOperation):
 		super().__init__(**kwargs)
 		self.method = 'patch'
 		self.url = f'https://api.zoom.us/v2/meetings/{kwargs.pop("meeting_id")}'
-		self.data = {**kwargs}
+		self.data = {'timezone': 'Europe/Rome', **kwargs}
 
 	def _operation(self, response, session=None):
 		if(response.status_code < 200 or response.status_code > 299):
@@ -164,7 +165,7 @@ class ZoomAccount():
 		return self._execute(InsertOperation(
 			lezione_id=lezione.id,
 			agenda=f'Lezione di {lezione.corso.titolo}',
-			start_time=str(lezione.inizio).replace(' ','T',1) + 'Z',
+			start_time=str(lezione.inizio).replace(' ','T',1),
 			duration=(int)(lezione.durata.total_seconds() / 60)
 		), session=session)
 
@@ -178,7 +179,7 @@ class ZoomAccount():
 		return self._execute(UpdateOperation(
 			meeting_id=lezione.meeting.id,
 			agenda=f'Lezione di {lezione.corso.titolo}',
-			start_time=str(lezione.inizio).replace(' ','T',1) + 'Z',
+			start_time=str(lezione.inizio).replace(' ','T',1),
 			duration=(int)(lezione.durata.total_seconds() / 60)
 		), session=session)
 
