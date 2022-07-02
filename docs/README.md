@@ -77,6 +77,12 @@ Dato che le sottoclassi delle gerarchie non avevano attributi che le differenzia
 * **R**: lezione da remoto;
 * **D**: lezione duale.
 
+
+
+
+
+
+
 ## Server Python e Flask
 
 Per iterfacciare il database con l'applicazione web abbiamo deciso di utilizzare Python, dal momento che abbiamo già utilizato durante il corso Basi di Dati la libreria SQL Alchemy.
@@ -103,10 +109,15 @@ Per poter eseguire il progetto, bisogna valorizzare le seguenti variabili all'in
 \
 
 `FLASK_KEY_PATH` : Path della chiave
+\
 `DB_HOST` : Indirizzo Ip del database
+\
 `DB_PORT` : Porta del database
+\
 `ZOOM_CLIENT_ID` : Id fornito da Zoom
+\
 `ZOOM_CLIENT_SECRET` : Codice segreto fornito da Zoom
+\
 `ZOOM_REDIRECT_URI` : Url fornito da Zoom
 
 ## Autori
