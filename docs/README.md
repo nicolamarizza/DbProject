@@ -39,12 +39,15 @@ Le pagine sono le seguenti:
 
 ## Database
 
-Per salvarci tutti i dati necessari per lo sviluppo della nostra applicazione abbiamo scelto di utilizzare il database PostgreSQL in quanto visto e utilizzato anche nel corso Basi di Dati.
-Per prima cosa abbiamo progettato il database, decidendo quali e quante informazioni ci sarebbero servite durante lo sviluppo dell'applicazione.
+Per salvarci tutti i dati necessari per lo sviluppo della nostra applicazione abbiamo scelto di utilizzare il database PostgreSQL in quanto visto e utilizzato anche nel corso Basi di Dati.\
+Per prima cosa abbiamo progettato il database, decidendo quali e quante informazioni ci sarebbero servite durante lo sviluppo dell'applicazione.\
 Di seguito la rappresentazione ad oggetti della nostra base di dati:
 ![Rappresentazione grafica ad oggetti](https://github.com/nicolamarizza/DbProject/blob/main/docs/SchemaOggetti.png)
-
+\
+\
 Di seguito la rappresentazione relazionale di della nostra base di dati:
+![Rappresentazione grafica relazionale](https://github.com/nicolamarizza/DbProject/blob/main/docs/SchemaRelazionale.png)
+
 ## Environment Variables
 
 To run this project, you will need to add the following environment variables to your .env file
