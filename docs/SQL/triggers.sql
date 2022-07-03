@@ -223,7 +223,7 @@ begin
 		select		*
 		from		lezioni
 		where		idcorso = NEW.id and
-					inizio <= NEW.scadenzaiscrizioni
+					inizio < NEW.scadenzaiscrizioni
 	)
 	then
 		raise 'Non è possibile programmare lezioni prima della scadenza delle iscrizioni';
@@ -278,7 +278,7 @@ execute function fnc_trg_closed_class_subscriptions();
 
 
 --garantire coerenza tra modalità lezione e modalità del corso a cui appartiente
-create function fnc_class_course_mod()
+create function fnc_trg_modalita_lezioni()
   returns trigger
     language plpgsql
 as $$
@@ -311,10 +311,39 @@ begin
 end;
 $$;
 
-create trigger trg_class_course_mod
+drop trigger if exists trg_modalita_lezioni on lezioni;
+create trigger trg_modalita_lezioni
 before insert or update on lezioni
 for each row
-execute function fnc_class_course_mod();
+execute function fnc_trg_modalita_lezioni();
+
+create or replace function fnc_trg_modalita_corsi()
+    returns trigger
+    language plpgsql
+as $$
+begin
+    if exists (
+        select      modalita
+        from        lezioni
+        where       idcorso = NEW.id and (
+                    (modalita = 'R' and NEW.modalita = 'P') or
+                    (modalita = 'P' and NEW.modalita = 'R') or
+                    (modalita = 'D' and NEW.modalita <> 'D')
+        )
+    )
+    then
+        raise 'La modalità di questo corso non è compatibile con alcune delle sue lezioni';
+        return null;
+    end if;
+    return NEW;
+end;$$;
+
+
+drop trigger if exists trg_modalita_corsi on corsi;
+create trigger trg_modalita_corsi
+before update or insert on corsi
+for each row
+execute function fnc_trg_modalita_corsi();
 
 
 -- ogni volta che vengono aggiornati i token viene automaticamente
@@ -338,4 +367,3 @@ referencing NEW TABLE as new_table OLD TABLE as old_table
 for each statement
 WHEN (pg_trigger_depth() < 1) --evita che si triggeri ricorsivamente
 execute function fnc_trg_zoom_token_time();
-
