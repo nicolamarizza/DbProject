@@ -65,8 +65,16 @@ Sono presenti poi i corsi, i quali avranno un una serie di informazioni, collega
 Ogni corso può essere composto da zero (lezioni non ancora inserite) o più lezioni che potranno essere frequentate dagli studenti. Le lezioni sono svolte in tre diverse modalità: presenza, remoto e duale. Questo è visualizzato tramite una doppia gerarchia, nel quale si distinguono lezioni remote da lezioni in aula. Una particolare categoria delle lezioni in aula sono quelle svolte in duale. Per queste ultime e per le lezioni da remoto verranno schedulate i meeting di zoom a cui potranno partecipare gli studenti.
 Le lezioni in aula verranno svolte in un'aula (esempio Aula 1), di un particolare edificio (esempio edificio Zeta) di un certo dipartimento.
 
-La tabella ZoomTokens ... TODO
+Quando un docente prova a inserire, modificare o cancellare una lezione da remoto o duale, la modifica interna al database viene anche riflessa su zoom. Per poter ottenere questo, l'utente deve concedere all'applicazione il permesso di accedere ai dati del suo account zoom. Questo si traduce a livello pratico alla cessione di una serie di token che vengono storati nella tabella zoomtokens:
+- access_token: ha validità di un'ora e va incluso, tramite opportuna encryption, agli header di ciascuna richiesta all'API.
+- refresh_token: ogni volta che l'access_token scade viene usato per mandare una richiesta speciale all'API di zoom per [ottenerne uno nuovo](https://marketplace.zoom.us/docs/guides/auth/oauth/#refreshing-an-access-token). A differenza dell'access_token, il refresh_token ha una validità di 15 anni.
+- creation_timestamp: timestamp (sufficientemente approssimativo) dell'inizio validità dell'access_token, necessario a calcolarne l'età ed eventualmente richiederne il refresh.
 
+Le informazioni relative agli zoom meetings creati vengono poi storati all'interno della tabella zoommeetings, la quale mantiene per ogni meeting i seguenti attributi:
+- id: identificativo gestito internamente da zoom, utilizzabile per indirizzare questo particolare meeting nelle richieste all'API
+- host_email: l'email del docente che ha schedulato il meeting
+- start_url: l'url che il docente può usare per avviare il meeting.
+- join_url: l'url che lo studente può usare per entrare nel meeting. Se il meeting non è già stato avviato gli verrà presentata una schermata di attesa. Altrimenti entrerà in una waiting room e sarà compito del docente farlo entrare o meno.
 
 
 \
