@@ -1,6 +1,3 @@
 __pycache__
-*.sh
-utilities/run.sh
-docs/dbproject_env
 .vscode
 venv
