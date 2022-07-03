@@ -9,13 +9,12 @@ import sys
 import json
 
 
-# all zoom operations return a dict of type:
+#tutte le ZoomOperation restituiscono un dict del seguente tipo:
 #{
-#	'success': boolean,		the operation is successful
-#	'redirect': boolean,	if present, it contains a url intended for redirection
-#	'args': dict			when the user is not being redirected, 
-# 							it holds the arguments to pass to the lezioni_get endpoint 
-# 							to build the jinja template
+#	'success': boolean,		l'operazione ha avuto successo
+#	'redirect': boolean,	se presente contiene un url per la redirezione dell'utente
+#	'args': dict			quando 'redirect' non è presente, contiene gli argomenti da passare
+#							alla funzione lezioni_get per il template jinja
 #}
 
 class ZoomOperation():
@@ -55,9 +54,9 @@ class ZoomOperation():
 			'args': args
 		}
 
-# Aside from deleting the meeting from zoom and from the db, this operation
-# also deletes the class from the db. This is necessary because of the zoom authorization process
-# which could make this operation span across 2 different endpoints (namely lezione_delete and zoom_auth_code)
+# Elimina il meeting da zoom e dal database
+# Su richiesta può eliminare anche la lezione corrispondente all'interno del database
+# (necessario per quando l'operazione è resumed dopo il processo di autorizzazione)
 class DeleteOperation(ZoomOperation):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
@@ -86,9 +85,9 @@ class DeleteOperation(ZoomOperation):
 		
 		return self._die(True, msg_error='La lezione è stata eliminata correttamente!', success=True)
 
-# This operations only inserts the meeting on zoom and on the db
-# In this case there is no need to insert the corresponding class also, since
-# it is inserted right away (endpoint lezione_insert) to check its validity against the db triggers 
+# Inserisce il meeting su zoom e sul database
+# La lezione corrispondente viene inserita all'interno del database a prescindere dall'esito
+# del processo di autorizzazione (prima dell'esecuzione di questa operazione)
 class InsertOperation(ZoomOperation):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
@@ -132,6 +131,8 @@ class InsertOperation(ZoomOperation):
 		
 		return self._die(True, msg_error='La lezione è stata inserita correttamente!', success=True)
 
+# Aggiorna le caratteristiche del meeting su zoom
+# Nessuna modifica necessaria nel database
 class UpdateOperation(ZoomOperation):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
@@ -162,8 +163,8 @@ class ZoomAccount():
 			session.commit()
 			session.close()
 
-	# the prerequisite is for the class to be already registered in the db 
-	# (or at least in the current session if specified)
+	# Assume che la lezione corrispondente sia già stata inserita all'interno
+	# del database, o almeno nella sessione corrente se specificata
 	def addMeeting(self, lezione, session=None):
 		return self._execute(InsertOperation(
 			lezione_id=lezione.id,
@@ -172,7 +173,6 @@ class ZoomAccount():
 			duration=(int)(lezione.durata.total_seconds() / 60)
 		), session=session)
 
-	# deletes the class also
 	def deleteMeeting(self, meeting_id, delete_lezione=False, session=None):
 		return self._execute(DeleteOperation(
 			meeting_id=meeting_id,
@@ -187,8 +187,9 @@ class ZoomAccount():
 			duration=(int)(lezione.durata.total_seconds() / 60)
 		), session=session)
 
-	# used to resume the operation that was serialized before asking the user
-	# the authorization to access their zoom account
+	# Usato quando l'operazione deve essere ripresa in seguito al processo di autorizzazione dell'utente
+	# L'operazione viene deserializzata a partire dallo state e le viene assegnato l'auth_code
+	# For reference vedere docs/zoomFlow.png
 	def resumeOperation(self, state, auth_code, session=None):
 		self._requestAccessToken(auth_code)
 		return self._execute(
@@ -199,13 +200,16 @@ class ZoomAccount():
 			session=session
 		)
 
-	# before executing a given operation, checks if the user has ever provided authorization to the app 
-	# (meaning the user has their own entry in the zoomtokens table). If they had not, the current operation 
-	# will be put on hold, serialized, and only after receiving authorization, deserialized and executed.
-	# See https://marketplace.zoom.us/docs/guides/auth/oauth/#getting-an-access-token
-	# If the user has already given authorization to the app but their access_token is expired (older than an hour),
-	# a request will be made to the zoom api and then the token will be refreshed
-	# See: https://marketplace.zoom.us/docs/guides/auth/oauth/#refreshing-an-access-token
+	# Prima di eseguire una data operazione, si verifica che l'utente abbia già dato l'autorizzazione all'applicazione
+	# per la gestione dei propri dati. Questa verifica si limita a controllare che ci sia un'entry nella tabella
+	# zoomtokens relativa all'email dell'utente che vuole eseguire l'operazione.
+	# Se l'autorizzazione non è ancora stata fornita, l'operazione viene serializzata, e solo in seguito alla ricevuta
+	# autorizzazione da parte dell'utente, deserializzata ed eseguita
+	# Vedi https://marketplace.zoom.us/docs/guides/auth/oauth/#getting-an-access-token
+	# Se invece l'utente ha già fornito l'autorizzazione all'applicazione, ma il suo access_token è expired (più vecchio di un'ora)
+	# prima dell'esecuzione dell'operazione viene fatta una richiesta all'API di zoom (in modo trasparente) 
+	# per il rinnovo dei token
+	# Vedi: https://marketplace.zoom.us/docs/guides/auth/oauth/#refreshing-an-access-token
 	def _execute(self, operation, session=None):
 		sessionProvided = session is not None
 		if(not sessionProvided):
@@ -235,7 +239,7 @@ class ZoomAccount():
 
 		return result
 
-	# step 1 of getting the access token (https://marketplace.zoom.us/docs/guides/auth/oauth#getting-an-access-token)
+	# Primo step per ottenere l'access_token (https://marketplace.zoom.us/docs/guides/auth/oauth#getting-an-access-token)
 	def _redirect_to_user_auth(self, state):
 		query = {
 			'response_type': 'code',
@@ -248,7 +252,7 @@ class ZoomAccount():
 			'redirect': 'https://zoom.us/oauth/authorize?' + urlencode(query),
 		}
 
-	# retreives access_token, refresh_token and creation_timestamp from the db
+	# recupera access_token, refresh_token e creation_timestamp dal db
 	def _getTokenInfo(self, session=None):
 		sessionProvided = not session is None
 		user = current_user
@@ -268,12 +272,13 @@ class ZoomAccount():
 			session.commit()
 			session.close()
 
-	# Access tokens older than one hour are expired
+	# Se l'access_token è più vecchio di un'ora è expired
 	def _isTokenExpired(self):
 		return date_time.now() - self.creation_timestamp >= timedelta(minutes=55) #give it 5 minutes slack
 
-	# sends a request to the zoom api to refresh the access key
-	# returns True if this whole operation is successful in addition to an error message if it's not
+	# Invia in modo trasparente una richiesta all'API di zoom per il refresh dei token
+	# Restituisce True se l'operazione ha avuto successo, altrimenti restituisce False insieme ad una
+	# stringa contenente il motivo del fallimento
 	def _refreshTokens(self, session = None):
 		sessionProvided = not session is None
 		if(not sessionProvided):
@@ -313,7 +318,7 @@ class ZoomAccount():
 
 		return True, ''
 
-	# step 2 of getting the access token (https://marketplace.zoom.us/docs/guides/auth/oauth#getting-an-access-token)
+	# Secondo step per ottenere l'access token (https://marketplace.zoom.us/docs/guides/auth/oauth#getting-an-access-token)
 	def _requestAccessToken(self, auth_code, session=None):
 		auth = b64encode(f'{ZoomAccount.CLIENT_ID}:{ZoomAccount.CLIENT_SECRET}'.encode('ascii')).decode("ascii")
 
