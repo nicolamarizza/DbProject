@@ -65,7 +65,7 @@ insert into responsabili_corsi(iddocente, idcorso) values
 
 
 insert into lezioni(inizio, durata, modalita, idaula, idcorso) values
-('2022-12-19 10:30:00', '01:30:00', 'R', null,  select id from corsi where titolo = 'It`s not Greek to me!'),
-('2022-12-22 14:30:00', '01:30:00', 'R', null,  select id from corsi where titolo = 'It`s not Greek to me!'),
-('2023-01-10 17:45:00', '01:30:00', 'R', null,  select id from corsi where titolo = 'Archeologia a Ca Foscari Venezia');
+('2022-12-19 10:30:00', '01:30:00', 'R', null,  (select id from corsi where titolo = 'It`s not Greek to me!')),
+('2022-12-22 14:30:00', '01:30:00', 'R', null,  (select id from corsi where titolo = 'It`s not Greek to me!')),
+('2023-01-10 17:45:00', '01:30:00', 'R', null,  (select id from corsi where titolo = 'Archeologia a Ca Foscari Venezia'));
 
