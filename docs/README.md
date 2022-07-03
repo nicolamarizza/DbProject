@@ -187,7 +187,7 @@ Per i corsi è stato inserito un trigger *trg_closed_subscriptions* per evitare 
 Per quanto riguarda le lezioni il discorso è un po' più complicato, infatti sono stati definiti vari trigger per evitare la sovrapposizione di più lezioni nei vari casi:
 - *trg_no_class_overlap_same_course_insert*: prima dell'inserimento controlla che la lezione non sia sovrapposta per data e orario ad un'altra dello stesso corso, nemmeno se vengono effettuate in aule diverse;
 - *trg_no_class_overlap_insert*: prima dell'inserimento controlla che la lezione non sia sovrapposta ad un'altra nella stessa aula, anche se di corsi diversi;
-- *trg_no_class_overlap_update*: si occupa di controllare che dopo l'aggiornamento della lezione essa non sia stata inserita in un'aula già occupata.\
+- *trg_no_class_overlap_update*: si occupa di controllare che dopo l'aggiornamento della lezione essa non sia stata inserita in un'aula già occupata.
 
 Si è presa la decisione di mantenere un controllo rilassato, permettendo la sovrapposizione di lezioni di corsi diversi dello stesso docente, in quanto è possibile avere più responsabili dello stesso corso.
 
@@ -195,9 +195,13 @@ Si è presa la decisione di mantenere un controllo rilassato, permettendo la sov
 
 - *trg_class_before_subscriptions_lezioni*: prima dell'inserimento o dell'aggiornamento della lezione controlla che essa venga programmata dopo la scadenza delle iscrizioni a quel particolare corso;
 
-- *trg_closed_class_subscriptions*: prima dell'inserimento della prenotazione controlla che la lezione non sia ancora iniziata, se è già iniziata non permette di effettuare la prenotazione;\
+- *trg_closed_class_subscriptions*: prima dell'inserimento della prenotazione controlla che la lezione non sia ancora iniziata, se è già iniziata non permette di effettuare la prenotazione;
 
 Tutti i trigger elencati sopra, in caso di fallimento, lanciano un messaggio di errore che sarà poi visualizzato nel sito per informare l'utente sull'esito dell'operazione effettuata.
+
+\
+Inoltre per quanto riguarda la coerenza tra la modalità delle lezioni e la modalità dei corsi sono stati definiti due trigger, *trg_modalita_lezioni* e *trg_modalita_corsi*. In questo modo quando si inserisce o si aggiorna una lezione o un corso viene verificata la modalità, se è coerente allora l'operazione viene effettuata, altrimenti l'utente visualizzerà  un messaggio di errore.
+
 
 Per le tabelle riguardanti zoom è stato inserito un trigger *trg_zoom_token_time* che si occupa di aggiornare l'ora di inizio validità ogni volta che vengono aggiornati i token.
 
@@ -210,7 +214,7 @@ Inoltre nella creazione delle tabelle sono stati definiti alcuni vincoli check p
 Nella tabella lezioni il check inserito si occupa di garantire che le lezioni da remoto non abbiano un'aula assegnata e che invece, quelle in presenza o duali ce l'abbiano. Per quanto riguarda la tabella dei corsi i check inseriti svolgono la funzione di mantenere la coerenza tra iscrizioni minime e massime, e di verificare che la scadenza delle iscrizioni avvenga dopo l'inizio di esse. All'interno della tabella aula i check fanno in modo che posti disponibili e posti totali non vadano in conflitto tra loro. 
 
 \
-La crezione delle tabelle e la conseguente dichiarazione dei vincoli check si può trovare nel file */docs/SQL/tables.sql*
+La creazione delle tabelle e la conseguente dichiarazione dei vincoli check si può trovare nel file */docs/SQL/tables.sql*
 
  
 ## Autori
