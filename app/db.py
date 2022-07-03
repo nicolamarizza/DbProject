@@ -10,12 +10,14 @@ port = os.environ['DB_PORT']
 engine = create_engine(f'postgresql://groupmember:groupmember@{host}:{port}/PCTO')
 teacherEngine = create_engine(f'postgresql://docente:docente@{host}:{port}/PCTO')
 studentEngine = create_engine(f'postgresql://studente:studente@{host}:{port}/PCTO')
+anonymousEngine = create_engine(f'postgresql://anonymous:anonymous@{host}:{port}/PCTO')
 
 metadata = MetaData(bind=engine)
 
-Session = sessionmaker(bind=engine)
+AdminSession = sessionmaker(bind=engine)
 TeacherSession = sessionmaker(bind=teacherEngine)
 StudentSession = sessionmaker(bind=studentEngine)
+AnonymousSession = sessionmaker(bind=anonymousEngine)
 
 
 DeclBase = declarative_base()

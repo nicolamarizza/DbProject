@@ -54,7 +54,7 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(email):
-	with views.Session() as session:
+	with db.AdminSession() as session:
 		return session.query(views.User.dbClass).get(email)
 
 #prova ad autenticare l'utente

@@ -110,7 +110,7 @@ class FkAttribute(MultiChoiceAttribute):
 	def getOptions(self, session=None):
 		sessionProvided = not session is None
 		if(not sessionProvided):
-			session = db.Session()
+			session = current_user.getSession()
 		
 		result = {}
 		mappedClass = getattr(db, self.mappedClassName)
@@ -136,7 +136,7 @@ class AnonymousUser():
 		return None
 	
 	def getSession(self):
-		return db.StudentSession()
+		return db.AnonymousSession()
 
 # tutte le classi di questo modulo che corrispondono direttamente a una delle classi del modulo db estendono questa classe
 # non è instanziabile
