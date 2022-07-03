@@ -9,13 +9,13 @@ Progetto realizzato per il corso Basi di Dati dell'Università di Venezia Ca' Fo
 
 ## Indice
 
-* [Introduzione](##Introduzione)
-* [Funzionalità principali](##Funzionalità)
-* [Database](##Database)
-* [Server Python e Flask](##Server)
-* [Variabili d'ambiente](##Variabili)
+* [Introduzione](#Introduzione)
+* [Funzionalità principali](#Funzionalità)
+* [Database](#Database)
+* [Server Python e Flask](#Server)
+* [Variabili d'ambiente](#Variabili)
 * [Scelte progettuali](#Scelte)
-* [Autori](##Autori)
+* [Autori](#Autori)
 
 ## Introduzione
 
@@ -28,7 +28,7 @@ Per fare ciò, sono stati utilizzati principalmente 3 strumenti:
 * **SQLalchemy ORM**, API che facilita l'associazione di classi Python definite dall'utente con tabelle di database e oggetti di tali classi con righe nelle tabelle corrispondenti. Le modifiche negli stati degli oggetti e delle righe vengono sincronizzate tra loro. SQLAlchemy consente di esprimere query di database in termini di classi definite dall'utente e le loro relazioni definite. 
 * **Flask**, micro-framework web scritto in python che consente una facile integrazione tra server e sito web. Implementa un sistema di template htmml popolati dinamicamente da _python_.
 
-Qualunque utente può accedere al sito e, se opportunamente registrato, può avere accesso a funzionalità in base al suo ruolo di docente o studente. Il semplice visitatore ha una panoramica generale del sito con la possibilità di visualizzare i corsi esistenti e la loro descrizione, ovviamente potrà poi decidere di registrarsi al sito web.
+Qualunque utente può accedere al sito e, se opportunamente registrato, può avere accesso a funzionalità in base al suo ruolo di docente o studente. Il semplice visitatore (anonymous) ha una panoramica generale del sito con la possibilità di visualizzare i corsi esistenti e la loro descrizione, ovviamente potrà poi decidere di registrarsi al sito web.
 
 
 ## Funzionalità
@@ -39,7 +39,7 @@ Le pagine sono le seguenti:
 - **Corsi**, pagina relativa ai corsi presenti all'interno dell'Ateneo. Per questa pagina bisogna effettuare 3 distinzioni a seconda dell'utente che ha fatto l'accesso:
     * *Studente*: vede i corsi a cui è iscritto e i restanti disponibili. Ovviamente potrà disiscsriversi oppure iscriversi nei limiti dei tempi prestabiliti dal responsabile del corso.
     * *Docente*: vede i corsi da lui  creati e i corsi di altri docenti. Può aggiungere nuovi corsi e modificare o eliminare i suoi corsi già presenti. Inoltre è presente la possibilità di visualizzare le statistiche riguardanti gli iscritti ad ognuno  dei suoi corsi.
-    * *Visitatore*, utente non loggato, vede i corsi disponibili, ma ovviamente non può iscriversi o effettuare altre operazioni.
+    * *Anonymous*, utente non loggato, vede i corsi disponibili, ma ovviamente non può iscriversi o effettuare altre operazioni.
 - **Lezioni**, pagina relativa alle lezioni dei corsi della pagina sopracitata. La pagina è accessibile solo ad un utente loggato, in quanto cambiano le funzionalità a seconda della tipologia di utente:
     * *Studente*: vede tutte le informazioni delle lezioni relative ai corsi a cui è iscritto, e può prenotarsi o annullare la prenotazione ad/di esse.
     * *Docente*: vede le lezioni relative ai suoi corsi, presenti e passate. Inoltre può aggiungere nuove lezioni e modificare o eliminare quelle già presenti. Inoltre quando inserisce una lezione, essa viene automaticamente schedulata su zoom in caso fosse da remoto o duale.
@@ -50,13 +50,12 @@ Le pagine sono le seguenti:
 ## Database
 
 Per salvare tutti i dati necessari per lo sviluppo della nostra applicazione abbiamo scelto di utilizzare il database PostgreSQL in quanto visto e utilizzato anche nel corso Basi di Dati.\
-Per prima cosa è stato progettato il database, decidendo quali e quante informazioni sarebbero servite durante lo sviluppo dell'applicazione.\
+Per prima cosa è stato progettato il database, decidendo quali e quante informazioni sarebbero servite durante lo sviluppo dell'applicazione.
+
 \
 Di seguito la rappresentazione ad oggetti della base di dati:
-\
-\
-![Rappresentazione grafica ad oggetti](https://github.com/nicolamarizza/DbProject/blob/main/docs/SchemaOggetti.png)
-\
+![Rappresentazione grafica ad oggetti](SchemaOggetti.png)
+
 Legenda colori sfondi:
 * **Giallo**: Key.
 
@@ -78,29 +77,23 @@ Le informazioni relative agli zoom meetings creati vengono poi storati all'inter
 
 
 \
-\
 Di seguito la rappresentazione relazionale di della nostra base di dati:
-\
-\
-![Rappresentazione grafica relazionale](https://github.com/nicolamarizza/DbProject/blob/main/docs/SchemaRelazionale.png)
+![Rappresentazione grafica relazionale](SchemaRelazionale.png)
 \
 Legenda colori sfondi:
 - **Giallo**: Primary Key;
 - **Azzurro**: Foreign Key;
 - **Rosso**: Primary Key e Foreign Key.
 
-\
+
 Dato che le sottoclassi delle gerarchie non avevano attributi che le differenziavano particolarmente viene effettuata una riduzione della gerarchia a una tabella unica. Per quanto riguarda gli utenti essi si differenziano tramite l'attributo _isDocente_ di tipo boolean, mentre le lezioni si distinguono tramite l'attributo _modalità_ di tipo enum, di seguito sono spiegati i valori:
 - **P**: lezione in presenza;
 - **R**: lezione da remoto;
 - **D**: lezione duale.
 
 \
-\
 Per completezza di seguito viene visualizzato il diagramma dell'interazione tra il sito web e l'API di zoom:
-\
-\
-![Diagramma funzionamento zoom](https://github.com/nicolamarizza/DbProject/blob/main/docs/zoomFlow.png)
+![Diagramma funzionamento zoom](zoomFlow.png)
 
 ## Server Python e Flask
 
@@ -142,7 +135,8 @@ Per poter eseguire il progetto, bisogna valorizzare le seguenti variabili all'in
 ## Scelte progettuali
 
 All'interno del database sono stati definiti due ruoli principali: _studente_ e _docente_. Si differenziano in base ai permessi per effettuare operazioni sulle varie tabelle in modo da evitare che qualcuno comprometta l'integrità del database.\
-Un terzo ruolo importante è l'_anonymous_ che corrisponde ad un utente ordinario che visita il sito, il quale potrà visualizzare informazioni generali e iscriversi o effettuare il login. Una volta effettuato il login accederà al database con il suo ruolo principale di studente o docente.\
+Un terzo ruolo importante è l'_anonymous_ che corrisponde ad un utente ordinario che visita il sito, il quale potrà visualizzare informazioni generali e iscriversi o effettuare il login. Una volta effettuato il login accederà al database con il suo ruolo principale di studente o docente.
+
 Inoltre si è pensato di inserire un terzo ruolo _segreteria_ che si occupa di operazioni particolari come l'inserimento di un docente nel database (infatti non può direttamente iscriversi dato che sarebbe un rischio), l'inserimento di aule, dipartimenti e categorie. Per mancanza di tempo questa feature non è stata ancora implementata.
 
 \
@@ -176,7 +170,10 @@ _permesso necessario per la disiscrizione al corso e l'annullamento della prenot
 \
 Le istruzioni sql per la creazione dei ruoli e assegnamento dei permessi si trovano in */docs/SQL/permissions.sql*
 
-\
+
+
+<hr>
+
 \
 Sono stati opportunamente definiti alcuni **trigger** per garantire l'integrità dei dati. Essi riguardano principalmente corsi e lezioni.
 
@@ -208,7 +205,6 @@ Per le tabelle riguardanti zoom è stato inserito un trigger *trg_zoom_token_tim
 \
 La definizione dei trigger si trova in */docs/SQL/triggers.sql*
 
-\
 \
 Inoltre nella creazione delle tabelle sono stati definiti alcuni vincoli check per assicurare che particolari condizioni vengano rispettate da tutti i valori presenti nell'attributo sul quale è stato definito il vincolo.\
 Nella tabella lezioni il check inserito si occupa di garantire che le lezioni da remoto non abbiano un'aula assegnata e che invece, quelle in presenza o duali ce l'abbiano. Per quanto riguarda la tabella dei corsi i check inseriti svolgono la funzione di mantenere la coerenza tra iscrizioni minime e massime, e di verificare che la scadenza delle iscrizioni avvenga dopo l'inizio di esse. All'interno della tabella aula i check fanno in modo che posti disponibili e posti totali non vadano in conflitto tra loro. 

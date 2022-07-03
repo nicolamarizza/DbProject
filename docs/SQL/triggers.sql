@@ -306,7 +306,7 @@ begin
 	then return NEW;
 	end if;
 
-	raise 'La modalità della lezione non è compatibile con la modalità del corso a cui appartiene!',
+	raise 'La modalità della lezione non è compatibile con la modalità del corso a cui appartiene!';
 	return NULL;
 end;
 $$;
