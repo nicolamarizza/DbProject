@@ -137,7 +137,7 @@ Per poter eseguire il progetto, bisogna valorizzare le seguenti variabili all'in
 All'interno del database sono stati definiti due ruoli principali: _studente_ e _docente_. Si differenziano in base ai permessi per effettuare operazioni sulle varie tabelle in modo da evitare che qualcuno comprometta l'integrità del database.\
 Un terzo ruolo importante è l'_anonymous_ che corrisponde ad un utente ordinario che visita il sito, il quale potrà visualizzare informazioni generali e iscriversi o effettuare il login. Una volta effettuato il login accederà al database con il suo ruolo principale di studente o docente.
 
-Inoltre si è pensato di inserire un terzo ruolo _segreteria_ che si occupa di operazioni particolari come l'inserimento di un docente nel database (infatti non può direttamente iscriversi dato che sarebbe un rischio), l'inserimento di aule, dipartimenti e categorie. Per mancanza di tempo questa feature non è stata ancora implementata.
+Inoltre si è pensato di inserire un terzo ruolo _segreteria_ che si occupa di operazioni particolari come l'inserimento di un docente nel database (infatti non può direttamente iscriversi dato che sarebbe un rischio), l'inserimento di aule, dipartimenti e categorie. Per mancanza di tempo questa feature non è stata ancora implementata. Per l'aggiunta di questi dati eseguire il file */docs/SQL/sampleData.sql*.
 
 \
 Permessi ruolo _anonymous_:
