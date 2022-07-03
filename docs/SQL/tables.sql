@@ -78,7 +78,10 @@ create table lezioni (
     idcorso integer not null references corsi(id)
 		on update cascade
 		on delete cascade,
-	check (modalita <> 'R' or idaula is null) -- lezioni da remoto non possono avere un'aula assegnata
+	check (
+		(modalita = 'R' and idaula is null) or
+		(modalita <> 'R' and idaula is not null)
+	) -- lezioni da remoto non possono avere un'aula assegnata, lezioni in presenza devono avere un'aula assegnata
 );
 
 create table iscrizioni_corsi (
@@ -87,7 +90,7 @@ create table iscrizioni_corsi (
 		on delete cascade,
     idcorso int references corsi(id)
 		on update cascade
-		on delete no action, -- might want to warn students before
+		on delete cascade,
     dataiscrizione timestamp not null DEFAULT (CURRENT_TIMESTAMP),
 	primary key (idcorso, idstudente)
 );
@@ -98,7 +101,7 @@ create table prenotazioni_lezioni (
 		on delete cascade,
 	idlezione int not null references lezioni(id)
 		on update cascade
-		on delete no action, -- might want to warn students before
+		on delete cascade,
 
 	primary key (idstudente, idlezione)
 );
@@ -115,7 +118,7 @@ create table responsabili_corsi (
 );
 
 create table zoommeetings (
-    id int primary key,
+    id bigint primary key,
 	idlezione int not null references lezioni(id)
 		on update cascade
 		on delete cascade,
