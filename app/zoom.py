@@ -241,7 +241,7 @@ class ZoomAccount():
 			'response_type': 'code',
 			'client_id': ZoomAccount.CLIENT_ID,
 			'redirect_uri': ZoomAccount.REDIRECT_URI,
-			'state': state
+			'state': state # serialized operation
 		}
 		return {
 			'outcome': False,

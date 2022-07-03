@@ -339,11 +339,7 @@ def lezioni_get(error = False, success = False, msg_error = "", error_p = False)
 def lezione_insert_post():
 	user = current_user
 	with user.getSession() as session:
-		copy = {**request.form}
-		if(copy.get('Lezioni.idaula', None) == 'virtual'):
-			copy.pop('Lezioni.idaula')
-
-		lezione = views.SimpleView.insertAll(copy, session=session)['Lezioni']
+		lezione = views.SimpleView.insertAll(request.form, session=session)['Lezioni']
 		try:
 			session.commit()
 		except IntegrityError as ex:
