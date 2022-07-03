@@ -85,6 +85,22 @@ class DeleteOperation(ZoomOperation):
 		
 		return self._die(True, msg_error='La lezione è stata eliminata correttamente!', success=True)
 
+
+class DeleteMultipleOperation(ZoomOperation):
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+		self.meeting_ids = kwargs.get('meeting_ids')
+		self.delete_lezione = kwargs.get('delete_lezione')
+
+	def execute(self, access_token, session=None):
+		for meeting_id in self.meeting_ids:
+			DeleteOperation(
+				meeting_id=meeting_id, 
+				delete_lezione=self.delete_lezione
+			).execute(access_token=access_token, session=session)
+
+		return {'outcome':True, 'args':{}}
+
 # Inserisce il meeting su zoom e sul database
 # La lezione corrispondente viene inserita all'interno del database a prescindere dall'esito
 # del processo di autorizzazione (prima dell'esecuzione di questa operazione)
@@ -179,6 +195,12 @@ class ZoomAccount():
 			delete_lezione=delete_lezione
 		), session=session)
 
+	def deleteMeetings(self, meeting_ids, delete_lezione=False, session=None):
+		return self._execute(DeleteMultipleOperation(
+			meeting_ids=meeting_ids,
+			delete_lezione=delete_lezione
+		), session=session)
+	
 	def updateMeeting(self, lezione, session=None):
 		return self._execute(UpdateOperation(
 			meeting_id=lezione.meeting.id,

@@ -209,8 +209,36 @@ def disiscrizione_corso_post():
 @app.route('/corso_delete', methods=["POST"])
 @login_required 
 def corso_delete_post():
-	views.SimpleView.deleteAll(request.form)
-	return redirect(url_for('corsi_get')) 
+	with current_user.getSession().no_autoflush as session:
+		corso = views.SimpleView.deleteAll(request.form, session=session)['Corsi']
+		
+		session.execute(
+			delete(db.iscrizioni_corsi).filter_by(idcorso=corso.id)
+		)			
+
+		for lezione in corso.lezioni:
+			session.execute(
+				delete(db.prenotazioni_lezioni).filter_by(
+						idlezione=lezione.id
+					)
+			)
+
+		if(USING_ZOOM):
+			meeting_ids = [lezione.meeting.id for lezione in filter(lambda l : l.meeting, corso.lezioni)]
+			acc = ZoomAccount(session=session)
+			result = acc.deleteMeetings(meeting_ids, delete_lezione=True, session=session)
+			if('redirect' in result):
+				return redirect(result['redirect'])
+
+			if(result['outcome']):
+				session.commit()
+			
+			return corsi_get(**result['args'])
+		else:
+			for lezione in corso.lezioni:
+				session.delete(lezione)
+			session.commit()
+			return redirect(url_for('corsi_get')) 
 
 #inserimento corso
 @app.route('/corso_insert', methods=["POST"])
