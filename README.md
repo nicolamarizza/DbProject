@@ -7,7 +7,7 @@ set role groupmember;
 create database "PCTO";
 
 ```
-Dopodichè, connettersi al database PCTO come groupmember ed eseguire il codice
+Dopodiché, connettersi al database PCTO come groupmember ed eseguire il codice
 SQL dei file sotto docs/SQL nel seguente ordine:
 tables.sql, triggers.sql, permissions.sql
 
@@ -27,7 +27,7 @@ pip install -r utilities/requirements.txt
 
 ### Variabili d'ambiente
 
-Tuttte le variabili d'ambiente necessarie sono contenute sotto utilites/env.txt\
+Tutte le variabili d'ambiente necessarie sono contenute sotto utilites/env.txt\
 Le seguenti sono già settate di default:
 
 - FLASK_KEY_PATH: il file contenente la flask secret key
@@ -37,11 +37,11 @@ Le seguenti sono già settate di default:
 ## Zoom
 
 Per testare l'applicazione con questa feature è necessario [creare un'applicazione OAuth](https://marketplace.zoom.us/docs/guides/build/oauth-app/#register-your-app).\
-Finchè l'applicazione non viene [pubblicata](https://marketplace.zoom.us/docs/guides/publishing)
+Finché l'applicazione non viene [pubblicata](https://marketplace.zoom.us/docs/guides/publishing)
 sul [marketplace di zoom](https://marketplace.zoom.us), tutte le feature fornite
 dall'[API di zoom](https://marketplace.zoom.us/docs/api-reference/zoom-api/methods) sono limitate al solo account del developer che possiede l'applicazione,
 pertanto la gestione dei meeting per le lezioni è possibile solo se l'email del docente che le organizza è effettivamente l'email del developer.\
-Affinchè l'applicazione possa comunicare con l'API di zoom, essa deve essere accessibile da remoto tramite opportuno port-forwarding.
+Affinché l'applicazione possa comunicare con l'API di zoom, essa deve essere accessibile da remoto tramite opportuno port-forwarding.
 
 ### Configurazione OAuth app
 

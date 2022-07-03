@@ -26,7 +26,7 @@ Per fare ciò, sono stati utilizzati principalmente 3 strumenti:
 * **Postgresql**, sistema di gestione di database relazionale ad oggetti che utilizza SQL (linguaggio di query strutturato) come linguaggio di query principale. Viene utilizzato per gestire i dati dell'applicazione;
 * **Python**, linguaggio col quale viene creato il server, fa da interfaccia tra sito web e database;
 * **SQLalchemy ORM**, API che facilita l'associazione di classi Python definite dall'utente con tabelle di database e oggetti di tali classi con righe nelle tabelle corrispondenti. Le modifiche negli stati degli oggetti e delle righe vengono sincronizzate tra loro. SQLAlchemy consente di esprimere query di database in termini di classi definite dall'utente e le loro relazioni definite. 
-* **Flask**, micro-framework web scritto in python che consente una facile integrazione tra server e sito web. Implementa un sistema di template htmml popolati dinamicamente da _python_.
+* **Flask**, micro-framework web scritto in python che consente una facile integrazione tra server e sito web. Implementa un sistema di template html popolati dinamicamente da _python_.
 
 Qualunque utente può accedere al sito e, se opportunamente registrato, può avere accesso a funzionalità in base al suo ruolo di docente o studente. Il semplice visitatore (anonymous) ha una panoramica generale del sito con la possibilità di visualizzare i corsi esistenti e la loro descrizione, ovviamente potrà poi decidere di registrarsi al sito web.
 
@@ -64,7 +64,7 @@ Sono presenti poi i corsi, i quali avranno un una serie di informazioni, collega
 Ogni corso può essere composto da zero (lezioni non ancora inserite) o più lezioni che potranno essere frequentate dagli studenti. Le lezioni sono svolte in tre diverse modalità: presenza, remoto e duale. Questo è visualizzato tramite una doppia gerarchia, nel quale si distinguono lezioni remote da lezioni in aula. Una particolare categoria delle lezioni in aula sono quelle svolte in duale. Per queste ultime e per le lezioni da remoto verranno schedulate i meeting di zoom a cui potranno partecipare gli studenti.
 Le lezioni in aula verranno svolte in un'aula (esempio Aula 1), di un particolare edificio (esempio edificio Zeta) di un certo dipartimento.
 
-Quando un docente prova a inserire, modificare o cancellare una lezione da remoto o duale, la modifica interna al database viene anche riflessa su zoom. Per poter ottenere questo, l'utente deve concedere all'applicazione il permesso di accedere ai dati del suo account zoom. Questo si traduce a livello pratico alla cessione di una serie di token che vengono storati nella tabella zoomtokens:
+Quando un docente prova a inserire, modificare o cancellare una lezione da remoto o duale, la modifica interna al database viene anche riflessa su zoom. Per poter ottenere questo, l'utente deve concedere all'applicazione il permesso di accedere ai dati del suo account zoom. Questo si traduce a livello pratico alla cessione di una serie di token che vengono salva nella tabella zoomtokens:
 - access_token: ha validità di un'ora e va incluso, tramite opportuna encryption, agli header di ciascuna richiesta all'API.
 - refresh_token: ogni volta che l'access_token scade viene usato per mandare una richiesta speciale all'API di zoom per [ottenerne uno nuovo](https://marketplace.zoom.us/docs/guides/auth/oauth/#refreshing-an-access-token). A differenza dell'access_token, il refresh_token ha una validità di 15 anni.
 - creation_timestamp: timestamp (sufficientemente approssimativo) dell'inizio validità dell'access_token, necessario a calcolarne l'età ed eventualmente richiederne il refresh.
@@ -125,11 +125,11 @@ Per poter eseguire il progetto, bisogna valorizzare le seguenti variabili all'in
 \
 `DB_PORT` : Porta del database
 \
-`ZOOM_CLIENT_ID` : Id fornito da Zoom
+`ZOOM_CLIENT_ID` : Id dell'applicazione per la registrazione su zoom
 \
 `ZOOM_CLIENT_SECRET` : Codice segreto fornito da Zoom
 \
-`ZOOM_REDIRECT_URI` : Url fornito da Zoom
+`ZOOM_REDIRECT_URI` : Url fornito da noi a zoom. Esso viene usato da zoom per dare il codice di autorizzazione nel momento in cui l'utente fornisce l'autorizzazione all'accesso ai dati al suo profilo di zoom
 
 
 ## Scelte progettuali
