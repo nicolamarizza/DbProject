@@ -1,16 +1,13 @@
 # questo modulo costituisce l'interfaccia fra il database e l'utente per quanto riguarda le operazioni
-# di update/insert/delete tramite form
+# di update/insert/delete tramite form (più nello specifico, l'interfaccia fra app.py e db.py)
 # fornisce una mappatura fra i campi dei form con cui l'utente interagisce e gli attributi delle tabelle del db
 
 from datetime import date, datetime, timedelta
-import re
 from flask_login import current_user
-from sqlalchemy.exc import IntegrityError
 import hashlib
 import sys
 
 import db
-from db import Session, StudentSession, TeacherSession
 import sys
 
 def encrypt(password):
@@ -105,8 +102,11 @@ class FkAttribute(MultiChoiceAttribute):
 		self.getChoiceDisplayName = getChoiceDisplayName
 		self.mappedClassName, self.referencedKey = strRef.split('.')
 
-# viene chiamata internamente a questo modulo una volta che tutte le classi sono state caricate
-# se la sessione non viene fornita, l'operazione è atomica
+	# ogni volta che viene chiamata restituisce i valori di tutte le chiavi che possono essere puntate dalla fk
+	# se getChoiceDisplayName non è specificata, il dict restituito ha forma {valore:valore}, altrimenti ha forma
+	# {valore:displayName}
+	# Ad esempio, se l'attributo corrente è una chiave esterna che punta agli edifici, e l'edificio Zeta ha chiave 4,
+	# se getChoiceDisplayName non è specificato la sua entry nel dict è (4,4), altrimenti è (4, "edificio 'Zeta' (via Torino 155)")
 	def getOptions(self, session=None):
 		sessionProvided = not session is None
 		if(not sessionProvided):
@@ -145,6 +145,8 @@ class SimpleView():
 	def getTables(**kwargs):
 		return {tName:None for tName in map(lambda k : k.split('.')[0], kwargs.keys())}.keys()
 
+	# I seguenti metodi *All servono ad inserire/eliminare/aggiornare oggetti di tipi diversi (uno per tipo)
+	# tramite una singola interazione col form
 	@staticmethod
 	def insertAll(args, session=None):
 		sessionProvided = not session is None
@@ -209,7 +211,7 @@ class SimpleView():
 	
 	
 	# riceve un dict di forma {'Class.attribute':value}
-	# potrebbero essere presenti classi diverse nel dict (utile per quando si vogliono inserire/aggiornare/eliminare più oggetti
+	# potrebbero essere presenti classi diverse nel dict (utile per quando si vogliono inserire/eliminare/aggiornare più oggetti
 	# di tabelle diverse attraverso una singola interazione col form)
 	def __init__(self, **kwargs):
 		ownedAttrs = list(filter(
