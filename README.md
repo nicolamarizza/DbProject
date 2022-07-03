@@ -1,14 +1,8 @@
-
-# DreamTeam project
-
-A brief description of what this project does and who it's for
-
-
-## Database setup
+## Setup database
 
 Connettersi al database postgres come utente postgres ed eseguire i seguenti comandi SQL
 ```sql
-create role groupmember with createdb login password 'groupmember';
+create role groupmember with createdb createrole login password 'groupmember';
 set role groupmember;
 create database "PCTO";
 
@@ -16,7 +10,9 @@ create database "PCTO";
 Dopodichè, connettersi al database PCTO come groupmember ed eseguire il codice
 SQL dei file sotto docs/SQL nel seguente ordine:
 tables.sql, triggers.sql, permissions.sql
-## Setup applicazione
+
+Se lo si desidera sono disponibili delle query SQL sotto docs/SQL/sampleData.sql per generare dei dati fittizi.
+## Setup server
 
 ### Virtualenv
 
@@ -28,8 +24,6 @@ source venv/bin/activate
 pip install -r utilities/requirements.txt
 
 ```
-Verranno automaticamente settate le variabili d'ambiente necessarie
-
 
 ### Variabili d'ambiente
 
@@ -51,21 +45,21 @@ Affinchè l'applicazione possa comunicare con l'API di zoom, essa deve essere ac
 
 ### Configurazione OAuth app
 
-Sotto la tab _App Credentials_, impostare l'attributo _Redirect URL for OAuth_ all'indirizzo **pubblico** completo mappato sull'endpoint '/zoom_auth_code'\
+Sotto la tab _App Credentials_, impostare l'attributo _Redirect URL for OAuth_ all'indirizzo **pubblico** completo mappato sull'endpoint /zoom\_auth\_code\
 Sotto la tab _Scopes_ includere 'View and manage all user meetings'
 
 ### Variabili d'ambiente
 
-Le seguenti variabili d'ambiente sono necessarie per runnare l'app con il supporto\
+Le seguenti variabili d'ambiente sono necessarie per runnare l'app con il supporto
 per zoom e vanno settate **manualmente**
 
 - ZOOM_CLIENT_ID: il codice identificativo dell'applicazione del marketplace di zoom
 - ZOOM_CLIENT_SECRET: il codice segreto dell'applicazione
-- ZOOM_REDIRECT_URI: l'indirizzo **pubblico** completo mappato sull'endpoint '/zoom_auth_code' usato dall'API di zoom per passare il codice di autorizzazione dell'utente nel momento in cui autorizza l'applicazione all'uso dei suoi dati.
+- ZOOM_REDIRECT_URI: l'indirizzo **pubblico** completo mappato sull'endpoint /zoom\_auth\_code usato dall'API di zoom per passare il codice di autorizzazione dell'utente nel momento in cui autorizza l'applicazione all'uso dei suoi dati.
 ## Avvio del server
 
 I seguenti comandi sono da eseguire dalla root directory del progetto.\
-Dopo aver configurato le variabili d'ambiente sotto utilities/env.txt, settarle eseguendo
+Dopo aver configurato le variabili d'ambiente sotto utilities/env.txt, attivarle eseguendo
 
 ```bash
 source utilities/env.txt
