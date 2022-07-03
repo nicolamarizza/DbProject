@@ -277,6 +277,46 @@ for each row
 execute function fnc_trg_closed_class_subscriptions();
 
 
+--garantire coerenza tra modalità lezione e modalità del corso a cui appartiente
+create function fnc_class_course_mod()
+  returns trigger
+    language plpgsql
+as $$
+begin
+
+	
+	if NEW.modalita = 'R' 
+	   and NEW.idcorso in (select c.id
+						   from corsi c
+						   where c.modalita = 'R' or c.modalita = 'D' )
+	then return NEW;
+	end if;
+
+	if NEW.modalita = 'P'  
+		and NEW.idcorso in (select c.id
+						   	from corsi c
+							where c.modalita = 'P' or c.modalita = 'D' )
+	then return NEW;
+	end if;
+
+	if NEW.modalita = 'D'
+		and NEW.idcorso in (select c.id
+						   	from corsi c
+							where c.modalita = 'D' )
+	then return NEW;
+	end if;
+
+	raise 'La modalità della lezione non è compatibile con la modalità del corso a cui appartiene!',
+	return NULL;
+end;
+$$;
+
+create trigger trg_class_course_mod
+before insert or update on lezioni
+for each row
+execute function fnc_class_course_mod();
+
+
 -- ogni volta che vengono aggiornati i token viene automaticamente
 -- aggiornata l'ora di inizio validità
 create or replace function fnc_trg_zoom_token_time()
@@ -298,3 +338,4 @@ referencing NEW TABLE as new_table OLD TABLE as old_table
 for each statement
 WHEN (pg_trigger_depth() < 1) --evita che si triggeri ricorsivamente
 execute function fnc_trg_zoom_token_time();
+
