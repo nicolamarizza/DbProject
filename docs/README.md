@@ -178,7 +178,7 @@ Le istruzioni sql per la creazione dei ruoli e assegnamento dei permessi si trov
 
 \
 \
-Sono stati opportunamente definiti alcuni trigger per garantire l'integrità dei dati. Essi riguardano principalmente corsi e lezioni.
+Sono stati opportunamente definiti alcuni **trigger** per garantire l'integrità dei dati. Essi riguardano principalmente corsi e lezioni.
 
 \
 Per i corsi è stato inserito un trigger *trg_closed_subscriptions* per evitare che lo studente si iscriva dopo la scadenza delle iscrizioni, a livello più alto viene comunque effettuato un controllo sulle date per impedire la visualizzazione dell'opzione per iscriversi, evitando di scomodare il controllo da parte del database.
@@ -203,6 +203,14 @@ Per le tabelle riguardanti zoom è stato inserito un trigger *trg_zoom_token_tim
 
 \
 La definizione dei trigger si trova in */docs/SQL/triggers.sql*
+
+\
+\
+Inoltre nella creazione delle tabelle sono stati definiti alcuni vincoli check per assicurare che particolari condizioni vengano rispettate da tutti i valori presenti nell'attributo sul quale è stato definito il vincolo.\
+Nella tabella lezioni il check inserito si occupa di garantire che le lezioni da remoto non abbiano un'aula assegnata e che invece, quelle in presenza o duali ce l'abbiano. Per quanto riguarda la tabella dei corsi i check inseriti svolgono la funzione di mantenere la coerenza tra iscrizioni minime e massime, e di verificare che la scadenza delle iscrizioni avvenga dopo l'inizio di esse. All'interno della tabella aula i check fanno in modo che posti disponibili e posti totali non vadano in conflitto tra loro. 
+
+\
+La crezione delle tabelle e la conseguente dichiarazione dei vincoli check si può trovare nel file */docs/SQL/tables.sql*
 
  
 ## Autori
