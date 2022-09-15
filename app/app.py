@@ -712,6 +712,12 @@ def is_datetime_ok(data):
 def is_not_datetatime_open(data):
 	return datetime.now() < data
 
+
+@app.template_filter("course_limit_reached")
+def course_limit_reached(corso):
+	return len(corso.iscritti) >= corso.iscrizionimassime
+
+
 # questa richiesta arriva dall'API di zoom
 @app.route('/zoom_auth_code', methods=['GET'])
 def zoom_auth_code():
