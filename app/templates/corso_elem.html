@@ -141,6 +141,12 @@
                                 <i class="ico">&#9888;</i> 
                                 Iscrizioni chiuse, aprono il {{ corso.inizioiscrizioni|extract_date }}
                             </div>
+							{%- elif corso|course_limit_reached -%}
+							<!--iscrizioni chiuse-->
+								<div  class="bar error right" style="cursor: help">
+									<i class="ico">&#9888;</i> 
+									Limite iscrizioni raggiunto
+								</div>
                             {%- else -%}
                             <!--pulsante iscrizione corso-->
                             <form action="/iscrizione_corso" method="POST">
